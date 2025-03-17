@@ -1,9 +1,47 @@
-image: golang:1.23.3-alpine3.20
+variables:
+  USERNAME: "amozhaykin"
+  APP_NAME: "my-app"
 
 stages:
+  #  - lint
   - test
+  - build
+  - update-tag
+
+#lint:
+#  stage: lint
+#  script:
+#    - golangci-lint run -v
 
 test:
   stage: test
   script:
-    - go test ./...
+    - go test -v ./...
+
+build:
+  stage: build
+  variables:
+    IMAGE: $REGISTRY/$USERNAME/$APP_NAME
+    TAG: $CI_COMMIT_SHORT_SHA
+  script:
+    - cat $ENV_FILE > .env
+    - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS" $REGISTRY
+    - docker build --tag $IMAGE:$TAG .
+    - docker push $IMAGE:$TAG
+
+update-tag:
+  stage: update-tag
+  variables:
+    IMAGE: $REGISTRY/$USERNAME/$APP_NAME
+    TAG: $CI_COMMIT_SHORT_SHA
+    REPOSITORY: https://$GITLAB_DEPLOY_USER:$GITLAB_DEPLOY_PASS@gitlab.golang-school.ru/potok-1/deploy.git
+    DEPLOYMENT: 1-deployment.yaml
+  script:
+    - git config --global user.email "ci@gitlab.bot"
+    - git config --global user.name "CI Bot"
+    - git clone $REPOSITORY
+    - cd deploy/k8s-manifests/$USERNAME-$APP_NAME
+    - sed -i "s|$IMAGE:.*|$IMAGE:$TAG|g" $DEPLOYMENT
+    - git add $DEPLOYMENT
+    - git commit -m "$USERNAME - $APP_NAME update image $TAG"
+    - git push $REPOSITORY
