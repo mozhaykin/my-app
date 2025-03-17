@@ -15,9 +15,16 @@ func hello(w http.ResponseWriter, _ *http.Request) {
 	fmt.Println("200 OK! Hello handler called")
 }
 
+func probe(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNoContent)
+}
+
 func main() {
 	router := chi.NewRouter()
+
 	router.Get("/amozhaykin/my-app/hello", hello)
+	router.Get("/live", probe)
+	router.Get("/ready", probe)
 
 	fmt.Println("Starting server on :8080")
 
