@@ -1,10 +1,15 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
+	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type Profile struct {
@@ -12,48 +17,86 @@ type Profile struct {
 	Age  int    `json:"age"`
 }
 
+var log zerolog.Logger
+
 func main() {
-	router := gin.Default()
+	zerolog.TimeFieldFormat = time.RFC3339                   // Инициализация логгера с форматом времени
+	log = zerolog.New(os.Stdout).With().Timestamp().Logger() // вывод логов в stdout с форматом времени
 
-	router.GET("/amozhaykin/my-app/hello", helloGET)
-	router.GET("/amozhaykin/my-app/profile", profileGET)
-	router.POST("/amozhaykin/my-app/profile", profilePOST)
+	log.Info().Msg("Starting server on :8080") // Логирование старта сервера
 
-	log.Info().Msg("Starting server on :8080")
+	r := chi.NewRouter()
 
-	err := http.ListenAndServe(":8080", router)
+	r.Get("/live", probe)
+	r.Get("/ready", probe)
+
+	r.Get("/amozhaykin/my-app/hello", helloGET)
+	r.Get("/amozhaykin/my-app/profile", profileGET)
+	r.Post("/amozhaykin/my-app/profile", profilePOST)
+
+	err := http.ListenAndServe(":8080", r)
 	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to start server")
+		log.Fatal().Err(err).Msg("Error starting server") // Логирование ошибки старта сервера
 	}
 }
 
-func helloGET(c *gin.Context) {
-	log.Debug().Msg("Handling GET /hello")
-
-	c.JSON(200, "Hello!")
+func probe(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNoContent)
+	log.Info(). // логирование в хендлерах
+			Str("method", r.Method).
+			Str("path", r.URL.Path).
+			Msg("Probe handler called")
 }
 
-func profileGET(c *gin.Context) {
-	log.Debug().Msg("Handling GET /profile")
+func helloGET(w http.ResponseWriter, r *http.Request) {
+	_, err := w.Write([]byte("Hello!"))
+	if err != nil {
+		log.Error().Err(err).Msg("Error writing response in helloGET") // Логирование ошибки записи ответа
+		return
+	}
 
-	Profile := Profile{
+	log.Info().
+		Str("method", r.Method).
+		Str("path", r.URL.Path).
+		Msg("200 OK! Hello handler called")
+}
+
+func profileGET(w http.ResponseWriter, r *http.Request) {
+	profile := Profile{
 		Name: "Alice",
 		Age:  30,
 	}
 
-	c.JSON(200, Profile)
-}
-
-func profilePOST(c *gin.Context) {
-	log.Debug().Msg("Handling POST /profile")
-
-	var newProfile Profile
-
-	err := c.BindJSON(&newProfile)
+	_, err := w.Write([]byte(fmt.Sprintf("Name: %s, Age: %d", profile.Name, profile.Age)))
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid request data"})
+		log.Error().Err(err).Msg("Error writing response in profileGET")
 		return
 	}
 
-	c.Status(201)
+	log.Info().
+		Str("method", r.Method).
+		Str("path", r.URL.Path).
+		Msg("200 OK! Profile handler called")
+}
+
+func profilePOST(w http.ResponseWriter, r *http.Request) {
+	var newProfile Profile
+
+	err := json.NewDecoder(r.Body).Decode(&newProfile)
+	if err != nil {
+		http.Error(w, "Invalid request data", http.StatusBadRequest)
+		log.Error().
+			Err(err).
+			Str("method", r.Method).
+			Str("path", r.URL.Path).
+			Msg("400 Bad Request in profilePOST")
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	log.Info().
+		Str("method", r.Method).
+		Str("path", r.URL.Path).
+		Interface("profile", newProfile).
+		Msg("201 Created! New profile created")
 }
