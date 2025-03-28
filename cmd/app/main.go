@@ -49,7 +49,7 @@ func probe(w http.ResponseWriter, r *http.Request) {
 }
 
 func helloGET(w http.ResponseWriter, r *http.Request) {
-	_, err := w.Write([]byte("Hello!"))
+	_, err := w.Write([]byte("I love you so much!"))
 	if err != nil {
 		log.Error().Err(err).Msg("Error writing response in helloGET") // Логирование ошибки записи ответа
 		return
