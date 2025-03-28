@@ -1,35 +1,59 @@
 package main
 
 import (
-	"fmt"
-	"github.com/go-chi/chi/v5"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 )
 
-func hello(w http.ResponseWriter, _ *http.Request) {
-	_, err := w.Write([]byte("Hello from k8s!"))
-	if err != nil {
-		fmt.Println("Error writing response:", err)
-	}
-
-	fmt.Println("200 OK! Hello handler called")
-}
-
-func probe(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNoContent)
+type Profile struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
 }
 
 func main() {
-	router := chi.NewRouter()
+	router := gin.Default()
 
-	router.Get("/amozhaykin/my-app/hello", hello)
-	router.Get("/live", probe)
-	router.Get("/ready", probe)
+	router.GET("/amozhaykin/my-app/hello", helloGET)
+	router.GET("/amozhaykin/my-app/profile", profileGET)
+	router.POST("/amozhaykin/my-app/profile", profilePOST)
 
-	fmt.Println("Starting server on :8080")
+	log.Info().Msg("Starting server on :8080")
 
 	err := http.ListenAndServe(":8080", router)
 	if err != nil {
-		fmt.Println("Error starting server:", err)
+		log.Fatal().Err(err).Msg("Failed to start server")
 	}
+}
+
+func helloGET(c *gin.Context) {
+	log.Debug().Msg("Handling GET /hello")
+
+	c.JSON(200, "Hello!")
+}
+
+func profileGET(c *gin.Context) {
+	log.Debug().Msg("Handling GET /profile")
+
+	Profile := Profile{
+		Name: "Alice",
+		Age:  30,
+	}
+
+	c.JSON(200, Profile)
+}
+
+func profilePOST(c *gin.Context) {
+	log.Debug().Msg("Handling POST /profile")
+
+	var newProfile Profile
+
+	err := c.BindJSON(&newProfile)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request data"})
+		return
+	}
+
+	c.Status(201)
 }
