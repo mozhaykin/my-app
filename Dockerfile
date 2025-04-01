@@ -2,6 +2,9 @@ FROM golang:1.23.3-alpine3.20 AS build
 
 WORKDIR /app
 
+RUN echo $GOCACHE
+RUN echo $GOMODCACHE
+
 # Modules layer
 COPY go.mod go.sum ./
 RUN go mod download

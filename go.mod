@@ -1,4 +1,4 @@
-module gitlab.golang-school.ru/potok-1/example/02-run-in-docker
+module gitlab.golang-school.ru/potok-1/amozhaykin/my-app
 
 go 1.23.3
 
