@@ -4,23 +4,13 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/rs/zerolog/log"
 )
 
 func (h *Handlers) GetProfile(w http.ResponseWriter, r *http.Request) {
-	log.Info().Msg("GetProfile called")
-
-	var input string
-
-	in := r.URL.RawQuery
-
-	err := json.Unmarshal([]byte(in), &input)
-	if err != nil {
-		http.Error(w, "json error", http.StatusBadRequest)
-		log.Error().Err(err).Msg("http v1 get_profile: json.NewDecoder.Decode")
-
-		return
-	}
+	input := chi.URLParam(r, "username")
 
 	output, ok := h.cache.Get(input)
 	if !ok {

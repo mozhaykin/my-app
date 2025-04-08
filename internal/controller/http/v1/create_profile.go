@@ -15,8 +15,6 @@ import (
 // Отдать в удобном для пользователя виде
 
 func (h *Handlers) CreateProfile(w http.ResponseWriter, r *http.Request) {
-	log.Info().Msg("CreateProfile called")
-
 	input := dto.CreateProfileInput{}
 
 	err := json.NewDecoder(r.Body).Decode(&input)

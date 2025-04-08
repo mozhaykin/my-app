@@ -10,7 +10,7 @@ func ProfileRouter(r *chi.Mux) {
 		v1 := ver1.New()
 
 		r.Route("/v1", func(r chi.Router) {
-			r.Get("/profile", v1.GetProfile)
+			r.Get("/profile/{username}", v1.GetProfile)
 			r.Post("/profile", v1.CreateProfile)
 		})
 	})
