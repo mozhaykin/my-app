@@ -5,18 +5,19 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/go-chi/chi/v5"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/router"
+
 	"github.com/rs/zerolog/log"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/http"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
 )
 
 func Run() (err error) {
-	router := chi.NewRouter()
+	r := router.New()
 
-	http.ProfileRouter(router)
+	http.ProfileRouter(r)
 
-	httpServer := httpserver.New(router, "8080")
+	httpServer := httpserver.New(r, "8080")
 	defer httpServer.Close()
 
 	waiting(httpServer)
