@@ -2,6 +2,7 @@ package v1
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/rs/zerolog/log"
@@ -16,6 +17,8 @@ import (
 
 func (h *Handlers) CreateProfile(w http.ResponseWriter, r *http.Request) {
 	input := dto.CreateProfileInput{}
+
+	log.Info().Msg(fmt.Sprintf("input %+v", r.Body))
 
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
@@ -32,6 +35,8 @@ func (h *Handlers) CreateProfile(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+
+	h.cache.Add(input.Name, input.Age)
 
 	// UseCase
 

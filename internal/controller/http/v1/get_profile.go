@@ -4,18 +4,34 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+	"github.com/rs/zerolog/log"
 )
 
-func (h *Handlers) GetProfile(w http.ResponseWriter, _ *http.Request) {
-	output := dto.CreateProfileOutput{
-		Name: "Alice",
-		Age:  30,
+func (h *Handlers) GetProfile(w http.ResponseWriter, r *http.Request) {
+	var input string
+
+	in := r.URL.RawQuery
+
+	err := json.Unmarshal([]byte(in), &input)
+	if err != nil {
+		http.Error(w, "json error", http.StatusBadRequest)
+		log.Error().Err(err).Msg("http v1 get_profile: json.NewDecoder.Decode")
+
+		return
+	}
+
+	output, ok := h.cache.Get(input)
+	if !ok {
+		http.Error(w, "key not found", http.StatusNotFound)
+		log.Info().Msg("http v1 get_profile: h.cache.Get: key not found")
+
+		return
 	}
 
 	data, err := json.Marshal(&output)
 	if err != nil {
 		http.Error(w, "json error", http.StatusBadRequest)
+		log.Error().Err(err).Msg("http v1 get_profile: json.Marshal")
 
 		return
 	}
@@ -26,5 +42,8 @@ func (h *Handlers) GetProfile(w http.ResponseWriter, _ *http.Request) {
 	_, err = w.Write(data)
 	if err != nil {
 		http.Error(w, "write error", http.StatusBadRequest)
+		log.Error().Err(err).Msg("http v1 get_profile: w.Write")
+
+		return
 	}
 }
