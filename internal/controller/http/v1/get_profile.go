@@ -8,6 +8,8 @@ import (
 )
 
 func (h *Handlers) GetProfile(w http.ResponseWriter, r *http.Request) {
+	log.Info().Msg("GetProfile called")
+
 	var input string
 
 	in := r.URL.RawQuery

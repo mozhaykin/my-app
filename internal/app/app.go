@@ -36,5 +36,6 @@ func waiting(httpServer *httpserver.Server) {
 	case err := <-httpServer.Notify():
 		log.Error().Err(err).Msg("App got notify: httpServer.Notify")
 	}
+
 	log.Info().Msg("App is stopping...")
 }

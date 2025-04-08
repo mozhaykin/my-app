@@ -2,7 +2,6 @@ package v1
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/rs/zerolog/log"
@@ -16,9 +15,9 @@ import (
 // Отдать в удобном для пользователя виде
 
 func (h *Handlers) CreateProfile(w http.ResponseWriter, r *http.Request) {
-	input := dto.CreateProfileInput{}
+	log.Info().Msg("CreateProfile called")
 
-	log.Info().Msg(fmt.Sprintf("input %+v", r.Body))
+	input := dto.CreateProfileInput{}
 
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
