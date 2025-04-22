@@ -1,13 +1,15 @@
 package v1
 
-import "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+import (
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
+)
 
 type Handlers struct {
-	cache *dto.Cache
+	usecase *usecase.UseCase
 }
 
-func New() *Handlers {
+func New(uc *usecase.UseCase) *Handlers {
 	return &Handlers{
-		cache: dto.NewCache(),
+		usecase: uc,
 	}
 }

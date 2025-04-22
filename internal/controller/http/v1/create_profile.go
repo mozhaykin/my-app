@@ -2,7 +2,11 @@ package v1
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
+
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/render"
 
 	"github.com/rs/zerolog/log"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
@@ -19,7 +23,7 @@ func (h *Handlers) CreateProfile(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
-		http.Error(w, "json error", http.StatusBadRequest)
+		http.Error(w, "json decode error", http.StatusBadRequest)
 		log.Error().Err(err).Msg("http v1 create_profile: json.NewDecoder.Decode")
 
 		return
@@ -33,10 +37,22 @@ func (h *Handlers) CreateProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.cache.Add(input.Name, input.Age)
+	output, err := h.usecase.CreateProfile(input)
+	if err != nil {
+		if errors.Is(err, domain.ErrAgeLessThan18) {
+			err = errors.Unwrap(err)
 
-	// UseCase
+			http.Error(w, "validate error: "+err.Error(), http.StatusBadRequest)
+			log.Error().Err(err).Msg("v1 create_profile: h.usecase.CreateProfile")
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+			return
+		}
+
+		http.Error(w, "bad request", http.StatusBadRequest)
+		log.Error().Err(err).Msg("v1 create_profile: h.usecase.CreateProfile")
+
+		return
+	}
+
+	render.JSON(w, output, http.StatusOK)
 }

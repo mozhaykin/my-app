@@ -21,8 +21,8 @@ type Server struct {
 func New(handler http.Handler, port string) *Server {
 	httpServer := &http.Server{
 		Handler:      handler,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 5 * time.Second,
+		ReadTimeout:  20 * time.Second,
+		WriteTimeout: 20 * time.Second,
 		Addr:         net.JoinHostPort("", port),
 	}
 
@@ -48,7 +48,7 @@ func (s *Server) Notify() <-chan error {
 }
 
 func (s *Server) Close() {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 25*time.Second)
 	defer cancel()
 
 	err := s.server.Shutdown(ctx)

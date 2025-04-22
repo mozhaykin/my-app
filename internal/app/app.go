@@ -5,6 +5,9 @@ import (
 	"os/signal"
 	"syscall"
 
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/cache"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
+
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/router"
 
 	"github.com/rs/zerolog/log"
@@ -13,9 +16,13 @@ import (
 )
 
 func Run() (err error) {
+	uc := usecase.New(
+		cache.New(),
+	)
+
 	r := router.New()
 
-	http.ProfileRouter(r)
+	http.ProfileRouter(r, uc)
 
 	httpServer := httpserver.New(r, "8080")
 	defer httpServer.Close()

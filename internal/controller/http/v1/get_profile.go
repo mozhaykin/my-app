@@ -1,41 +1,33 @@
 package v1
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-
 	"github.com/rs/zerolog/log"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/render"
 )
 
 func (h *Handlers) GetProfile(w http.ResponseWriter, r *http.Request) {
-	input := chi.URLParam(r, "username")
-
-	output, ok := h.cache.Get(input)
-	if !ok {
-		http.Error(w, "key not found", http.StatusNotFound)
-		log.Info().Msg("http v1 get_profile: h.cache.Get: key not found")
-
-		return
+	input := dto.GetProfileInput{
+		ID: chi.URLParam(r, "id"),
 	}
 
-	data, err := json.Marshal(&output)
+	err := input.Validate()
 	if err != nil {
-		http.Error(w, "json error", http.StatusBadRequest)
-		log.Error().Err(err).Msg("http v1 get_profile: json.Marshal")
+		http.Error(w, "validate error", http.StatusBadRequest)
 
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	_, err = w.Write(data)
+	output, err := h.usecase.GetProfile(input)
 	if err != nil {
-		http.Error(w, "write error", http.StatusBadRequest)
-		log.Error().Err(err).Msg("http v1 get_profile: w.Write")
+		http.Error(w, "bad request", http.StatusBadRequest)
+		log.Error().Err(err).Msg("v1 get_profile: h.usecase.GetProfile")
 
 		return
 	}
+
+	render.JSON(w, output, http.StatusOK)
 }
