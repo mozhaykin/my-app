@@ -1,7 +1,6 @@
 package cache
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/google/uuid"
@@ -50,13 +49,4 @@ func (c *Cache) Delete(key uuid.UUID) {
 	defer c.mx.Unlock()
 
 	delete(c.m, key)
-}
-
-func (c *Cache) PrintAll() {
-	c.mx.RLock()
-	defer c.mx.RUnlock()
-
-	for k, v := range c.m {
-		fmt.Println(k, v) //nolint:forbidigo
-	}
 }

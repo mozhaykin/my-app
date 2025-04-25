@@ -1,8 +1,6 @@
 package v1
 
-import (
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
-)
+import "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 
 type Handlers struct {
 	usecase *usecase.UseCase

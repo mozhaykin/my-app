@@ -6,11 +6,10 @@ import (
 )
 
 type Cache interface {
-	Add(key uuid.UUID, p domain.Profile)
+	Add(key uuid.UUID, profile domain.Profile)
 	Get(key uuid.UUID) (domain.Profile, error)
-	Update(key uuid.UUID, p domain.Profile)
+	Update(key uuid.UUID, profile domain.Profile)
 	Delete(key uuid.UUID)
-	PrintAll()
 }
 
 type UseCase struct {

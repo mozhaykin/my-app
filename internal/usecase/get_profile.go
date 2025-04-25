@@ -10,18 +10,17 @@ import (
 func (u *UseCase) GetProfile(input dto.GetProfileInput) (dto.GetProfileOutput, error) {
 	var output dto.GetProfileOutput
 
-	key, err := uuid.Parse(input.ID)
+	id, err := uuid.Parse(input.ID)
 	if err != nil {
 		return output, fmt.Errorf("uuid.Parse: %w", err)
 	}
 
-	p, err := u.cache.Get(key)
+	profile, err := u.cache.Get(id)
 	if err != nil {
 		return output, fmt.Errorf("u.cache.Get: %w", err)
 	}
 
 	return dto.GetProfileOutput{
-		Name: p.Name,
-		Age:  p.Age,
+		Profile: profile,
 	}, nil
 }

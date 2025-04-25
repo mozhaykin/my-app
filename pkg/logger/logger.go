@@ -30,7 +30,7 @@ func Init(c Config) {
 		Str("app_version", c.AppVersion).
 		Logger()
 
-	if c.PrettyConsole {
+	if c.PrettyConsole == true { //nolint:gosimple
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "15:04:05"})
 	}
 

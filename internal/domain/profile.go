@@ -1,15 +1,18 @@
 package domain
 
+import "github.com/google/uuid"
+
 type Name string
 
 type Age int
 
 type Profile struct {
-	Name Name
-	Age  Age
+	ID   uuid.UUID `json:"id"`
+	Name Name      `json:"name"`
+	Age  Age       `json:"age"`
 }
 
-func NewProfile(name string, age int) (Profile, error) {
+func NewProfile(name string, age int, id ...uuid.UUID) (Profile, error) {
 	var p Profile
 
 	if name == "" {
@@ -23,6 +26,12 @@ func NewProfile(name string, age int) (Profile, error) {
 	p = Profile{
 		Name: Name(name),
 		Age:  Age(age),
+	}
+
+	if len(id) > 0 {
+		p.ID = id[0]
+	} else {
+		p.ID = uuid.New()
 	}
 
 	return p, nil
