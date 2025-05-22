@@ -16,14 +16,13 @@ import (
 	"github.com/brianvoe/gofakeit/v7"
 )
 
-var statuses = []string{
-	"pending",
-	"active",
-	"inactive",
-	"banned",
-}
-
 func Status() string {
+	statuses := []string{
+		"pending",
+		"active",
+		"inactive",
+		"banned",
+	}
 	gofakeit.ShuffleAnySlice(statuses)
 
 	return statuses[0]
