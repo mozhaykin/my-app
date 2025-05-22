@@ -8,11 +8,9 @@ import (
 )
 
 func (u *UseCase) CreateProfile(input dto.CreateProfileInput) (dto.CreateProfileOutput, error) {
-	var output dto.CreateProfileOutput
-
 	profile, err := domain.NewProfile(input.Name, input.Age)
 	if err != nil {
-		return output, fmt.Errorf("domain.NewProfile: %w", err)
+		return dto.CreateProfileOutput{}, fmt.Errorf("domain.NewProfile: %w", err)
 	}
 
 	u.cache.Add(profile.ID, profile)

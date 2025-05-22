@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/render"
-
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/render"
 )
 
 func (h *Handlers) CreateProfile(w http.ResponseWriter, r *http.Request) {
