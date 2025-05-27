@@ -14,7 +14,6 @@ func New() *chi.Mux {
 
 	r.Get("/live", probe)
 	r.Get("/ready", probe)
-	r.Get("/startup", probe)
 
 	return r
 }
@@ -22,5 +21,5 @@ func New() *chi.Mux {
 func probe(w http.ResponseWriter, r *http.Request) {
 	log.Info().Str("path", r.URL.Path).Msg("probe")
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusNoContent)
 }

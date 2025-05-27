@@ -3,6 +3,7 @@ package main
 import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/app"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
+	_ "go.uber.org/automaxprocs"
 )
 
 func main() {
