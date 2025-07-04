@@ -95,3 +95,18 @@ SELECT p.id, p.name, p.age, p.status, p.verified, p.contacts, pr.tags
 FROM profile p
          JOIN property pr ON p.id = pr.profile_id
 WHERE p.id = '34b4b762-4083-4cd3-8265-6a85857de745';
+
+-- Посмотреть все БД
+SELECT datname FROM pg_database;
+
+-- Создать БД для my-app для своего пользователя
+CREATE DATABASE amozhaykin_my_app;
+
+-- Удалить БД для my-app для своего пользователя
+DROP DATABASE amozhaykin_my_app;
+
+-- Хост: 89.111.142.19
+-- Порт: 5432
+-- Логин: admin
+-- Пароль: K3Ea8anNvpHWcy
+-- База: postgres

@@ -1,11 +1,13 @@
 variables:
   USERNAME: "amozhaykin"
   APP_NAME: "my-app"
+  POSTGRES_DB_NAME: "amozhaykin_my_app"
 
 stages:
   - lint
   - test
   - build
+  - migration
   - update-tag
 
 lint:
@@ -28,6 +30,14 @@ build: # сборка image образа и его push в harbor
     - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS" $REGISTRY # авторизация в harbor
     - docker build --tag $IMAGE:$TAG .
     - docker push $IMAGE:$TAG # назначаем тег прописанный выше image образу
+
+migration:
+  stage: migration
+  variables:
+    DB_URL: postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB_NAME
+    MIGRATE_PATH: ./migration/postgres
+  script:
+    - migrate -database $DB_URL -path $MIGRATE_PATH up
 
 update-tag: # этой секции может здесь не быть, в этом случае обновление тега выполняется вручную или нажатием кнопки
   stage: update-tag

@@ -1,38 +1,69 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"fmt"
+	"time"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
+)
+
+// Сущность (структура) которая располагается в базе данных
+// Конструктор для создания этой сущености
+// Методы этой сущности (если они есть)
 
 type Name string
 
 type Age int
 
 type Profile struct {
-	ID   uuid.UUID `json:"id"`
-	Name Name      `json:"name"`
-	Age  Age       `json:"age"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	DeletedAt time.Time `json:"deleted_at"`
+	Name      Name      `json:"name"      validate:"required,min=3,max=64"`
+	Age       Age       `json:"age"       validate:"required,min=18,max=120"`
+	Status    Status    `json:"status"`
+	Verified  bool      `json:"verified"`
+	Contacts  Contacts  `json:"contacts"`
 }
 
-func NewProfile(name string, age int, id ...uuid.UUID) (Profile, error) {
-	var p Profile
+type Contacts struct {
+	Email string `json:"email" validate:"email"`
+	Phone string `json:"phone" validate:"e164"`
+}
 
-	if name == "" {
-		return p, ErrEmptyName
+var validate = validator.New(validator.WithRequiredStructEnabled()) //nolint:gochecknoglobals
+
+func NewProfile(name string, age int, email, phone string) (Profile, error) {
+	p := Profile{
+		ID:       uuid.New(),
+		Name:     Name(name),
+		Age:      Age(age),
+		Status:   Pending,
+		Verified: false,
+		Contacts: Contacts{
+			Email: email,
+			Phone: phone,
+		},
 	}
 
-	if age < 18 {
-		return p, ErrAgeLessThan18
-	}
-
-	p = Profile{
-		Name: Name(name),
-		Age:  Age(age),
-	}
-
-	if len(id) > 0 {
-		p.ID = id[0]
-	} else {
-		p.ID = uuid.New()
+	if err := p.Validate(); err != nil {
+		return Profile{}, fmt.Errorf("p.Validate: %w", err)
 	}
 
 	return p, nil
+}
+
+func (p Profile) Validate() error {
+	err := validate.Struct(p)
+	if err != nil {
+		return fmt.Errorf("validate.Struct: %w", err)
+	}
+
+	return nil
+}
+
+func (p Profile) IsDeleted() bool {
+	return !p.DeletedAt.IsZero()
 }

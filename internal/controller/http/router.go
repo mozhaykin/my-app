@@ -12,9 +12,9 @@ func ProfileRouter(r *chi.Mux, uc *usecase.UseCase) {
 	r.Route("/amozhaykin/my-app/api", func(r chi.Router) {
 		r.Route("/v1", func(r chi.Router) {
 			r.Post("/profile", v1.CreateProfile)
-			r.Put("/profile", v1.UpdateProfile)
 			r.Get("/profile/{id}", v1.GetProfile)
 			r.Delete("/profile/{id}", v1.DeleteProfile)
+			r.Put("/profile", v1.UpdateProfile)
 		})
 	})
 }

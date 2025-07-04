@@ -12,11 +12,11 @@ type Err struct {
 	Error string `json:"error"`
 }
 
-func Error(w http.ResponseWriter, err error, status int, message string) {
-	log.Error().Err(err).Msg(message)
+func Error(w http.ResponseWriter, err error, status int) {
+	log.Error().Err(err).Msg("")
 
 	err = unpack(err)
-	err = fmt.Errorf("%s: %s", message, err) //nolint:errorlint, err113
+	err = fmt.Errorf("%w", err)
 
 	JSON(w, Err{Error: err.Error()}, status)
 }

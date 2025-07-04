@@ -6,6 +6,8 @@ import (
 	"log"
 	"time"
 
+	"github.com/pkg/profile"
+
 	"github.com/jackc/pgx/v5"
 
 	"github.com/brianvoe/gofakeit/v7"
@@ -21,13 +23,17 @@ const (
 	dbURL     = "postgres://login:pass@localhost:5432/amozhaykin"
 )
 
+// go tool pprof -http=:8080 -base=a_cpu.pprof b_cpu.pprof
+
 func main() {
+	defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
+
 	now := time.Now()
 
 	ctx := context.Background()
 	Seeder(ctx, dbURL)
 
-	fmt.Println("Done: ", time.Since(now))
+	fmt.Println("Done: ", time.Since(now)) //nolint:forbidigo
 }
 
 func Seeder(ctx context.Context, dbURL string) {

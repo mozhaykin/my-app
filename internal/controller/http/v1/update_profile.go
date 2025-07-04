@@ -2,26 +2,35 @@ package v1
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
+
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/render"
 )
 
-// UpdateProfile обновляет существующий или создаёт новый профиль.
 func (h *Handlers) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	input := dto.UpdateProfileInput{}
 
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
-		render.Error(w, err, http.StatusBadRequest, "json decode error")
+		render.Error(w, fmt.Errorf("json.NewDecoder.Decode: %w", err), http.StatusBadRequest)
 
 		return
 	}
 
-	err = h.usecase.UpdateProfile(input)
+	err = h.usecase.UpdateProfile(r.Context(), input)
 	if err != nil {
-		render.Error(w, err, http.StatusBadRequest, "request failed")
+		switch {
+		case errors.Is(err, domain.ErrNotFound):
+			render.Error(w, fmt.Errorf("h.usecase.UpdateProfile: %w", err), http.StatusNotFound)
+
+		default:
+			render.Error(w, fmt.Errorf("h.usecase.UpdateProfile: %w", err), http.StatusBadRequest)
+		}
 
 		return
 	}

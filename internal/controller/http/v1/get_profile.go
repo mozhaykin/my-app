@@ -2,6 +2,7 @@ package v1
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -12,17 +13,17 @@ import (
 
 func (h *Handlers) GetProfile(w http.ResponseWriter, r *http.Request) {
 	input := dto.GetProfileInput{
-		ID: chi.URLParam(r, "id"),
+		ID: chi.URLParam(r, "id"), // Достаем ключ из запроса
 	}
 
-	output, err := h.usecase.GetProfile(input)
+	output, err := h.usecase.GetProfile(r.Context(), input)
 	if err != nil {
 		switch {
 		case errors.Is(err, domain.ErrNotFound):
-			render.Error(w, err, http.StatusNotFound, "not found")
+			render.Error(w, fmt.Errorf("h.usecase.GetProfile: %w", err), http.StatusNotFound)
 
 		default:
-			render.Error(w, err, http.StatusBadRequest, "request failed")
+			render.Error(w, fmt.Errorf("h.usecase.GetProfile: %w", err), http.StatusBadRequest)
 		}
 
 		return

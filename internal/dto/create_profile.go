@@ -9,6 +9,8 @@ type CreateProfileOutput struct {
 }
 
 type CreateProfileInput struct {
-	Name string `json:"name"`
-	Age  int    `json:"age"`
+	Name  string `json:"name"`
+	Age   int    `json:"age"`
+	Email string `json:"email"`
+	Phone string `json:"phone"`
 }

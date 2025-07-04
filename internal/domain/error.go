@@ -5,7 +5,9 @@ import (
 )
 
 var (
-	ErrEmptyName     = errors.New("name is empty")
-	ErrAgeLessThan18 = errors.New("age is less than 18")
-	ErrNotFound      = errors.New("not found")
+	ErrNotFound                = errors.New("not found")
+	ErrAllFieldsForUpdateEmpty = errors.New("all fields for update are empty")
+	ErrUUIDInvalid             = errors.New("uuid is invalid")
+	ErrUUIDIsEmpty             = errors.New("uuid is empty")
+	ErrNoChangesFound          = errors.New("no changes found")
 )

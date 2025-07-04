@@ -1,16 +1,9 @@
-version: '3'
-
-# Хост: 79.174.88.210
-# Порт: 16801
-# Логин: admin
-# Пароль: A5jCJ9ALS3<VQXX2
-
 services:
   postgres:
     image: postgres
     environment:
       POSTGRES_USER: 'login'
       POSTGRES_PASSWORD: 'pass'
-      POSTGRES_DB: 'amozhaykin' # замените на своё имя пользователя
+      POSTGRES_DB: 'amozhaykin'
     ports:
       - '5432:5432'

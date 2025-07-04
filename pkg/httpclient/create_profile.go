@@ -2,24 +2,30 @@ package httpclient
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/google/uuid"
 )
 
-func (c *Client) Create(name string, age int) (uuid.UUID, error) {
+func (c *Client) Create(ctx context.Context, name string, age int, email, phone string) (uuid.UUID, error) {
 	const createProfile = "amozhaykin/my-app/api/v1/profile"
 
 	path := fmt.Sprintf("http://%s/%s", c.host, createProfile)
 
 	request := struct {
-		Name string `json:"name"`
-		Age  int    `json:"age"`
+		Name  string `json:"name"`
+		Age   int    `json:"age"`
+		Email string `json:"email"`
+		Phone string `json:"phone"`
 	}{
 		name,
 		age,
+		email,
+		phone,
 	}
 
 	body, err := json.Marshal(request)
@@ -27,19 +33,26 @@ func (c *Client) Create(name string, age int) (uuid.UUID, error) {
 		return uuid.Nil, fmt.Errorf("json.Marshal: %w", err)
 	}
 
-	req, err := http.NewRequest(http.MethodPost, path, bytes.NewReader(body))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, path, bytes.NewReader(body))
 	if err != nil {
-		return uuid.Nil, fmt.Errorf("http.NewRequest: %w", err)
+		return uuid.Nil, fmt.Errorf("http.NewRequestWithContext: %w", err)
 	}
+
+	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("client.Do: %w", err)
 	}
 
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:contextcheck
 
-	if resp.StatusCode != http.StatusOK {
+	body, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("io.ReadAll: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusCreated {
 		return uuid.Nil, fmt.Errorf("request failed: status: %s, body: %s", resp.Status, body)
 	}
 
@@ -47,8 +60,9 @@ func (c *Client) Create(name string, age int) (uuid.UUID, error) {
 		ID uuid.UUID `json:"id"`
 	}{}
 
-	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
-		return uuid.Nil, fmt.Errorf("json.NewDecoder.Decode: %w", err)
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("json.Unmarshal: %w", err)
 	}
 
 	return response.ID, nil

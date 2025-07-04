@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS profile
 (
     id         UUID PRIMARY KEY,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    update_at  TIMESTAMPTZ,
+    updated_at  TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ,
 
     name       TEXT,
