@@ -48,7 +48,7 @@ func (c *Client) Get(ctx context.Context, id string) (Profile, error) {
 		return Profile{}, fmt.Errorf("client.Do: %w", err)
 	}
 
-	defer resp.Body.Close() //nolint:contextcheck
+	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -56,8 +56,8 @@ func (c *Client) Get(ctx context.Context, id string) (Profile, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		switch {
-		case resp.StatusCode == http.StatusNotFound:
+		switch resp.StatusCode {
+		case http.StatusNotFound:
 			return Profile{}, ErrNotFound
 
 		default:

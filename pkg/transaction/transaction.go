@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/rs/zerolog/log"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
-
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/rs/zerolog/log"
+
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
 )
 
 type ctxKey struct{}

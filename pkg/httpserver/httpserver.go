@@ -11,7 +11,7 @@ import (
 )
 
 type Config struct {
-	Port string `envconfig:"HTTP_PORT" default:"8080"`
+	Port string `default:"8080" envconfig:"HTTP_PORT"`
 }
 
 type Server struct { // Обёртка над стандартным http.Server для добавления методов start() и Close()

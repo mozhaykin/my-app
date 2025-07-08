@@ -1,69 +1,153 @@
-run:
-  timeout: 2m                     # Устанавливает максимальное время выполнения линтера на 2 минуты, после чего он будет остановлен
+version: "2"
 
-issues:
-  exclude-files:                  # Игнорирует файлы, которые соответствуют регулярному выражению .*mocks.+
-    - ".*mocks.+"                 # это полезно, чтобы не проверять автоматически сгенерированные моки
-  exclude-rules:                  # Здесь задаются исключения для определённых проверок
-    - path: config/config         # Исключение применяется к файлам, находящимся в директории config/config
-      linters:                    # для этих файлов отключается проверка указанными линтерами
-        - govet
-
-output:
-  formats:
-    - format: colored-line-number # Формат вывода для интеграции с GitHub Actions
-
-linters-settings:                 # В этой секции настраиваются параметры для конкретных линтеров
-  cyclop:                         # Линтер для проверки цикломатической сложности функций
-    max-complexity: 15            # Максимально допустимая сложность функции
-  funlen:                         # Линтер для проверки длины функций
-    lines: 80                     # Максимальное количество строк в функции
-  errcheck:                       # Линтер для проверки обработки ошибок
-    check-type-assertions: true   # Проверяет, обрабатываются ли ошибки при type-assertions
-    check-blank: true             # Проверяет, игнорируются ли ошибки
-  goconst:                        # Линтер для поиска повторяющихся строковых и числовых констант
-    min-len: 2                    # Минимальная длина строки для проверки
-    min-occurrences: 2            # Минимальное количество повторений для обнаружения
-    ignore-tests: true            # Игнорировать тестовые файлы
-    match-constant: false         # Не проверять совпадение с существующими константами
-    numbers: true                 # Проверять числовые константы
-    min: 2                        # Минимальное значение для числовых констант
-    max: 2                        # Максимальное значение для числовых констант
-  gocritic:                       # Линтер для анализа кода на основе настраиваемых правил
-    enabled-tags:                 # Включены правила со следующими тегами
-      - diagnostic
-      - experimental
-      - opinionated
-      - performance
-      - style
-    disabled-checks:              # Отключены конкретные проверки
-      - dupImport                 # Проверка на дублирование импортов
-      - unnecessaryBlock          # Проверка на избыточные блоки кода
-      - whyNoLint                 # Проверка на отсутствие комментариев //nolint
-  gofumpt:                        # Линтер для форматирования кода с дополнительными строгими правилами
-    extra-rules: true             # Включены дополнительные правила форматирования
-  misspell:                       # Линтер для поиска орфографических ошибок
-    locale: US                    # Используется американский английский для проверки
-
-linters:                          # В этой секции указывается какие линтеры должны быть включены, а какие отключены
-  enable-all: true                # Включены все линтеры по умолчанию
-  disable:                        # Отключены следующие линтеры
-    - err113                      # Временно отключил
-    - mnd                         # Временно отключил
-    - gocritic                    # Временно отключил
-    - gci                         # Управляет порядком импортов, но gofumpt делает это лучше
-    - tenv                        # deprecated, но пока не удаленный линтер, поэтому он прописан здесь
-    - lll                         # мало пользы
-    - nolintlint                  # мало пользы
-    - prealloc                    # преждевременная оптимизация
-    - paralleltest                # преждевременная оптимизация
-    - exhaustruct                 # теряется удобство, придётся инициализировать все поля структуры нулевыми значениями
-    - nonamedreturns              # не дает возможности использовать именованные возвраты там где это нужно
-    - varnamelen                  # идея интересная, но не хватает гибкости в настройках, такое сложно автоматизировать
-    - promlinter                  # диктует как называть переменные метрик
-    - tagliatelle                 # у нас могут быть разные кейсы, обобщить нельзя, в каждом проекте будут свои настройки
-    - dupl                        # не приносит пользы
-    - ireturn
-    - tagalign
+linters:
+  default: all
+  enable:
+    - wsl_v5
+  disable:
+    - wsl                 # отключаем старую версию
+    - exhaustruct         # Проверяет, что все поля структуры инициализированы при её создании.
+    - forbidigo           # Запрещает использование определённых выражений или функций, указанных в конфигурации.
+    - funcorder           # Проверяет порядок объявления функций для улучшения читаемости.
+    - ireturn             # Анализирует возвращаемые значения функций на соответствие ожиданиям.
+    - mnd                 # Обнаруживает "магические числа" в коде, предлагая заменить их на именованные константы.
+    - tagliatelle         # Проверяет стиль и форматирование тегов структур.
+    - varnamelen          # Проверяет длину имён переменных, чтобы избежать слишком коротких или слишком длинных имён.
     - depguard
-    - dupword
+
+  # Тонкая настройка нужного линтера (если есть)
+  # См. отдельную секцию документации https://golangci-lint.run/usage/linters/#linters-configuration
+  settings:
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - style
+        - experimental
+        - opinionated
+      disabled-checks:
+        - whyNoLint
+
+    wsl_v5:
+      allow-first-in-block: true
+      allow-whole-block: false
+      branch-max-lines: 2
+
+  # Определяет набор правил для игнорирования предупреждений.
+  # Анализ при этом выполняется, поэтому ошибки "typecheck" всё равно будут выдаваться.
+  exclusions:
+    # Режим анализа сгенерированных файлов.
+    # - `lax`:  Исключает файлы, содержащие строки вроде `autogenerated file`, `code generated`, `do not edit` и т.п.
+    generated: lax
+
+    # Предустановленные правила исключения.
+    presets:
+      - comments                  # отключает типичные замечания к комментариям
+      - std-error-handling        # отключает незначительные ошибки при обработке ошибок
+
+    # Пути к файлам, которые будут анализироваться, но их ошибки не будут выводиться.
+    paths:
+      - _test.go
+      - gen/
+      - test/integration/
+
+    # Исключающие правила по пути, линтеру, тексту и исходнику.
+    rules:
+      # Исключаем определённые линтеры для файлов по пути
+      - path: pkg/logger
+        linters:
+          - zerologlint
+
+      - path: internal/app
+        linters:
+          - contextcheck
+
+      - path: internal/controller/grpc/
+        linters:
+          - wrapcheck
+
+      - path: internal/controller/http/v2
+        linters:
+          - wrapcheck
+
+      # Исключаем некоторые сообщения по тексту ошибки
+      - linters:
+          - err113
+        text: "do not define dynamic errors"
+
+      # Исключаем некоторые сообщения по коду в файле
+      - linters:
+          - lll
+        source: "^//go:generate "
+
+# Опции форматирования кода.
+formatters:
+  enable:
+    - gci          # Упорядочивает импорты по группам (стандартные, сторонние, локальные)
+    - gofmt        # Стандартный инструмент форматирования кода Go
+    - gofumpt      # Более строгая версия gofmt с улучшенной читаемостью
+    - goimports    # Форматирует код и автоматически управляет импортами
+
+  # Настройки для форматтеров.
+  # См. раздел документации https://golangci-lint.run/usage/formatters/
+  settings:
+    gofumpt:
+      extra-rules: true
+    gci:
+      sections:
+        - standard # Standard section: captures all standard packages.
+        - default # Default section: contains all imports that could not be matched to another section type.
+        - blank # Blank section: contains all blank imports. This section is not present unless explicitly enabled.
+        - dot # Dot section: contains all dot imports. This section is not present unless explicitly enabled.
+        - localmodule # Local module section: contains all local packages. This section is not present unless explicitly enabled.
+        - alias # Alias section: contains all alias imports. This section is not present unless explicitly enabled.
+
+  exclusions:
+    # Режим анализа сгенерированных файлов.
+    # - `disable`: не исключать сгенерированные файлы вообще
+    generated: disable
+
+    # Пути к файлам, которые исключаются из форматирования.
+    paths:
+      - gen
+
+# Опции конфигурации линтера.
+issues:
+  # Максимальное количество одинаковых сообщений об ошибке.
+  # Установите 0, чтобы отключить ограничение.
+  # По умолчанию: 3
+  max-same-issues: 0
+
+  # Автоматически исправлять найденные ошибки (если поддерживается линтером).
+  fix: true
+
+# Опции конфигурации вывода результатов.
+output:
+  # Форматы, в которых выводятся найденные проблемы.
+  formats:
+    # Вывод в текстовом формате с цветами, номерами строк и названиями линтеров.
+    # Это формат используется по умолчанию.
+    text:
+      # Куда выводить результаты: `stdout`, `stderr` или путь к файлу.
+      # По умолчанию: stdout
+      path: stdout
+
+  # Определяет порядок сортировки результатов.
+  sort-order:
+    - linter
+    - file # путь к файлу, строка, колонка
+
+# Опции для запуска анализа.
+run:
+  # Таймаут для всего процесса анализа
+  timeout: 5m
+
+  # Режим, используемый для вычисления относительных путей.
+  # Используется в исключениях, Go-плагинах и некоторых линтерах.
+  # - `gomod`: пути считаются относительно директории с `go.mod`.
+  relative-path-mode: gomod
+
+  # Разрешить одновременный запуск нескольких экземпляров golangci-lint.
+  allow-parallel-runners: true
+
+  # Разрешить запуск нескольких экземпляров, но синхронизировать их по блокировке.
+  allow-serial-runners: true

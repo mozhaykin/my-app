@@ -45,7 +45,7 @@ func (c *Client) Update(ctx context.Context, id, name string, age int, email, ph
 		return fmt.Errorf("c.client.Do: %w", err)
 	}
 
-	defer resp.Body.Close() //nolint:contextcheck
+	defer resp.Body.Close()
 
 	body, err = io.ReadAll(resp.Body)
 	if err != nil {
@@ -53,8 +53,8 @@ func (c *Client) Update(ctx context.Context, id, name string, age int, email, ph
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		switch {
-		case resp.StatusCode == http.StatusNotFound:
+		switch resp.StatusCode {
+		case http.StatusNotFound:
 			return ErrNotFound
 
 		default:

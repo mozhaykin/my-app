@@ -7,20 +7,19 @@ import (
 	"os/signal"
 	"syscall"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/config"
+	"github.com/rs/zerolog/log"
 
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/config"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/postgres"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/http"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
 	pgpool "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/router"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
-
-	"github.com/rs/zerolog/log"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/http"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
 )
 
-func Run(ctx context.Context, c config.Config) (err error) {
+func Run(ctx context.Context, c config.Config) error {
 	// Создаем пул подключений к Postgres (используя данные из конфиг файла)
 	pgPool, err := pgpool.New(ctx, c.Postgres)
 	if err != nil {
@@ -33,9 +32,10 @@ func Run(ctx context.Context, c config.Config) (err error) {
 	uc := usecase.New(postgres.New(pgPool))
 
 	// HTTP
-	r := router.New()                       // Создаем новый роутер chi
-	http.ProfileRouter(r, uc)               // Прописываем ручки
-	httpServer := httpserver.New(r, c.HTTP) // Создаем HTTP сервер, передавая в него роутер и используя данные из конфиг файла
+	r := router.New()         // Создаем новый роутер chi
+	http.ProfileRouter(r, uc) // Прописываем ручки
+	// Создаем HTTP сервер, передавая в него роутер и используя данные из конфиг файла
+	httpServer := httpserver.New(r, c.HTTP)
 
 	log.Info().Msg("App started!")
 
@@ -45,7 +45,7 @@ func Run(ctx context.Context, c config.Config) (err error) {
 
 	log.Info().Msg("App got signal to stop")
 
-	httpServer.Close() //nolint:contextcheck
+	httpServer.Close()
 	pgPool.Close()
 
 	log.Info().Msg("App stopped!")

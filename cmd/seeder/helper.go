@@ -6,14 +6,11 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/doug-martin/goqu/v9/exp"
-
-	"github.com/jackc/pgx/v5"
-
-	"github.com/doug-martin/goqu/v9"
-	"github.com/google/uuid"
-
 	"github.com/brianvoe/gofakeit/v7"
+	"github.com/doug-martin/goqu/v9"
+	"github.com/doug-martin/goqu/v9/exp"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 )
 
 func Status() string {

@@ -45,7 +45,7 @@ func (c *Client) Create(ctx context.Context, name string, age int, email, phone 
 		return uuid.Nil, fmt.Errorf("client.Do: %w", err)
 	}
 
-	defer resp.Body.Close() //nolint:contextcheck
+	defer resp.Body.Close()
 
 	body, err = io.ReadAll(resp.Body)
 	if err != nil {

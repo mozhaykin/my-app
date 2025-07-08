@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/google/uuid"
+
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 )
 

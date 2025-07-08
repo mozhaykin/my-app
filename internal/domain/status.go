@@ -10,7 +10,6 @@ const (
 	Banned
 )
 
-//nolint:goconst
 func NewStatus(s string) Status {
 	switch s {
 	case "pending":

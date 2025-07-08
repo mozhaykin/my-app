@@ -9,10 +9,10 @@ import (
 )
 
 type Config struct {
-	AppName       string `envconfig:"APP_NAME" required:"true"`
+	AppName       string `envconfig:"APP_NAME"    required:"true"`
 	AppVersion    string `envconfig:"APP_VERSION" required:"true"`
-	Level         string `envconfig:"LOGGER_LEVEL" default:"error"`
-	PrettyConsole bool   `envconfig:"LOGGER_PRETTY_CONSOLE" default:"false"`
+	Level         string `default:"error"         envconfig:"LOGGER_LEVEL"`
+	PrettyConsole bool   `default:"false"         envconfig:"LOGGER_PRETTY_CONSOLE"`
 }
 
 func Init(c Config) {

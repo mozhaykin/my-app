@@ -20,7 +20,7 @@ func Example() {
 		panic(fmt.Errorf("profile.Get1: %w", err))
 	}
 
-	fmt.Printf( //nolint forbidigo
+	fmt.Printf(
 		"Profile:\n"+
 			"  ID: 			%v\n"+
 			"  CreatedAt: 	%v\n"+
@@ -43,7 +43,7 @@ func Example() {
 		panic(fmt.Errorf("profile.Get2: %w", err))
 	}
 
-	fmt.Printf( //nolint forbidigo
+	fmt.Printf(
 		"Profile:\n"+
 			"  ID: 			%v\n"+
 			"  CreatedAt: 	%v\n"+

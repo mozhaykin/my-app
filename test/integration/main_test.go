@@ -66,6 +66,10 @@ func (s *Suite) SetupSuite() {
 			Password: "pass",
 			DBName:   "postgres",
 		},
+		Client: httpclient.Config{
+			Host: "localhost",
+			Port: "8080",
+		},
 	}
 
 	logger.Init(c.Logger)
@@ -77,7 +81,7 @@ func (s *Suite) SetupSuite() {
 	}()
 
 	// Client
-	s.profile = httpclient.New(httpclient.Config{Host: "localhost", Port: "8080"})
+	s.profile = httpclient.New(c.Client)
 
 	time.Sleep(time.Second)
 }

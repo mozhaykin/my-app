@@ -6,15 +6,11 @@ import (
 	"log"
 	"time"
 
-	"github.com/pkg/profile"
-
-	"github.com/jackc/pgx/v5"
-
 	"github.com/brianvoe/gofakeit/v7"
-
 	"github.com/doug-martin/goqu/v9"
-
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+	"github.com/pkg/profile"
 )
 
 const (

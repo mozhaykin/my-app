@@ -2,6 +2,7 @@ package http
 
 import (
 	"github.com/go-chi/chi/v5"
+
 	ver1 "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/http/v1"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 )

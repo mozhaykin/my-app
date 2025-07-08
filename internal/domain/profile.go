@@ -21,8 +21,8 @@ type Profile struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	DeletedAt time.Time `json:"deleted_at"`
-	Name      Name      `json:"name"      validate:"required,min=3,max=64"`
-	Age       Age       `json:"age"       validate:"required,min=18,max=120"`
+	Name      Name      `json:"name"       validate:"required,min=3,max=64"`
+	Age       Age       `json:"age"        validate:"required,min=18,max=120"`
 	Status    Status    `json:"status"`
 	Verified  bool      `json:"verified"`
 	Contacts  Contacts  `json:"contacts"`
@@ -48,7 +48,8 @@ func NewProfile(name string, age int, email, phone string) (Profile, error) {
 		},
 	}
 
-	if err := p.Validate(); err != nil {
+	err := p.Validate()
+	if err != nil {
 		return Profile{}, fmt.Errorf("p.Validate: %w", err)
 	}
 

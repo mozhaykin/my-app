@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
+
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 )
 

@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
-
 	"github.com/google/uuid"
+
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 )
 
 func (p *Postgres) DeleteProfile(ctx context.Context, profileID uuid.UUID) error {

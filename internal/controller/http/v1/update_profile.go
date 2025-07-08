@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
-
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/render"
 )

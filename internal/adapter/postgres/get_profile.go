@@ -9,11 +9,13 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
+
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 )
 
 func (p *Postgres) GetProfile(ctx context.Context, profileID uuid.UUID) (domain.Profile, error) {
-	const sql = `SELECT created_at, updated_at, deleted_at, name, age, status, verified, contacts FROM profile WHERE id = $1`
+	const sql = `SELECT created_at, updated_at, deleted_at, name, age, status, verified, contacts 
+				FROM profile WHERE id = $1`
 
 	dto := struct {
 		CreatedAt pgtype.Timestamptz

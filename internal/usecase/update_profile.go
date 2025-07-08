@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
 )
@@ -43,7 +44,10 @@ func (u *UseCase) UpdateProfile(ctx context.Context, input dto.UpdateProfileInpu
 }
 
 func update(profile domain.Profile, input dto.UpdateProfileInput) (domain.Profile, error) {
-	if profile.Name == domain.Name(*input.Name) && profile.Age == domain.Age(*input.Age) && profile.Contacts.Email == *input.Email && profile.Contacts.Phone == *input.Phone {
+	if profile.Name == domain.Name(*input.Name) &&
+		profile.Age == domain.Age(*input.Age) &&
+		profile.Contacts.Email == *input.Email &&
+		profile.Contacts.Phone == *input.Phone {
 		return profile, domain.ErrNoChangesFound
 	}
 
@@ -63,7 +67,8 @@ func update(profile domain.Profile, input dto.UpdateProfileInput) (domain.Profil
 		profile.Contacts.Phone = *input.Phone
 	}
 
-	if err := profile.Validate(); err != nil {
+	err := profile.Validate()
+	if err != nil {
 		return profile, fmt.Errorf("p.Validate: %w", err)
 	}
 

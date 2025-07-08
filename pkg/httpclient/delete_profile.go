@@ -23,7 +23,7 @@ func (c *Client) Delete(ctx context.Context, id string) error {
 		return fmt.Errorf("client.Do: %w", err)
 	}
 
-	defer resp.Body.Close() //nolint:contextcheck
+	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -31,8 +31,8 @@ func (c *Client) Delete(ctx context.Context, id string) error {
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		switch {
-		case resp.StatusCode == http.StatusNotFound:
+		switch resp.StatusCode {
+		case http.StatusNotFound:
 			return ErrNotFound
 
 		default:

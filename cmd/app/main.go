@@ -4,10 +4,12 @@ import (
 	"context"
 
 	"github.com/rs/zerolog/log"
+
+	_ "go.uber.org/automaxprocs"
+
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/config"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/app"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
-	_ "go.uber.org/automaxprocs"
 )
 
 // В пакете main создаем новый конфиг, инициализируем сторонний логгер и запускаем основную функцию
