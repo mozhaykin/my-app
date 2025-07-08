@@ -2,10 +2,7 @@ version: "2"
 
 linters:
   default: all
-  enable:
-    - wsl_v5
   disable:
-    - wsl                 # отключаем старую версию
     - exhaustruct         # Проверяет, что все поля структуры инициализированы при её создании.
     - forbidigo           # Запрещает использование определённых выражений или функций, указанных в конфигурации.
     - funcorder           # Проверяет порядок объявления функций для улучшения читаемости.
@@ -26,11 +23,6 @@ linters:
         - opinionated
       disabled-checks:
         - whyNoLint
-
-    wsl_v5:
-      allow-first-in-block: true
-      allow-whole-block: false
-      branch-max-lines: 2
 
   # Определяет набор правил для игнорирования предупреждений.
   # Анализ при этом выполняется, поэтому ошибки "typecheck" всё равно будут выдаваться.
