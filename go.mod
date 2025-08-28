@@ -1,6 +1,6 @@
 module gitlab.golang-school.ru/potok-1/amozhaykin/my-app
 
-go 1.23.3
+go 1.24.6
 
 require (
 	github.com/brianvoe/gofakeit/v7 v7.2.1

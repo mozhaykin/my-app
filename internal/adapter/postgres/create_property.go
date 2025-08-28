@@ -9,22 +9,18 @@ import (
 )
 
 func (p *Postgres) CreateProperty(ctx context.Context, property domain.Property) error {
-	const sql = `INSERT INTO property (profile_id, tags)
-                    VALUES ($1, $2)`
+	const sql = `INSERT INTO property (profile_id, tags) VALUES ($1, $2)`
 
 	args := []any{
 		property.ProfileID,
 		property.Tags,
 	}
 
-	tx, err := transaction.Get(ctx)
-	if err != nil {
-		return fmt.Errorf("transaction.Get: %w", err)
-	}
+	txOrPool := transaction.TryExtractTX(ctx)
 
-	_, err = tx.Exec(ctx, sql, args...)
+	_, err := txOrPool.Exec(ctx, sql, args...)
 	if err != nil {
-		return fmt.Errorf("tx.Exec: %w", err)
+		return fmt.Errorf("txOrPool.Exec: %w", err)
 	}
 
 	return nil

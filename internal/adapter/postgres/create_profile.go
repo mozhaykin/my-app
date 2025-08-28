@@ -10,8 +10,7 @@ import (
 )
 
 func (p *Postgres) CreateProfile(ctx context.Context, profile domain.Profile) error {
-	const sql = `INSERT INTO profile (id, name, age, status, verified, contacts)
-                    VALUES ($1, $2, $3, $4, $5, $6)`
+	const sql = `INSERT INTO profile (id, name, age, status, verified, contacts) VALUES ($1, $2, $3, $4, $5, $6)`
 
 	contacts, err := json.Marshal(profile.Contacts)
 	if err != nil {
@@ -27,14 +26,11 @@ func (p *Postgres) CreateProfile(ctx context.Context, profile domain.Profile) er
 		contacts,
 	}
 
-	tx, err := transaction.Get(ctx)
-	if err != nil {
-		return fmt.Errorf("transaction.Get: %w", err)
-	}
+	txOrPool := transaction.TryExtractTX(ctx)
 
-	_, err = tx.Exec(ctx, sql, args...)
+	_, err = txOrPool.Exec(ctx, sql, args...)
 	if err != nil {
-		return fmt.Errorf("tx.Exec: %w", err)
+		return fmt.Errorf("txOrPool.Exec: %w", err)
 	}
 
 	return nil

@@ -6,13 +6,12 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog/log"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
 )
-
-type ctxKey struct{}
 
 var (
 	errMissingInit  = errors.New("missing `transaction.Init' call before `transaction.Begin'")
@@ -24,6 +23,8 @@ var (
 	pool       *pgxpool.Pool
 	IsUnitTest bool
 )
+
+type ctxKey struct{}
 
 func Init(p *postgres.Pool) {
 	pool = p.Pool
@@ -82,11 +83,17 @@ func Commit(ctx context.Context) error {
 	return nil
 }
 
-func Get(ctx context.Context) (*Transaction, error) {
+type Executor interface {
+	Exec(ctx context.Context, sql string, args ...any) (pgconn.CommandTag, error)
+	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
+	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
+}
+
+func TryExtractTX(ctx context.Context) Executor {
 	tx, ok := ctx.Value(ctxKey{}).(*Transaction)
 	if !ok {
-		return nil, errMissingBegin
+		return pool
 	}
 
-	return tx, nil
+	return tx
 }
