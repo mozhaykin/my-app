@@ -28,12 +28,17 @@ type Config struct {
 func New() (Config, error) {
 	var config Config
 
-	err := godotenv.Load(".env") // загружаем переменные окружения из файла .env
+	// При локальном запуске: загружаем переменные окружения рантайма из файла .env
+	// При запуске на проде: считываем переменные окружения из среды (хранятся в секретах гитлаба)
+	// и записываем в файл .env, затем загружаем переменные окружения рантайма из файла .env
+	// Load не перезаписывает уже существующие переменные окружения, а только добавляет новые.
+	err := godotenv.Load(".env")
 	if err != nil {
 		return config, fmt.Errorf("godotenv.Load: %w", err)
 	}
 
-	err = envconfig.Process("", &config) // записываем данные в конфиг из переменных окружения
+	// Записываем данные в структуру config из переменных окружения рантайма
+	err = envconfig.Process("", &config)
 	if err != nil {
 		return config, fmt.Errorf("envconfig.Process: %w", err)
 	}

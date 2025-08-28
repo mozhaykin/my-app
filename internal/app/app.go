@@ -29,7 +29,7 @@ func Run(ctx context.Context, c config.Config) error {
 	transaction.Init(pgPool)
 
 	// Создаем структуру UseCase, которая содержит интерфейс с методами обращения к базе данных
-	uc := usecase.New(postgres.New(pgPool))
+	uc := usecase.New(postgres.New())
 
 	// HTTP
 	r := router.New()         // Создаем новый роутер chi

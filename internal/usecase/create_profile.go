@@ -19,6 +19,8 @@ func (u *UseCase) CreateProfile(ctx context.Context, input dto.CreateProfileInpu
 		return output, fmt.Errorf("domain.NewProfile: %w", err)
 	}
 
+	property := domain.NewProperty(profile.ID, []string{"home", "primary"})
+
 	ctx, err = transaction.Begin(ctx)
 	if err != nil {
 		return output, fmt.Errorf("transaction.Begin: %w", err)
@@ -30,8 +32,6 @@ func (u *UseCase) CreateProfile(ctx context.Context, input dto.CreateProfileInpu
 	if err != nil {
 		return output, fmt.Errorf("u.postgres.CreateProfile: %w", err)
 	}
-
-	property := domain.NewProperty(profile.ID, []string{"home", "primary"})
 
 	err = u.postgres.CreateProperty(ctx, property)
 	if err != nil {

@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
 )
 
 func (p *Postgres) GetProfile(ctx context.Context, profileID uuid.UUID) (domain.Profile, error) {
@@ -39,13 +40,15 @@ func (p *Postgres) GetProfile(ctx context.Context, profileID uuid.UUID) (domain.
 		&dto.Contacts,
 	}
 
-	err := p.pool.QueryRow(ctx, sql, profileID).Scan(dest...)
+	txOrPool := transaction.TryExtractTX(ctx)
+
+	err := txOrPool.QueryRow(ctx, sql, profileID).Scan(dest...)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return domain.Profile{}, fmt.Errorf("p.pool.QueryRow.Scan: %w", domain.ErrNotFound)
 		}
 
-		return domain.Profile{}, fmt.Errorf("p.pool.QueryRow: %w", err)
+		return domain.Profile{}, fmt.Errorf("txOrPool.QueryRow: %w", err)
 	}
 
 	var contacts domain.Contacts

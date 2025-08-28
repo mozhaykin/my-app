@@ -9,11 +9,12 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
 )
 
 func (p *Postgres) UpdateProfile(ctx context.Context, profile domain.Profile) error {
 	const sql = `UPDATE profile SET name = $1, age = $2, contacts = $3, updated_at = NOW()
-                     WHERE id = $4`
+               WHERE id = $4`
 
 	contacts, err := json.Marshal(profile.Contacts)
 	if err != nil {
@@ -27,13 +28,15 @@ func (p *Postgres) UpdateProfile(ctx context.Context, profile domain.Profile) er
 		profile.ID,
 	}
 
-	_, err = p.pool.Exec(ctx, sql, args...)
+	txOrPool := transaction.TryExtractTX(ctx)
+
+	_, err = txOrPool.Exec(ctx, sql, args...)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return domain.ErrNotFound
 		}
 
-		return fmt.Errorf("p.pool.Exec: %w", err)
+		return fmt.Errorf("txOrPool.Exec: %w", err)
 	}
 
 	return nil
