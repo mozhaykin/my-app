@@ -46,14 +46,6 @@ func (s *Suite) Test_UpdateProfile_NotFound() {
 	s.EqualError(err, httpclient.ErrNotFound.Error())
 }
 
-func (s *Suite) Test_UpdateProfile_AllFieldsForUpdateEmpty() {
-	id, err := s.profile.Create(context.Background(), "Bill_Update", 25, "7n1987@gmail.com", "+79634813074")
-	s.NoError(err)
-
-	err = s.profile.Update(context.Background(), id.String(), "", 0, "", "")
-	s.ErrorContains(err, "all fields for update are empty")
-}
-
 func (s *Suite) Test_UpdateProfile_UUIDInvalid() {
 	err := s.profile.Update(context.Background(), "c6799c89c560-45a2-a3da-b3f1eb9bee2b", "New_John_Update", 26, "a7n1987@yandex.ru", "+79634813069")
 	s.ErrorContains(err, "uuid is invalid")

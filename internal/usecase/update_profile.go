@@ -44,10 +44,8 @@ func (u *UseCase) UpdateProfile(ctx context.Context, input dto.UpdateProfileInpu
 }
 
 func update(profile domain.Profile, input dto.UpdateProfileInput) (domain.Profile, error) {
-	if profile.Name == domain.Name(*input.Name) &&
-		profile.Age == domain.Age(*input.Age) &&
-		profile.Contacts.Email == *input.Email &&
-		profile.Contacts.Phone == *input.Phone {
+	changes := HasChanges(profile, input)
+	if !changes {
 		return profile, domain.ErrNoChangesFound
 	}
 
@@ -69,8 +67,28 @@ func update(profile domain.Profile, input dto.UpdateProfileInput) (domain.Profil
 
 	err := profile.Validate()
 	if err != nil {
-		return profile, fmt.Errorf("p.Validate: %w", err)
+		return profile, fmt.Errorf("profile.Validate: %w", err)
 	}
 
 	return profile, nil
+}
+
+func HasChanges(p domain.Profile, input dto.UpdateProfileInput) bool {
+	if input.Name != nil && p.Name != domain.Name(*input.Name) {
+		return true
+	}
+
+	if input.Age != nil && p.Age != domain.Age(*input.Age) {
+		return true
+	}
+
+	if input.Email != nil && p.Contacts.Email != *input.Email {
+		return true
+	}
+
+	if input.Phone != nil && p.Contacts.Phone != *input.Phone {
+		return true
+	}
+
+	return false
 }
