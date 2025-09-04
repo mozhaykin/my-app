@@ -9,7 +9,14 @@ import (
 )
 
 func (s *Suite) Test_UpdateProfile() {
-	id, err := s.profile.Create(context.Background(), "John_Update", 25, "7n1987@gmail.com", "+79634813074")
+	requestCreate := httpclient.CreateProfileRequest{
+		Name:  "John_Update",
+		Age:   25,
+		Email: "7n1987@gmail.com",
+		Phone: "+79634813074",
+	}
+
+	id, err := s.profile.Create(context.Background(), requestCreate)
 	s.NoError(err)
 
 	p, err := s.profile.Get(context.Background(), id.String())
@@ -22,7 +29,22 @@ func (s *Suite) Test_UpdateProfile() {
 	s.Equal(1, int(p.Status))
 	s.Equal(false, p.Verified)
 
-	err = s.profile.Update(context.Background(), id.String(), "New_John_Update", 26, "a7n1987@yandex.ru", "+79634813069")
+	var (
+		newName  = "New_John_Update"
+		newAge   = 26
+		newEmail = "a7n1987@yandex.ru"
+		newPhone = "+79634813069"
+	)
+
+	requestUpdate := httpclient.UpdateProfileRequest{
+		ID:    id.String(),
+		Name:  &newName,
+		Age:   &newAge,
+		Email: &newEmail,
+		Phone: &newPhone,
+	}
+
+	err = s.profile.Update(context.Background(), requestUpdate)
 	s.NoError(err)
 
 	p, err = s.profile.Get(context.Background(), id.String())
@@ -36,25 +58,85 @@ func (s *Suite) Test_UpdateProfile() {
 	s.Equal(false, p.Verified)
 }
 
-func (s *Suite) Test_UpdateProfile_ErrUUIDIsEmpty() {
-	err := s.profile.Update(context.Background(), "", "New_John_Update", 26, "a7n1987@yandex.ru", "+79634813069")
-	s.ErrorContains(err, "uuid is empty")
-}
-
 func (s *Suite) Test_UpdateProfile_NotFound() {
-	err := s.profile.Update(context.Background(), "c6799c89-c560-45a2-a3da-b3f1eb9bee2b", "New_John_Update", 26, "a7n1987@yandex.ru", "+79634813069")
+	var (
+		newName  = "New_John_Update"
+		newAge   = 26
+		newEmail = "a7n1987@yandex.ru"
+		newPhone = "+79634813069"
+	)
+
+	requestUpdate := httpclient.UpdateProfileRequest{
+		ID:    "c6799c89-c560-45a2-a3da-b3f1eb9bee2b",
+		Name:  &newName,
+		Age:   &newAge,
+		Email: &newEmail,
+		Phone: &newPhone,
+	}
+
+	err := s.profile.Update(context.Background(), requestUpdate)
 	s.EqualError(err, httpclient.ErrNotFound.Error())
 }
 
 func (s *Suite) Test_UpdateProfile_UUIDInvalid() {
-	err := s.profile.Update(context.Background(), "c6799c89c560-45a2-a3da-b3f1eb9bee2b", "New_John_Update", 26, "a7n1987@yandex.ru", "+79634813069")
+	var (
+		newName  = "New_John_Update"
+		newAge   = 26
+		newEmail = "a7n1987@yandex.ru"
+		newPhone = "+79634813069"
+	)
+
+	requestUpdate := httpclient.UpdateProfileRequest{
+		ID:    "c6799c89c560-45a2-a3da-b3f1eb9bee2b",
+		Name:  &newName,
+		Age:   &newAge,
+		Email: &newEmail,
+		Phone: &newPhone,
+	}
+
+	err := s.profile.Update(context.Background(), requestUpdate)
 	s.ErrorContains(err, "uuid is invalid")
 }
 
 func (s *Suite) Test_UpdateProfile_NoChangesFound() {
-	id, err := s.profile.Create(context.Background(), "Ben_Update", 25, "7n1987@gmail.com", "+79634813074")
+	requestCreate := httpclient.CreateProfileRequest{
+		Name:  "Ben_Update",
+		Age:   25,
+		Email: "7n1987@gmail.com",
+		Phone: "+79634813074",
+	}
+
+	id, err := s.profile.Create(context.Background(), requestCreate)
 	s.NoError(err)
 
-	err = s.profile.Update(context.Background(), id.String(), "Ben_Update", 25, "7n1987@gmail.com", "+79634813074")
+	var (
+		newName  = "Ben_Update"
+		newAge   = 25
+		newEmail = "7n1987@gmail.com"
+		newPhone = "+79634813074"
+	)
+
+	requestUpdate := httpclient.UpdateProfileRequest{
+		ID:    id.String(),
+		Name:  &newName,
+		Age:   &newAge,
+		Email: &newEmail,
+		Phone: &newPhone,
+	}
+
+	err = s.profile.Update(context.Background(), requestUpdate)
 	s.ErrorContains(err, "no changes found")
+}
+
+func (s *Suite) Test_UpdateProfile_AllFieldsAreEmpty() {
+	requestUpdate := httpclient.UpdateProfileRequest{
+		ID:    "c6799c89-c560-45a2-a3da-b3f1eb9bee2b",
+		Name:  nil,
+		Age:   nil,
+		Email: nil,
+		Phone: nil,
+	}
+
+	err := s.profile.Update(context.Background(), requestUpdate)
+	s.ErrorContains(err, "all fields for update are empty")
 }

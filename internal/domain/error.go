@@ -5,9 +5,8 @@ import (
 )
 
 var (
-	ErrNotFound                = errors.New("not found")
-	ErrAllFieldsForUpdateEmpty = errors.New("all fields for update are empty")
-	ErrUUIDInvalid             = errors.New("uuid is invalid")
-	ErrUUIDIsEmpty             = errors.New("uuid is empty")
-	ErrNoChangesFound          = errors.New("no changes found")
+	ErrNotFound          = errors.New("not found")
+	ErrAllFieldsAreEmpty = errors.New("all fields for update are empty")
+	ErrUUIDInvalid       = errors.New("uuid is invalid")
+	ErrNoChangesFound    = errors.New("no changes found")
 )

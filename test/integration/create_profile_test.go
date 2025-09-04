@@ -2,10 +2,21 @@
 
 package test
 
-import "context"
+import (
+	"context"
+
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclient"
+)
 
 func (s *Suite) Test_CreateProfile1() {
-	id, err := s.profile.Create(context.Background(), "John_Create", 25, "7n1987@gmail.com", "+79634813074")
+	request := httpclient.CreateProfileRequest{
+		Name:  "John_Create",
+		Age:   25,
+		Email: "7n1987@gmail.com",
+		Phone: "+79634813074",
+	}
+
+	id, err := s.profile.Create(context.Background(), request)
 	s.NoError(err)
 
 	p, err := s.profile.Get(context.Background(), id.String())
@@ -20,7 +31,14 @@ func (s *Suite) Test_CreateProfile1() {
 }
 
 func (s *Suite) Test_CreateProfile2() {
-	id, err := s.profile.Create(context.Background(), "John_Create", 25, "7n1987@gmail.com", "+79634813074")
+	request := httpclient.CreateProfileRequest{
+		Name:  "John_Create",
+		Age:   25,
+		Email: "7n1987@gmail.com",
+		Phone: "+79634813074",
+	}
+
+	id, err := s.profile.Create(context.Background(), request)
 	s.NoError(err)
 
 	p, err := s.profile.Get(context.Background(), id.String())
@@ -35,15 +53,43 @@ func (s *Suite) Test_CreateProfile2() {
 }
 
 func (s *Suite) Test_CreateProfile_IsInvalid() {
-	_, err := s.profile.Create(context.Background(), "", 25, "7n1987@gmail.com", "+79634813074")
+	request := httpclient.CreateProfileRequest{
+		Name:  "",
+		Age:   25,
+		Email: "7n1987@gmail.com",
+		Phone: "+79634813074",
+	}
+
+	_, err := s.profile.Create(context.Background(), request)
 	s.ErrorContains(err, "validation")
 
-	_, err = s.profile.Create(context.Background(), "John_Create", 17, "7n1987@gmail.com", "+79634813074")
+	request = httpclient.CreateProfileRequest{
+		Name:  "John_Create",
+		Age:   17,
+		Email: "7n1987@gmail.com",
+		Phone: "+79634813074",
+	}
+
+	_, err = s.profile.Create(context.Background(), request)
 	s.ErrorContains(err, "validation")
 
-	_, err = s.profile.Create(context.Background(), "John_Create", 25, "7n1987gmail.com", "+79634813074")
+	request = httpclient.CreateProfileRequest{
+		Name:  "John_Create",
+		Age:   25,
+		Email: "7n1987gmail.com",
+		Phone: "+79634813074",
+	}
+
+	_, err = s.profile.Create(context.Background(), request)
 	s.ErrorContains(err, "validation")
 
-	_, err = s.profile.Create(context.Background(), "John_Create", 25, "7n1987@gmail.com", "74813074")
+	request = httpclient.CreateProfileRequest{
+		Name:  "John_Create",
+		Age:   25,
+		Email: "7n1987@gmail.com",
+		Phone: "79634813074",
+	}
+
+	_, err = s.profile.Create(context.Background(), request)
 	s.ErrorContains(err, "validation")
 }

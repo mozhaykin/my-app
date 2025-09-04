@@ -8,6 +8,7 @@ import (
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
 )
 
 func (u *UseCase) UpdateProfile(ctx context.Context, input dto.UpdateProfileInput) error {
@@ -20,6 +21,13 @@ func (u *UseCase) UpdateProfile(ctx context.Context, input dto.UpdateProfileInpu
 	if err != nil {
 		return fmt.Errorf("uuid.Parse: %w", domain.ErrUUIDInvalid)
 	}
+
+	ctx, err = transaction.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("transaction.Begin: %w", err)
+	}
+
+	defer transaction.Rollback(ctx)
 
 	profile, err := u.postgres.GetProfile(ctx, id)
 	if err != nil {
@@ -35,20 +43,24 @@ func (u *UseCase) UpdateProfile(ctx context.Context, input dto.UpdateProfileInpu
 		return fmt.Errorf("update: %w", err)
 	}
 
+	if newProfile == profile {
+		return domain.ErrNoChangesFound
+	}
+
 	err = u.postgres.UpdateProfile(ctx, newProfile)
 	if err != nil {
 		return fmt.Errorf("u.postgres.UpdateProfile: %w", err)
+	}
+
+	err = transaction.Commit(ctx)
+	if err != nil {
+		return fmt.Errorf("transaction.Commit: %w", err)
 	}
 
 	return nil
 }
 
 func update(profile domain.Profile, input dto.UpdateProfileInput) (domain.Profile, error) {
-	changes := HasChanges(profile, input)
-	if !changes {
-		return profile, domain.ErrNoChangesFound
-	}
-
 	if input.Name != nil {
 		profile.Name = domain.Name(*input.Name)
 	}
@@ -71,24 +83,4 @@ func update(profile domain.Profile, input dto.UpdateProfileInput) (domain.Profil
 	}
 
 	return profile, nil
-}
-
-func HasChanges(p domain.Profile, input dto.UpdateProfileInput) bool {
-	if input.Name != nil && p.Name != domain.Name(*input.Name) {
-		return true
-	}
-
-	if input.Age != nil && p.Age != domain.Age(*input.Age) {
-		return true
-	}
-
-	if input.Email != nil && p.Contacts.Email != *input.Email {
-		return true
-	}
-
-	if input.Phone != nil && p.Contacts.Phone != *input.Phone {
-		return true
-	}
-
-	return false
 }

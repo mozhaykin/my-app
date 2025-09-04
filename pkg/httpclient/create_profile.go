@@ -11,22 +11,17 @@ import (
 	"github.com/google/uuid"
 )
 
-func (c *Client) Create(ctx context.Context, name string, age int, email, phone string) (uuid.UUID, error) {
+type CreateProfileRequest struct {
+	Name  string `json:"name"`
+	Age   int    `json:"age"`
+	Email string `json:"email"`
+	Phone string `json:"phone"`
+}
+
+func (c *Client) Create(ctx context.Context, request CreateProfileRequest) (uuid.UUID, error) {
 	const createProfile = "amozhaykin/my-app/api/v1/profile"
 
 	path := fmt.Sprintf("http://%s/%s", c.host, createProfile)
-
-	request := struct {
-		Name  string `json:"name"`
-		Age   int    `json:"age"`
-		Email string `json:"email"`
-		Phone string `json:"phone"`
-	}{
-		name,
-		age,
-		email,
-		phone,
-	}
 
 	body, err := json.Marshal(request)
 	if err != nil {

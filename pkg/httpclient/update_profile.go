@@ -9,24 +9,18 @@ import (
 	"net/http"
 )
 
-func (c *Client) Update(ctx context.Context, id, name string, age int, email, phone string) error {
+type UpdateProfileRequest struct {
+	ID    string  `json:"id"`
+	Name  *string `json:"name"`
+	Age   *int    `json:"age"`
+	Email *string `json:"email"`
+	Phone *string `json:"phone"`
+}
+
+func (c *Client) Update(ctx context.Context, request UpdateProfileRequest) error {
 	const updateProfile = "amozhaykin/my-app/api/v1/profile"
 
 	path := fmt.Sprintf("http://%s/%s", c.host, updateProfile)
-
-	request := struct {
-		ID    string `json:"id"`
-		Name  string `json:"name"`
-		Age   int    `json:"age"`
-		Email string `json:"email"`
-		Phone string `json:"phone"`
-	}{
-		ID:    id,
-		Name:  name,
-		Age:   age,
-		Email: email,
-		Phone: phone,
-	}
 
 	body, err := json.Marshal(request)
 	if err != nil {

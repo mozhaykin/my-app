@@ -16,21 +16,14 @@ type Profile struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	DeletedAt time.Time `json:"deleted_at"`
-	Name      Name      `json:"name"`
-	Age       Age       `json:"age"`
-	Status    Status    `json:"status"`
+	Name      string    `json:"name"`
+	Age       int       `json:"age"`
+	Status    int       `json:"status"`
 	Verified  bool      `json:"verified"`
-	Contacts  Contacts  `json:"contacts"`
-}
-type Name string
-
-type Age int
-
-type Status int
-
-type Contacts struct {
-	Email string `json:"email"`
-	Phone string `json:"phone"`
+	Contacts  struct {
+		Email string `json:"email"`
+		Phone string `json:"phone"`
+	} `json:"contacts"`
 }
 
 func (c *Client) Get(ctx context.Context, id string) (Profile, error) {

@@ -9,7 +9,13 @@ import (
 )
 
 func (s *Suite) Test_DeleteProfile() {
-	id, err := s.profile.Create(context.Background(), "John_Delete", 25, "7n1987@gmail.com", "+79634813074")
+	request := httpclient.CreateProfileRequest{
+		Name:  "John_Delete",
+		Age:   25,
+		Email: "7n1987@gmail.com",
+		Phone: "+79634813074",
+	}
+	id, err := s.profile.Create(context.Background(), request)
 	s.NoError(err)
 
 	p, err := s.profile.Get(context.Background(), id.String())
