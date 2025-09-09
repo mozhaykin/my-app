@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/HEAD/configuration-schema.json
+package: http_client    # название пакета, который будет сгенерирован
+generate:
+  client: true
+  models: true          # генерировать или нет модели
+output: client.gen.go   # название файла, который будет сгенерирован
+output-options:
+  name-normalizer: ToCamelCaseWithInitialisms

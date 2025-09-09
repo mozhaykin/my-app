@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/HEAD/configuration-schema.json
+package: http_server    # название пакета, который будет сгенерирован
+generate:
+  chi-server: true      # какой сервер использовать
+  models: true          # генерировать или нет модели
+  strict-server: true   # рекомендуется включать, чтобы код был более подробный (сгенерятся dto и будут использованы)
+output: server.gen.go   # название файла, который будет сгенерирован
+output-options:
+  name-normalizer: ToCamelCaseWithInitialisms
