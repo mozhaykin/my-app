@@ -6,4 +6,5 @@ generate:
   strict-server: true   # рекомендуется включать, чтобы код был более подробный (сгенерятся dto и будут использованы)
 output: server.gen.go   # название файла, который будет сгенерирован
 output-options:
-  name-normalizer: ToCamelCaseWithInitialisms
+  name-normalizer: ToCamelCaseWithInitialisms # с этой опцией переменные-абревиатуры, например ID, будут сгенерированы большими буквами
+                                              # а без этой опции будет Id.

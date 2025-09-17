@@ -1,0 +1,44 @@
+package httpclientv2
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+
+	"github.com/google/uuid"
+
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http_client"
+)
+
+type UpdateProfileRequest struct {
+	ID    string  `json:"id"`
+	Name  *string `json:"name"`
+	Age   *int    `json:"age"`
+	Email *string `json:"email"`
+	Phone *string `json:"phone"`
+}
+
+func (c *Client) Update(request UpdateProfileRequest) error {
+	input := http_client.UpdateProfileInput{
+		ID:    uuid.MustParse(request.ID),
+		Name:  request.Name,
+		Age:   request.Age,
+		Email: request.Email,
+		Phone: request.Phone,
+	}
+
+	output, err := c.client.UpdateProfileWithResponse(context.Background(), input)
+	if err != nil {
+		return fmt.Errorf("delete profile: %w", err)
+	}
+
+	if output.StatusCode() == http.StatusNotFound {
+		return ErrNotFound
+	}
+
+	if output.StatusCode() != http.StatusNoContent {
+		return fmt.Errorf("request failed: status: %s, body:%s", output.Status(), output.Body)
+	}
+
+	return nil
+}

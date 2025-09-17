@@ -6,7 +6,6 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclient"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
@@ -22,7 +21,6 @@ type Config struct {
 	HTTP     httpserver.Config
 	Logger   logger.Config
 	Postgres postgres.Config
-	Client   httpclient.Config
 }
 
 func New() (Config, error) {

@@ -1,4 +1,4 @@
-package httpclient
+package httpclientv1
 
 import (
 	"fmt"
@@ -8,12 +8,12 @@ import (
 	"golang.org/x/net/context"
 )
 
-func (c *Client) Delete(ctx context.Context, id string) error {
+func (c *Client) Delete(id string) error {
 	const deleteProfile = "amozhaykin/my-app/api/v1/profile"
 
 	path := fmt.Sprintf("http://%s/%s/%s", c.host, deleteProfile, id)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, path, http.NoBody)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodDelete, path, http.NoBody)
 	if err != nil {
 		return fmt.Errorf("http.NewRequestWithContext: %w", err)
 	}
@@ -30,14 +30,12 @@ func (c *Client) Delete(ctx context.Context, id string) error {
 		return fmt.Errorf("io.ReadAll: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusNoContent {
-		switch resp.StatusCode {
-		case http.StatusNotFound:
-			return ErrNotFound
+	if resp.StatusCode == http.StatusNotFound {
+		return ErrNotFound
+	}
 
-		default:
-			return fmt.Errorf("request failed: status: %s body: %s", resp.Status, body)
-		}
+	if resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("request failed: status: %s body: %s", resp.Status, body)
 	}
 
 	return nil

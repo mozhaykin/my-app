@@ -38,9 +38,13 @@ down-v:
 test:
 	go test -v -cover ./...
 
-.PHONY: integration-test
-integration-test:
-	go test -count=1 -v -tags integration ./test/integration
+.PHONY: integration-test-v1
+integration-test-v1:
+	go test -count=1 -v -tags integration ./test/integrationv1
+
+.PHONY: integration-test-v2
+integration-test-v2:
+	go test -count=1 -v -tags integration ./test/integrationv2
 
 .PHONY: migrate-install
 migrate-install:

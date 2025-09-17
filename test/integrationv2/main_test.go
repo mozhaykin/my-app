@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclientv2"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
 
@@ -14,7 +15,6 @@ import (
 	"github.com/stretchr/testify/suite"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/config"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/app"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclient"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
 )
 
@@ -35,7 +35,7 @@ type Suite struct {
 	suite.Suite
 	*require.Assertions
 
-	profile *httpclient.Client
+	profile *httpclientv2.Client
 }
 
 // Запускается один раз, до тестов (например для поднятия коннекшена к базе).
@@ -66,10 +66,6 @@ func (s *Suite) SetupSuite() {
 			Password: "pass",
 			DBName:   "postgres",
 		},
-		Client: httpclient.Config{
-			Host: "localhost",
-			Port: "8080",
-		},
 	}
 
 	logger.Init(c.Logger)
@@ -80,8 +76,10 @@ func (s *Suite) SetupSuite() {
 		s.NoError(err)
 	}()
 
-	// Client
-	s.profile = httpclient.New(c.Client)
+	// Client V2
+	var err error
+	s.profile, err = httpclientv2.New("http://localhost:8080/amozhaykin/my-app/api/v2")
+	s.NoError(err)
 
 	time.Sleep(time.Second)
 }

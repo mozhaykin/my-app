@@ -1,0 +1,71 @@
+//go:build integration
+
+package test
+
+import (
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclientv2"
+)
+
+func (s *Suite) Test_CreateProfile() {
+	request := httpclientv2.CreateProfileRequest{
+		Name:  "John_Create",
+		Age:   25,
+		Email: "7n1987@gmail.com",
+		Phone: "+79634813074",
+	}
+
+	id, err := s.profile.Create(request)
+	s.NoError(err)
+
+	p, err := s.profile.Get(id.String())
+	s.NoError(err)
+
+	s.Equal("John_Create", p.Name)
+	s.Equal(25, p.Age)
+	s.Equal("7n1987@gmail.com", p.Contacts.Email)
+	s.Equal("+79634813074", p.Contacts.Phone)
+	s.Equal(1, p.Status)
+	s.Equal(false, p.Verified)
+}
+
+func (s *Suite) Test_CreateProfile_IsInvalid() {
+	request := httpclientv2.CreateProfileRequest{
+		Name:  "",
+		Age:   25,
+		Email: "7n1987@gmail.com",
+		Phone: "+79634813074",
+	}
+
+	_, err := s.profile.Create(request)
+	s.ErrorContains(err, "validation")
+
+	request = httpclientv2.CreateProfileRequest{
+		Name:  "John_Create",
+		Age:   17,
+		Email: "7n1987@gmail.com",
+		Phone: "+79634813074",
+	}
+
+	_, err = s.profile.Create(request)
+	s.ErrorContains(err, "validation")
+
+	request = httpclientv2.CreateProfileRequest{
+		Name:  "John_Create",
+		Age:   25,
+		Email: "7n1987gmail.com",
+		Phone: "+79634813074",
+	}
+
+	_, err = s.profile.Create(request)
+	s.ErrorContains(err, "validation")
+
+	request = httpclientv2.CreateProfileRequest{
+		Name:  "John_Create",
+		Age:   25,
+		Email: "7n1987@gmail.com",
+		Phone: "79634813074",
+	}
+
+	_, err = s.profile.Create(request)
+	s.ErrorContains(err, "validation")
+}

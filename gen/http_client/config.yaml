@@ -5,4 +5,5 @@ generate:
   models: true          # генерировать или нет модели
 output: client.gen.go   # название файла, который будет сгенерирован
 output-options:
-  name-normalizer: ToCamelCaseWithInitialisms
+  name-normalizer: ToCamelCaseWithInitialisms # с этой опцией переменные-абревиатуры, например ID, будут сгенерированы большими буквами
+                                              # а без этой опции будет Id.
