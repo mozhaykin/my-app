@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http_client"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 )
 
 type UpdateProfileRequest struct {
@@ -19,8 +20,13 @@ type UpdateProfileRequest struct {
 }
 
 func (c *Client) Update(request UpdateProfileRequest) error {
+	id, err := uuid.Parse(request.ID)
+	if err != nil {
+		return fmt.Errorf("uuid.Parse: %w", domain.ErrUUIDInvalid)
+	}
+
 	input := http_client.UpdateProfileInput{
-		ID:    uuid.MustParse(request.ID),
+		ID:    id,
 		Name:  request.Name,
 		Age:   request.Age,
 		Email: request.Email,

@@ -37,3 +37,8 @@ func (s *Suite) Test_DeleteProfile_NotFound() {
 	err := s.profile.Delete("e6799c89-c560-45a2-a3da-b3f1eb9bee2b")
 	s.ErrorContains(err, "not found")
 }
+
+func (s *Suite) Test_DeleteProfile_UuidIsInvalid() {
+	err := s.profile.Delete("c6799c89c560-45a2-a3da-b3f1eb9bee2b")
+	s.ErrorContains(err, "uuid is invalid")
+}

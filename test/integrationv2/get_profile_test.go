@@ -32,3 +32,8 @@ func (s *Suite) Test_GetProfile_NotFound() {
 	_, err := s.profile.Get("c6799c89-c560-45a2-afda-b3f1eb9bee2b")
 	s.ErrorContains(err, "not found")
 }
+
+func (s *Suite) Test_GetProfile_UuidIsInvalid() {
+	_, err := s.profile.Get("c6799c89c560-45a2-a3da-b3f1eb9bee2b")
+	s.ErrorContains(err, "uuid is invalid")
+}

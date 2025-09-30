@@ -2,7 +2,9 @@ package domain_test
 
 import (
 	"testing"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 )
@@ -16,6 +18,7 @@ func TestNewProfile(t *testing.T) {
 		wantErr bool
 	}{
 		{"Valid Profile", 25, "test@example.com", "+7123456789", false},
+		{"In", 25, "test@example.com", "+7123456789", true},
 		{"Invalid Age Min", 17, "test@example.com", "+7123456789", true},
 		{"Invalid Age Max", 121, "test@example.com", "+7123456789", true},
 		{"Invalid Email", 25, "invalid-email", "+7123456789", true},
@@ -29,6 +32,7 @@ func TestNewProfile(t *testing.T) {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
+				require.NotEqual(t, uuid.Nil, profile.ID)
 				require.Equal(t, c.name, string(profile.Name))
 				require.Equal(t, c.age, int(profile.Age))
 				require.Equal(t, c.email, profile.Contacts.Email)
@@ -38,4 +42,12 @@ func TestNewProfile(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestProfile_IsDeleted(t *testing.T) {
+	var p domain.Profile
+	require.False(t, p.IsDeleted())
+
+	p.DeletedAt = time.Now()
+	require.True(t, p.IsDeleted())
 }

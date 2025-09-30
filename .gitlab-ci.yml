@@ -22,8 +22,8 @@ test:
 
 build: # сборка image образа и его push в harbor
   stage: build
-  variables: # Все переменные окружения задаются админамом и находятся в админской области репозитория
-    IMAGE: $REGISTRY/$USERNAME/$APP_NAME
+  variables:
+    IMAGE: $REGISTRY/$USERNAME/$APP_NAME # переменную $REGISTRY мы не видим, она прописана в админке gitlab
     TAG: $CI_COMMIT_SHORT_SHA # устанавливаем тег, как short SHA последнего коммита
   script:
     - cat $ENV_FILE > .env
@@ -41,7 +41,7 @@ migration:
 
 update-tag: # этой секции может здесь не быть, в этом случае обновление тега выполняется вручную или нажатием кнопки
   stage: update-tag
-  variables: # устанавливаем переменные
+  variables:
     IMAGE: $REGISTRY/$USERNAME/$APP_NAME
     TAG: $CI_COMMIT_SHORT_SHA # устанавливаем тег, как short SHA последнего коммита
     REPOSITORY: https://$GITLAB_DEPLOY_USER:$GITLAB_DEPLOY_PASS@gitlab.golang-school.ru/potok-1/deploy.git

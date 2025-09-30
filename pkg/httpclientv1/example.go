@@ -4,9 +4,8 @@ import (
 	"fmt"
 )
 
-// nolint: funlen
-func Example() {
-	profile := New("localhost:8080")
+func Example() { //nolint: funlen
+	profile := New(Config{Host: "localhost", Port: "8080"})
 
 	createRequest := CreateProfileRequest{
 		Name:  "Andrey",

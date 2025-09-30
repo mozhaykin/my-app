@@ -7,9 +7,9 @@ info:
 
 # список серверов, на которых доступно API
 servers:
-  - url: http://localhost:8080/amozhaykin/my-app/api/v1
+  - url: http://localhost:8080/amozhaykin/my-app/api/v2
     description: Dev
-  - url: http://k8s.goscl.ru/amozhaykin/my-app/api/v1
+  - url: http://k8s.goscl.ru/amozhaykin/my-app/api/v2
     description: Prod
 
 # описание всех REST-эндпоинтов

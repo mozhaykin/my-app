@@ -19,7 +19,9 @@ import (
 )
 
 // Вначае поднимается база данных, потом запускаются тесты.
-// Run test: make integration-test.
+// make up
+// make integration-test
+
 // Пакет должен обязательно называться test.
 // Выше названия пакета, обязательно добавить тег //go:build integration Этот тег должен присутствовать
 // во всех файлах внутри папки integration. Это означает, что при сборке приложения,
@@ -42,7 +44,7 @@ type Suite struct {
 func (s *Suite) SetupSuite() {
 	s.Assertions = s.Require()
 
-	s.ResetMigrations()
+	s.ResetMigrations() // Удаление миграций и накатывание заново.
 
 	// Config
 	c := config.Config{
@@ -77,12 +79,12 @@ func (s *Suite) SetupSuite() {
 	}()
 
 	// Client
-	s.profile = httpclientv1.New("localhost:8080")
+	s.profile = httpclientv1.New(httpclientv1.Config{Host: "localhost", Port: "8080"})
 
-	time.Sleep(time.Second)
+	time.Sleep(time.Second) // Спим секунду, что горутина с сервером успела запуститься
 }
 
-// Не заданные функции. Оставил для наглядности:
+// Не заданные функции. Иногда ими удобно пользоваться:
 func (s *Suite) TearDownSuite() {} // Запускается один раз в вконце, после тестов (например закроет коннекшн к базе данных).
 
 func (s *Suite) SetupTest() {} // Запускается перед каждым кейсом (например прогоняются миграции).

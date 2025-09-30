@@ -118,3 +118,23 @@ func (s *Suite) Test_UpdateProfile_AllFieldsAreEmpty() {
 	err := s.profile.Update(requestUpdate)
 	s.ErrorContains(err, "all fields for update are empty")
 }
+
+func (s *Suite) Test_UpdateProfile_UUIDInvalid() {
+	var (
+		newName  = "New_John_Update"
+		newAge   = 26
+		newEmail = "a7n1987@yandex.ru"
+		newPhone = "+79634813069"
+	)
+
+	requestUpdate := httpclientv2.UpdateProfileRequest{
+		ID:    "c6799c89c560-45a2-a3da-b3f1eb9bee2b",
+		Name:  &newName,
+		Age:   &newAge,
+		Email: &newEmail,
+		Phone: &newPhone,
+	}
+
+	err := s.profile.Update(requestUpdate)
+	s.ErrorContains(err, "uuid is invalid")
+}

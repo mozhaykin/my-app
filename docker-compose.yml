@@ -1,9 +1,21 @@
 services:
+# По умолчанию приложение my-app запускается просто локально, а все зависимости в docker compose,
+# поэтому запуск приложения в docker compose я закоменировал.
+  #  app:
+  #    build:
+  #      context: .
+  #      dockerfile: Dockerfile
+  #    ports:
+  #      - '8080:8080'
+  #    depends_on:
+  #      - redis
+  #      - postgres
+  #      - tempo
   postgres:
     image: postgres
     environment:
       POSTGRES_USER: 'login'
       POSTGRES_PASSWORD: 'pass'
-      POSTGRES_DB: 'amozhaykin'
+      POSTGRES_DB: 'postgres'
     ports:
       - '5432:5432'

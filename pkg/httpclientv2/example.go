@@ -4,8 +4,7 @@ import (
 	"fmt"
 )
 
-// nolint: funlen
-func Example() {
+func Example() { //nolint: funlen
 	profile, err := New("http://localhost:8080/amozhaykin/my-app/api/v2")
 	if err != nil {
 		panic(err)

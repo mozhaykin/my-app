@@ -20,7 +20,7 @@ type Profile struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt time.Time `json:"deleted_at"`
+	DeletedAt time.Time `json:"-"`
 	Name      Name      `json:"name"       validate:"required,min=3,max=64"`
 	Age       Age       `json:"age"        validate:"required,min=18,max=120"`
 	Status    Status    `json:"status"`

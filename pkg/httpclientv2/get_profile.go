@@ -8,10 +8,16 @@ import (
 	"github.com/google/uuid"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http_client"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 )
 
-func (c *Client) Get(id string) (*http_client.GetProfileOutput, error) {
-	output, err := c.client.GetProfileByIDWithResponse(context.Background(), uuid.MustParse(id))
+func (c *Client) Get(s string) (*http_client.GetProfileOutput, error) {
+	id, err := uuid.Parse(s)
+	if err != nil {
+		return nil, fmt.Errorf("uuid.Parse: %w", domain.ErrUUIDInvalid)
+	}
+
+	output, err := c.client.GetProfileByIDWithResponse(context.Background(), id)
 	if err != nil {
 		return nil, fmt.Errorf("GetProfileByIdWithResponse: %w", err)
 	}

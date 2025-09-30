@@ -26,7 +26,9 @@ func main() {
 
 	logger.Init(c.Logger)
 
-	err = app.Run(context.Background(), c)
+	ctx := context.Background()
+
+	err = app.Run(ctx, c)
 	if err != nil {
 		log.Fatal().Err(err).Msg("app.Run")
 	}
