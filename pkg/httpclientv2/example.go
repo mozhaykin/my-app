@@ -24,7 +24,7 @@ func Example() { //nolint: funlen
 
 	p, err := profile.Get(id.String())
 	if err != nil {
-		panic(fmt.Errorf("httpclientv2: example: profile.Get Before profile.Update: %w", err))
+		panic(fmt.Errorf("httpclientv2: example: profile.Get before profile.Update: %w", err))
 	}
 
 	fmt.Printf(
@@ -61,7 +61,7 @@ func Example() { //nolint: funlen
 
 	p, err = profile.Get(id.String())
 	if err != nil {
-		panic(fmt.Errorf("httpclientv2: example: profile.Get After profile.Update: %w", err))
+		panic(fmt.Errorf("httpclientv2: example: profile.Get after profile.Update: %w", err))
 	}
 
 	fmt.Printf(

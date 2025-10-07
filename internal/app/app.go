@@ -11,6 +11,7 @@ import (
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/config"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/postgres"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/grpc"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/http"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
@@ -31,6 +32,12 @@ func Run(ctx context.Context, c config.Config) error {
 	// Создаем структуру UseCase, которая содержит интерфейс с методами обращения к базе данных
 	uc := usecase.New(postgres.New())
 
+	// GRPC
+	grpcServer, err := grpc.New(c.GRPC, uc)
+	if err != nil {
+		return fmt.Errorf("grpc.New: %w", err)
+	}
+
 	// HTTP
 	r := router.New()         // Создаем новый роутер chi
 	http.ProfileRouter(r, uc) // Прописываем ручки
@@ -45,6 +52,7 @@ func Run(ctx context.Context, c config.Config) error {
 
 	log.Info().Msg("App got signal to stop")
 
+	grpcServer.Close()
 	httpServer.Close()
 	pgPool.Close()
 

@@ -1,0 +1,33 @@
+package grpcclientv1
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/google/uuid"
+
+	pb "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/grpc/profile_v1"
+)
+
+type CreateProfileRequest struct {
+	Name  string
+	Age   int
+	Email string
+	Phone string
+}
+
+func (c *Client) Create(r CreateProfileRequest) (uuid.UUID, error) {
+	input := &pb.CreateProfileInput{
+		Name:  r.Name,
+		Age:   int32(r.Age), //nolint: gosec
+		Email: r.Email,
+		Phone: r.Phone,
+	}
+
+	resp, err := c.client.CreateProfile(context.Background(), input)
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("c.client.CreateProfile: %w", err)
+	}
+
+	return uuid.MustParse(resp.GetId()), nil
+}

@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http_server"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http/profile_v2/server"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
 )
 
-func (h *Handlers) DeleteProfileByID(ctx context.Context, request http_server.DeleteProfileByIDRequestObject) (
-	http_server.DeleteProfileByIDResponseObject, error,
+func (h *Handlers) DeleteProfileByID(ctx context.Context, request server.DeleteProfileByIDRequestObject) (
+	server.DeleteProfileByIDResponseObject, error,
 ) {
 	input := dto.DeleteProfileInput{
 		ID: request.ID.String(),
@@ -20,12 +20,12 @@ func (h *Handlers) DeleteProfileByID(ctx context.Context, request http_server.De
 	if err != nil {
 		switch {
 		case errors.Is(err, domain.ErrNotFound):
-			return http_server.DeleteProfileByID404JSONResponse{Error: err.Error()}, nil
+			return server.DeleteProfileByID404JSONResponse{Error: err.Error()}, nil
 
 		default:
-			return http_server.DeleteProfileByID400JSONResponse{Error: err.Error()}, nil
+			return server.DeleteProfileByID400JSONResponse{Error: err.Error()}, nil
 		}
 	}
 
-	return http_server.DeleteProfileByID204Response{}, nil
+	return server.DeleteProfileByID204Response{}, nil
 }

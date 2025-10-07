@@ -10,22 +10,22 @@ import (
 
 	openapi_types "github.com/oapi-codegen/runtime/types"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http_client"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http/profile_v2/client"
 )
 
 type CreateProfileRequest struct {
-	Name  string `json:"name"`
-	Age   int    `json:"age"`
-	Email string `json:"email"`
-	Phone string `json:"phone"`
+	Name  string
+	Age   int
+	Email string
+	Phone string
 }
 
-func (c *Client) Create(request CreateProfileRequest) (uuid.UUID, error) {
-	input := http_client.CreateProfileInput{
-		Name:  request.Name,
-		Age:   request.Age,
-		Email: openapi_types.Email(request.Email),
-		Phone: request.Phone,
+func (c *Client) Create(r CreateProfileRequest) (uuid.UUID, error) {
+	input := client.CreateProfileInput{
+		Name:  r.Name,
+		Age:   r.Age,
+		Email: openapi_types.Email(r.Email),
+		Phone: r.Phone,
 	}
 
 	output, err := c.client.CreateProfileWithResponse(context.Background(), input)

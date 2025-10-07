@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http_client"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http/profile_v2/client"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 )
 
@@ -25,7 +25,7 @@ func (c *Client) Update(request UpdateProfileRequest) error {
 		return fmt.Errorf("uuid.Parse: %w", domain.ErrUUIDInvalid)
 	}
 
-	input := http_client.UpdateProfileInput{
+	input := client.UpdateProfileInput{
 		ID:    id,
 		Name:  request.Name,
 		Age:   request.Age,

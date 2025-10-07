@@ -18,6 +18,9 @@ mod-update:
 	go mod tidy
 	go mod download
 
+seeder:
+	go run ./cmd/seeder
+
 up:
 	docker compose up --build --force-recreate
 
@@ -31,11 +34,14 @@ down-v: # Если хотим удалить контейнер вместе с 
 test:
 	go test -v -cover ./...
 
-integration-test-v1:
-	go test -count=1 -v -tags integration ./test/integrationv1
+integration_test_http_v1:
+	go test -count=1 -v -tags integration ./test/integration_http_v1
 
-integration-test-v2:
-	go test -count=1 -v -tags integration ./test/integrationv2
+integration_test_http_v2:
+	go test -count=1 -v -tags integration ./test/integration_http_v2
+
+integration_test_grpc_v1:
+	go test -count=1 -v -tags integration ./test/integration_grpc_v1
 
 migrate-install:
 	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.18.1
@@ -59,8 +65,13 @@ oapi-install:
 generate:
 	go generate ./...
 
-seeder:
-	go run ./cmd/seeder
+grpc_gen:
+	mkdir -p ./gen/grpc/profile_v1
+	protoc \
+	  --proto_path=api/grpc \
+	  --go_out=./gen/grpc/profile_v1 --go_opt=paths=source_relative \
+	  --go-grpc_out=./gen/grpc/profile_v1 --go-grpc_opt=paths=source_relative \
+	  profile_v1.proto
 
 #goose-status:
 #	goose -dir=migrations postgres $(DATABASE_URL) status

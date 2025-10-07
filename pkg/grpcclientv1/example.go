@@ -1,11 +1,16 @@
-package httpclientv1
+package grpcclientv1
 
 import (
 	"fmt"
 )
 
 func Example() { //nolint: funlen
-	profile := New(Config{Host: "localhost", Port: "8080"})
+	profile, err := New("localhost:50051")
+	if err != nil {
+		panic(err)
+	}
+
+	defer profile.Close()
 
 	createRequest := CreateProfileRequest{
 		Name:  "Andrey",
@@ -16,12 +21,12 @@ func Example() { //nolint: funlen
 
 	id, err := profile.Create(createRequest)
 	if err != nil {
-		panic(fmt.Errorf("httpclientv1: example: profile.Create: %w", err))
+		panic(fmt.Errorf("grpcclientv1: example: profile.Create: %w", err))
 	}
 
 	p, err := profile.Get(id.String())
 	if err != nil {
-		panic(fmt.Errorf("httpclientv1: example: profile.Get before profile.Update: %w", err))
+		panic(fmt.Errorf("grpcclientv1: example: profile.Get before profile.Update: %w", err))
 	}
 
 	fmt.Printf(
@@ -50,12 +55,12 @@ func Example() { //nolint: funlen
 
 	err = profile.Update(updateRequest)
 	if err != nil {
-		panic(fmt.Errorf("httpclientv1: example: profile.Update: %w", err))
+		panic(fmt.Errorf("grpcclientv1: example: profile.Update: %w", err))
 	}
 
 	p, err = profile.Get(id.String())
 	if err != nil {
-		panic(fmt.Errorf("httpclientv1: example: profile.Get after profile.Update: %w", err))
+		panic(fmt.Errorf("grpcclientv1: example: profile.Get after profile.Update: %w", err))
 	}
 
 	fmt.Printf(
@@ -73,10 +78,10 @@ func Example() { //nolint: funlen
 
 	err = profile.Delete(id.String())
 	if err != nil {
-		panic(fmt.Errorf("httpclientv1: example: profile.Delete: %w", err))
+		panic(fmt.Errorf("grpcclientv1: example: profile.Delete: %w", err))
 	}
 
 	_, err = profile.Get(id.String())
 
-	fmt.Println("The Example function for httpclientv1 completed successfully! Get request: ", err) //nolint:forbidigo
+	fmt.Println("The Example function for grpcclientv1 completed successfully! Get request: ", err) //nolint:forbidigo
 }

@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/HEAD/configuration-schema.json
-package: http_client    # название пакета, который будет сгенерирован
+package: client    # название пакета, который будет сгенерирован
 generate:
   client: true
   models: true          # генерировать или нет модели
