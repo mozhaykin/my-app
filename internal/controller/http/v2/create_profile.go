@@ -5,6 +5,7 @@ import (
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http/profile_v2/server"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto/baggage"
 )
 
 func (h *Handlers) CreateProfile(ctx context.Context, request server.CreateProfileRequestObject) (
@@ -19,8 +20,12 @@ func (h *Handlers) CreateProfile(ctx context.Context, request server.CreateProfi
 
 	output, err := h.usecase.CreateProfile(ctx, input)
 	if err != nil {
-		return server.CreateProfile400JSONResponse{Error: err.Error()}, nil //nolint: nilerr
+		baggage.PutError(ctx, err)
+
+		return server.CreateProfile400JSONResponse{Error: err.Error()}, nil
 	}
+
+	baggage.PutProfileID(ctx, output.ID.String())
 
 	return server.CreateProfile201JSONResponse{
 		ID: output.ID,

@@ -7,6 +7,7 @@ import (
 	ver1 "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/http/v1"
 	ver2 "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/http/v2"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
 )
 
 func ProfileRouter(r *chi.Mux, uc *usecase.UseCase) {
@@ -14,6 +15,8 @@ func ProfileRouter(r *chi.Mux, uc *usecase.UseCase) {
 	v2 := ver2.New(uc)
 
 	r.Route("/amozhaykin/my-app/api", func(r chi.Router) {
+		r.Use(logger.Middleware)
+
 		r.Route("/v1", func(r chi.Router) {
 			r.Post("/profile", v1.CreateProfile)
 			r.Get("/profile/{id}", v1.GetProfile)

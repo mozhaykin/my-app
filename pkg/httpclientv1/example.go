@@ -16,12 +16,12 @@ func Example() { //nolint: funlen
 
 	id, err := profile.Create(createRequest)
 	if err != nil {
-		panic(fmt.Errorf("httpclientv1: example: profile.Create: %w", err))
+		panic(err)
 	}
 
 	p, err := profile.Get(id.String())
 	if err != nil {
-		panic(fmt.Errorf("httpclientv1: example: profile.Get before profile.Update: %w", err))
+		panic(err)
 	}
 
 	fmt.Printf(
@@ -50,12 +50,12 @@ func Example() { //nolint: funlen
 
 	err = profile.Update(updateRequest)
 	if err != nil {
-		panic(fmt.Errorf("httpclientv1: example: profile.Update: %w", err))
+		panic(err)
 	}
 
 	p, err = profile.Get(id.String())
 	if err != nil {
-		panic(fmt.Errorf("httpclientv1: example: profile.Get after profile.Update: %w", err))
+		panic(err)
 	}
 
 	fmt.Printf(
@@ -73,10 +73,10 @@ func Example() { //nolint: funlen
 
 	err = profile.Delete(id.String())
 	if err != nil {
-		panic(fmt.Errorf("httpclientv1: example: profile.Delete: %w", err))
+		panic(err)
 	}
 
 	_, err = profile.Get(id.String())
 
-	fmt.Println("The Example function for httpclientv1 completed successfully! Get request: ", err) //nolint:forbidigo
+	fmt.Println("The Example function for httpclientv1 completed successfully! Get request:", err) //nolint:forbidigo
 }

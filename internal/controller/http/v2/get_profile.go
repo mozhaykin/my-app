@@ -7,6 +7,7 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http/profile_v2/server"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto/baggage"
 )
 
 func (h *Handlers) GetProfileByID(ctx context.Context, request server.GetProfileByIDRequestObject) (
@@ -16,8 +17,12 @@ func (h *Handlers) GetProfileByID(ctx context.Context, request server.GetProfile
 		ID: request.ID.String(),
 	}
 
+	baggage.PutProfileID(ctx, input.ID)
+
 	output, err := h.usecase.GetProfile(ctx, input)
 	if err != nil {
+		baggage.PutError(ctx, err)
+
 		switch {
 		case errors.Is(err, domain.ErrNotFound):
 			return server.GetProfileByID404JSONResponse{Error: err.Error()}, nil

@@ -7,6 +7,7 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http/profile_v2/server"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto/baggage"
 )
 
 func (h *Handlers) UpdateProfile(ctx context.Context, request server.UpdateProfileRequestObject) (
@@ -20,8 +21,12 @@ func (h *Handlers) UpdateProfile(ctx context.Context, request server.UpdateProfi
 		Phone: request.Body.Phone,
 	}
 
+	baggage.PutProfileID(ctx, input.ID)
+
 	err := h.usecase.UpdateProfile(ctx, input)
 	if err != nil {
+		baggage.PutError(ctx, err)
+
 		switch {
 		case errors.Is(err, domain.ErrNotFound):
 			return server.UpdateProfile404JSONResponse{Error: err.Error()}, nil

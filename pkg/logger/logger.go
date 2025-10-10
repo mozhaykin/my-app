@@ -19,16 +19,16 @@ func Init(c Config) {
 	zerolog.TimeFieldFormat = time.RFC3339    // Формат времени: "2006-01-02T15:04:05Z07:00"
 	zerolog.SetGlobalLevel(zerolog.InfoLevel) // Уровень логирования по умолчанию: Info
 
-	level, err := zerolog.ParseLevel(c.Level) // Динамическое изменение уровня логирования, если парсинг успешен
+	level, err := zerolog.ParseLevel(c.Level) // Динамическое изменение уровня логирования, если парсинг конфига успешен
 	if err == nil {
 		zerolog.SetGlobalLevel(level)
 	}
 
 	log.Logger = log.With(). // Добавление общих полей в логи
-					Caller(). // Добавляет файл и номер строки, откуда вызван лог
-					Str("app_name", c.AppName).
-					Str("app_version", c.AppVersion).
-					Logger()
+		// Caller(). // Добавляет файл и номер строки, откуда вызван лог
+		// Str("app_name", c.AppName).
+		// Str("app_version", c.AppVersion).
+		Logger()
 
 	if c.PrettyConsole { // Если c.PrettyConsole == true, логи выводятся с подсветкой, без JSON (иначе в JSON)
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "15:04:05"})

@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/rs/zerolog/log"
 )
 
 func New() *chi.Mux {
@@ -23,8 +22,6 @@ func New() *chi.Mux {
 	return r
 }
 
-func probe(w http.ResponseWriter, r *http.Request) {
-	log.Info().Str("path", r.URL.Path).Msg("probe") // Логируем факт обращения к эндпоинту (с указанием пути)
-
+func probe(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }

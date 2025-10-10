@@ -5,18 +5,20 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/rs/zerolog/log"
+	"golang.org/x/net/context"
+
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto/baggage"
 )
 
 type Err struct {
 	Error string `json:"error"`
 }
 
-func Error(w http.ResponseWriter, err error, status int) {
-	log.Error().Err(err).Msg("")
+func Error(ctx context.Context, w http.ResponseWriter, err error, status int, message string) {
+	baggage.PutError(ctx, err) // кладем ошибку в контекст, для дальнейшего логирования
 
 	err = unpack(err)
-	err = fmt.Errorf("%w", err)
+	err = fmt.Errorf("%s%w", message, err)
 
 	JSON(w, Err{Error: err.Error()}, status)
 }
