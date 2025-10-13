@@ -14,7 +14,7 @@ func (h *Handlers) UpdateProfile(ctx context.Context, request server.UpdateProfi
 	server.UpdateProfileResponseObject, error,
 ) {
 	input := dto.UpdateProfileInput{
-		ID:    request.Body.ID.String(),
+		ID:    request.Body.ID,
 		Name:  request.Body.Name,
 		Age:   request.Body.Age,
 		Email: request.Body.Email,

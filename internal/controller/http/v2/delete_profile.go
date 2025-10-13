@@ -14,7 +14,7 @@ func (h *Handlers) DeleteProfileByID(ctx context.Context, request server.DeleteP
 	server.DeleteProfileByIDResponseObject, error,
 ) {
 	input := dto.DeleteProfileInput{
-		ID: request.ID.String(),
+		ID: request.ID,
 	}
 
 	baggage.PutProfileID(ctx, input.ID)

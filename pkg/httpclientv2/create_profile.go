@@ -8,8 +8,6 @@ import (
 
 	"github.com/google/uuid"
 
-	openapi_types "github.com/oapi-codegen/runtime/types"
-
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http/profile_v2/client"
 )
 
@@ -24,7 +22,7 @@ func (c *Client) Create(r CreateProfileRequest) (uuid.UUID, error) {
 	input := client.CreateProfileInput{
 		Name:  r.Name,
 		Age:   r.Age,
-		Email: openapi_types.Email(r.Email),
+		Email: r.Email,
 		Phone: r.Phone,
 	}
 

@@ -5,18 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/google/uuid"
-
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http/profile_v2/client"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 )
 
-func (c *Client) Get(s string) (*client.GetProfileOutput, error) {
-	id, err := uuid.Parse(s)
-	if err != nil {
-		return nil, fmt.Errorf("uuid.Parse: %w", domain.ErrUUIDInvalid)
-	}
-
+func (c *Client) Get(id string) (*client.GetProfileOutput, error) {
 	output, err := c.client.GetProfileByIDWithResponse(context.Background(), id)
 	if err != nil {
 		return nil, fmt.Errorf("GetProfileByIdWithResponse: %w", err)

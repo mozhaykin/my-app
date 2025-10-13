@@ -14,7 +14,7 @@ func (h *Handlers) GetProfileByID(ctx context.Context, request server.GetProfile
 	server.GetProfileByIDResponseObject, error,
 ) {
 	input := dto.GetProfileInput{
-		ID: request.ID.String(),
+		ID: request.ID,
 	}
 
 	baggage.PutProfileID(ctx, input.ID)

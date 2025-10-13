@@ -4,18 +4,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/google/uuid"
-
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 )
 
-func (c *Client) Delete(s string) error {
-	id, err := uuid.Parse(s)
-	if err != nil {
-		return fmt.Errorf("uuid.Parse: %w", domain.ErrUUIDInvalid)
-	}
-
+func (c *Client) Delete(id string) error {
 	output, err := c.client.DeleteProfileByIDWithResponse(context.Background(), id)
 	if err != nil {
 		return fmt.Errorf("delete profile: %w", err)
