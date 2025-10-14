@@ -8,6 +8,8 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 )
 
+//go:generate mockery
+
 type Postgres interface {
 	CreateProfile(ctx context.Context, profile domain.Profile) error
 	CreateProperty(ctx context.Context, property domain.Property) error

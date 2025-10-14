@@ -65,7 +65,10 @@ migrate-down:
 oapi-install:
 	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 
-generate:
+mockery-install:
+	go install github.com/vektra/mockery/v3@v3.2.5
+
+generate: # запускает команды из файлов с флагом //go:generate. Например генерирует HTTP сервер и клиент, генерирует Mocks
 	go generate ./...
 
 grpc_gen:
