@@ -14,7 +14,7 @@ func (h *Handlers) CreateProfile(ctx context.Context, request server.CreateProfi
 	input := dto.CreateProfileInput{
 		Name:  request.Body.Name,
 		Age:   request.Body.Age,
-		Email: string(request.Body.Email),
+		Email: request.Body.Email,
 		Phone: request.Body.Phone,
 	}
 

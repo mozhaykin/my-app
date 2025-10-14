@@ -31,16 +31,19 @@ down-v: # Если хотим удалить контейнер вместе с 
 	docker compose down -v
 
 .PHONY: test
-test:
+test: # запуск юнит тестов
+	go test -v ./...
+
+test_coverage: # показать покрытие юнит тестами (отдельно для каждого пакета)
 	go test -v -cover ./...
 
-integration_test_http_v1:
+test_integration_http_v1:
 	go test -count=1 -v -tags integration ./test/integration_http_v1
 
-integration_test_http_v2:
+test_integration_http_v2:
 	go test -count=1 -v -tags integration ./test/integration_http_v2
 
-integration_test_grpc_v1:
+test_integration_grpc_v1:
 	go test -count=1 -v -tags integration ./test/integration_grpc_v1
 
 migrate-install:
