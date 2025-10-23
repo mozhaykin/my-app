@@ -1,7 +1,6 @@
 package grpc
 
 import (
-	"context"
 	"fmt"
 	"net"
 
@@ -13,6 +12,7 @@ import (
 	pb "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/grpc/profile_v1"
 	ver1 "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/grpc/v1"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
 )
 
 type Config struct {
@@ -26,9 +26,11 @@ type Server struct {
 func New(c Config, uc *usecase.UseCase) (*Server, error) {
 	s := grpc.NewServer(
 		grpc.Creds(insecure.NewCredentials()),
+		grpc.ChainUnaryInterceptor(logger.Interceptor),
 	)
 
-	reflection.Register(s) // для просмотра через инсомнию или постман
+	// для просмотра через инсомнию или постман
+	reflection.Register(s)
 
 	v1 := ver1.New(uc)
 	pb.RegisterProfileV1Server(s, v1)
@@ -42,15 +44,13 @@ func New(c Config, uc *usecase.UseCase) (*Server, error) {
 }
 
 func start(server *grpc.Server, port string) error {
-	listenerConfig := &net.ListenConfig{}
-
-	conn, err := listenerConfig.Listen(context.Background(), "tcp", net.JoinHostPort("", port))
+	conn, err := net.Listen("tcp", net.JoinHostPort("", port)) //nolint: noctx
 	if err != nil {
-		return fmt.Errorf("net.ListenConfig.Listen: %w", err)
+		return fmt.Errorf("net.Listen: %w", err)
 	}
 
 	go func() {
-		err := server.Serve(conn)
+		err = server.Serve(conn)
 		if err != nil {
 			log.Error().Err(err).Msg("grpc server: Serve")
 		}
