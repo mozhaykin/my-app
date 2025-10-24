@@ -6,8 +6,8 @@ import (
 	"net/http"
 )
 
-func (c *Client) Delete(id string) error {
-	output, err := c.client.DeleteProfileByIDWithResponse(context.Background(), id)
+func (c *Client) Delete(ctx context.Context, id string) error {
+	output, err := c.client.DeleteProfileByIDWithResponse(ctx, id)
 	if err != nil {
 		return fmt.Errorf("delete profile: %w", err)
 	}

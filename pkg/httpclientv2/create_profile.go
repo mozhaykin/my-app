@@ -18,7 +18,7 @@ type CreateProfileRequest struct {
 	Phone string
 }
 
-func (c *Client) Create(r CreateProfileRequest) (uuid.UUID, error) {
+func (c *Client) Create(ctx context.Context, r CreateProfileRequest) (uuid.UUID, error) {
 	input := client.CreateProfileInput{
 		Name:  r.Name,
 		Age:   r.Age,
@@ -26,7 +26,7 @@ func (c *Client) Create(r CreateProfileRequest) (uuid.UUID, error) {
 		Phone: r.Phone,
 	}
 
-	output, err := c.client.CreateProfileWithResponse(context.Background(), input)
+	output, err := c.client.CreateProfileWithResponse(ctx, input)
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("create profile: %w", err)
 	}

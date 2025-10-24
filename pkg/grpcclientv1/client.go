@@ -3,6 +3,7 @@ package grpcclientv1
 import (
 	"context"
 	"fmt"
+	"net"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -12,15 +13,19 @@ import (
 	pb "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/grpc/profile_v1"
 )
 
+type Config struct {
+	Host string `default:"localhost" envconfig:"GRPC_CLIENT_HOST"`
+	Port string `default:"50051"     envconfig:"GRPC_CLIENT_PORT"`
+}
 type Client struct {
 	client pb.ProfileV1Client
 	conn   *grpc.ClientConn
 }
 
-func New(host string) (*Client, error) {
-	conn, err := grpc.NewClient(host,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithUnaryInterceptor(timeoutInterceptor),
+func New(c Config) (*Client, error) {
+	conn, err := grpc.NewClient(net.JoinHostPort(c.Host, c.Port),
+		grpc.WithTransportCredentials(insecure.NewCredentials()), // для работы по http а не https
+		grpc.WithUnaryInterceptor(timeoutInterceptor),            // мидлвара
 	)
 	if err != nil {
 		return nil, fmt.Errorf("grpc.NewClient: %w", err)

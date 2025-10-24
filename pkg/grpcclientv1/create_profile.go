@@ -16,7 +16,7 @@ type CreateProfileRequest struct {
 	Phone string
 }
 
-func (c *Client) Create(r CreateProfileRequest) (uuid.UUID, error) {
+func (c *Client) Create(ctx context.Context, r CreateProfileRequest) (uuid.UUID, error) {
 	input := &pb.CreateProfileInput{
 		Name:  r.Name,
 		Age:   int32(r.Age), //nolint: gosec
@@ -24,10 +24,15 @@ func (c *Client) Create(r CreateProfileRequest) (uuid.UUID, error) {
 		Phone: r.Phone,
 	}
 
-	resp, err := c.client.CreateProfile(context.Background(), input)
+	resp, err := c.client.CreateProfile(ctx, input)
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("c.client.CreateProfile: %w", err)
 	}
 
-	return uuid.MustParse(resp.GetId()), nil
+	id, err := uuid.Parse(resp.GetId())
+	if err != nil {
+		return uuid.UUID{}, fmt.Errorf("uuid.Parse: %w", err)
+	}
+
+	return id, nil
 }

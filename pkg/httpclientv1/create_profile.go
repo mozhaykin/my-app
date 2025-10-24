@@ -18,7 +18,7 @@ type CreateProfileRequest struct {
 	Phone string `json:"phone"`
 }
 
-func (c *Client) Create(request CreateProfileRequest) (uuid.UUID, error) {
+func (c *Client) Create(ctx context.Context, request CreateProfileRequest) (uuid.UUID, error) {
 	const createProfile = "amozhaykin/my-app/api/v1/profile"
 
 	path := fmt.Sprintf("http://%s/%s", c.host, createProfile)
@@ -28,7 +28,7 @@ func (c *Client) Create(request CreateProfileRequest) (uuid.UUID, error) {
 		return uuid.Nil, fmt.Errorf("json.Marshal: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodPost, path, bytes.NewReader(body))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, path, bytes.NewReader(body))
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("http.NewRequestWithContext: %w", err)
 	}

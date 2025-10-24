@@ -22,6 +22,8 @@ import (
 // make up
 // make test_integration_grpc_v1
 
+var ctx = context.Background()
+
 func Test_Integration(t *testing.T) {
 	suite.Run(t, &Suite{})
 }
@@ -46,6 +48,7 @@ func (s *Suite) SetupSuite() {
 			Version: "test",
 		},
 		GRPC: grpc.Config{
+			Host: "localhost",
 			Port: "50051",
 		},
 		Logger: logger.Config{
@@ -72,7 +75,7 @@ func (s *Suite) SetupSuite() {
 	}()
 
 	// Client
-	client, err := grpcclientv1.New("localhost:50051")
+	client, err := grpcclientv1.New(grpcclientv1.Config{Host: "localhost", Port: "50051"})
 	s.NoError(err)
 
 	s.profile = client

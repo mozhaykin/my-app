@@ -16,7 +16,7 @@ type UpdateProfileRequest struct {
 	Phone *string `json:"phone"`
 }
 
-func (c *Client) Update(request UpdateProfileRequest) error {
+func (c *Client) Update(ctx context.Context, request UpdateProfileRequest) error {
 	input := client.UpdateProfileInput{
 		ID:    request.ID,
 		Name:  request.Name,
@@ -25,7 +25,7 @@ func (c *Client) Update(request UpdateProfileRequest) error {
 		Phone: request.Phone,
 	}
 
-	output, err := c.client.UpdateProfileWithResponse(context.Background(), input)
+	output, err := c.client.UpdateProfileWithResponse(ctx, input)
 	if err != nil {
 		return fmt.Errorf("delete profile: %w", err)
 	}

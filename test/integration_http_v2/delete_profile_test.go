@@ -13,10 +13,10 @@ func (s *Suite) Test_DeleteProfile() {
 		Email: "7n1987@gmail.com",
 		Phone: "+79634813074",
 	}
-	id, err := s.profile.Create(request)
+	id, err := s.profile.Create(ctx, request)
 	s.NoError(err)
 
-	p, err := s.profile.Get(id.String())
+	p, err := s.profile.Get(ctx, id.String())
 	s.NoError(err)
 
 	s.Equal("John_Delete", p.Name)
@@ -26,19 +26,19 @@ func (s *Suite) Test_DeleteProfile() {
 	s.Equal(1, p.Status)
 	s.Equal(false, p.Verified)
 
-	err = s.profile.Delete(id.String())
+	err = s.profile.Delete(ctx, id.String())
 	s.NoError(err)
 
-	_, err = s.profile.Get(id.String())
+	_, err = s.profile.Get(ctx, id.String())
 	s.ErrorContains(err, "not found")
 }
 
 func (s *Suite) Test_DeleteProfile_NotFound() {
-	err := s.profile.Delete("e6799c89-c560-45a2-a3da-b3f1eb9bee2b")
+	err := s.profile.Delete(ctx, "e6799c89-c560-45a2-a3da-b3f1eb9bee2b")
 	s.ErrorContains(err, "not found")
 }
 
 func (s *Suite) Test_DeleteProfile_UuidIsInvalid() {
-	err := s.profile.Delete("c6799c89c560-45a2-a3da-b3f1eb9bee2b")
+	err := s.profile.Delete(ctx, "c6799c89c560-45a2-a3da-b3f1eb9bee2b")
 	s.ErrorContains(err, "uuid is invalid")
 }

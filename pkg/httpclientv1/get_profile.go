@@ -26,12 +26,12 @@ type Profile struct {
 	} `json:"contacts"`
 }
 
-func (c *Client) Get(id string) (Profile, error) {
+func (c *Client) Get(ctx context.Context, id string) (Profile, error) {
 	const getProfile = "amozhaykin/my-app/api/v1/profile"
 
 	path := fmt.Sprintf("http://%s/%s/%s", c.host, getProfile, id)
 
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, path, http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, path, http.NoBody)
 	if err != nil {
 		return Profile{}, fmt.Errorf("http.NewRequestWithContext: %w", err)
 	}

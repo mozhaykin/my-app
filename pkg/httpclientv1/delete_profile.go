@@ -8,12 +8,12 @@ import (
 	"golang.org/x/net/context"
 )
 
-func (c *Client) Delete(id string) error {
+func (c *Client) Delete(ctx context.Context, id string) error {
 	const deleteProfile = "amozhaykin/my-app/api/v1/profile"
 
 	path := fmt.Sprintf("http://%s/%s/%s", c.host, deleteProfile, id)
 
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodDelete, path, http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, path, http.NoBody)
 	if err != nil {
 		return fmt.Errorf("http.NewRequestWithContext: %w", err)
 	}

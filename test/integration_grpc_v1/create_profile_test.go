@@ -14,10 +14,10 @@ func (s *Suite) Test_CreateProfile() {
 		Phone: "+79634813074",
 	}
 
-	id, err := s.profile.Create(request)
+	id, err := s.profile.Create(ctx, request)
 	s.NoError(err)
 
-	p, err := s.profile.Get(id.String())
+	p, err := s.profile.Get(ctx, id.String())
 	s.NoError(err)
 
 	s.Equal("John_Create", p.Name)
@@ -36,7 +36,7 @@ func (s *Suite) Test_CreateProfile_IsInvalid() {
 		Phone: "+79634813074",
 	}
 
-	_, err := s.profile.Create(request)
+	_, err := s.profile.Create(ctx, request)
 	s.ErrorContains(err, "validation")
 
 	request = grpcclientv1.CreateProfileRequest{
@@ -46,7 +46,7 @@ func (s *Suite) Test_CreateProfile_IsInvalid() {
 		Phone: "+79634813074",
 	}
 
-	_, err = s.profile.Create(request)
+	_, err = s.profile.Create(ctx, request)
 	s.ErrorContains(err, "validation")
 
 	request = grpcclientv1.CreateProfileRequest{
@@ -56,7 +56,7 @@ func (s *Suite) Test_CreateProfile_IsInvalid() {
 		Phone: "+79634813074",
 	}
 
-	_, err = s.profile.Create(request)
+	_, err = s.profile.Create(ctx, request)
 	s.ErrorContains(err, "validation")
 
 	request = grpcclientv1.CreateProfileRequest{
@@ -66,6 +66,6 @@ func (s *Suite) Test_CreateProfile_IsInvalid() {
 		Phone: "79634813074",
 	}
 
-	_, err = s.profile.Create(request)
+	_, err = s.profile.Create(ctx, request)
 	s.ErrorContains(err, "validation")
 }

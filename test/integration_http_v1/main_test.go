@@ -22,6 +22,8 @@ import (
 // make up
 // make test_integration_http_v1
 
+var ctx = context.Background()
+
 func Test_Integration(t *testing.T) {
 	suite.Run(t, &Suite{})
 }

@@ -8,8 +8,8 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http/profile_v2/client"
 )
 
-func (c *Client) Get(id string) (*client.GetProfileOutput, error) {
-	output, err := c.client.GetProfileByIDWithResponse(context.Background(), id)
+func (c *Client) Get(ctx context.Context, id string) (*client.GetProfileOutput, error) {
+	output, err := c.client.GetProfileByIDWithResponse(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("GetProfileByIdWithResponse: %w", err)
 	}

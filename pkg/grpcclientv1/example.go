@@ -2,15 +2,19 @@ package grpcclientv1
 
 import (
 	"fmt"
+
+	"golang.org/x/net/context"
 )
 
 func Example() { //nolint: funlen
-	profile, err := New("localhost:50051")
+	profile, err := New(Config{Host: "localhost", Port: "50051"})
 	if err != nil {
 		panic(err)
 	}
 
 	defer profile.Close()
+
+	ctx := context.Background()
 
 	createRequest := CreateProfileRequest{
 		Name:  "Andrey",
@@ -19,12 +23,12 @@ func Example() { //nolint: funlen
 		Phone: "+79634813074",
 	}
 
-	id, err := profile.Create(createRequest)
+	id, err := profile.Create(ctx, createRequest)
 	if err != nil {
 		panic(err)
 	}
 
-	p, err := profile.Get(id.String())
+	p, err := profile.Get(ctx, id.String())
 	if err != nil {
 		panic(err)
 	}
@@ -53,12 +57,12 @@ func Example() { //nolint: funlen
 		Age:  &age,
 	}
 
-	err = profile.Update(updateRequest)
+	err = profile.Update(ctx, updateRequest)
 	if err != nil {
 		panic(err)
 	}
 
-	p, err = profile.Get(id.String())
+	p, err = profile.Get(ctx, id.String())
 	if err != nil {
 		panic(err)
 	}
@@ -76,12 +80,12 @@ func Example() { //nolint: funlen
 			"  Contacts: 	%v\n\n",
 		p.ID, p.CreatedAt, p.UpdatedAt, p.DeletedAt, p.Name, p.Age, p.Status, p.Verified, p.Contacts)
 
-	err = profile.Delete(id.String())
+	err = profile.Delete(ctx, id.String())
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = profile.Get(id.String())
+	_, err = profile.Get(ctx, id.String())
 
 	fmt.Println("The Example function for grpcclientv1 completed successfully! Get request:", err) //nolint:forbidigo
 }

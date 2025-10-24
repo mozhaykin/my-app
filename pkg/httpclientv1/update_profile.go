@@ -17,7 +17,7 @@ type UpdateProfileRequest struct {
 	Phone *string `json:"phone"`
 }
 
-func (c *Client) Update(request UpdateProfileRequest) error {
+func (c *Client) Update(ctx context.Context, request UpdateProfileRequest) error {
 	const updateProfile = "amozhaykin/my-app/api/v1/profile"
 
 	path := fmt.Sprintf("http://%s/%s", c.host, updateProfile)
@@ -27,7 +27,7 @@ func (c *Client) Update(request UpdateProfileRequest) error {
 		return fmt.Errorf("json.Marshal: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodPut, path, bytes.NewReader(body))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, path, bytes.NewReader(body))
 	if err != nil {
 		return fmt.Errorf("http.NewRequestWithContext: %w", err)
 	}

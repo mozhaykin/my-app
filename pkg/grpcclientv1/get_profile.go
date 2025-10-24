@@ -25,12 +25,12 @@ type Profile struct {
 	} `json:"contacts"`
 }
 
-func (c *Client) Get(id string) (Profile, error) {
+func (c *Client) Get(ctx context.Context, id string) (Profile, error) {
 	input := &pb.GetProfileInput{
 		Id: id,
 	}
 
-	output, err := c.client.GetProfile(context.Background(), input)
+	output, err := c.client.GetProfile(ctx, input)
 	if err != nil {
 		return Profile{}, fmt.Errorf("c.client.GetProfile: %w", err)
 	}

@@ -14,10 +14,10 @@ func (s *Suite) Test_UpdateProfile() {
 		Phone: "+79634813074",
 	}
 
-	id, err := s.profile.Create(requestCreate)
+	id, err := s.profile.Create(ctx, requestCreate)
 	s.NoError(err)
 
-	p, err := s.profile.Get(id.String())
+	p, err := s.profile.Get(ctx, id.String())
 	s.NoError(err)
 
 	s.Equal("John_Update", p.Name)
@@ -42,10 +42,10 @@ func (s *Suite) Test_UpdateProfile() {
 		Phone: &newPhone,
 	}
 
-	err = s.profile.Update(requestUpdate)
+	err = s.profile.Update(ctx, requestUpdate)
 	s.NoError(err)
 
-	p, err = s.profile.Get(id.String())
+	p, err = s.profile.Get(ctx, id.String())
 	s.NoError(err)
 
 	s.Equal("New_John_Update", p.Name)
@@ -72,7 +72,7 @@ func (s *Suite) Test_UpdateProfile_NotFound() {
 		Phone: &newPhone,
 	}
 
-	err := s.profile.Update(requestUpdate)
+	err := s.profile.Update(ctx, requestUpdate)
 	s.ErrorContains(err, "not found")
 }
 
@@ -84,7 +84,7 @@ func (s *Suite) Test_UpdateProfile_NoChangesFound() {
 		Phone: "+79634813074",
 	}
 
-	id, err := s.profile.Create(requestCreate)
+	id, err := s.profile.Create(ctx, requestCreate)
 	s.NoError(err)
 
 	var (
@@ -102,7 +102,7 @@ func (s *Suite) Test_UpdateProfile_NoChangesFound() {
 		Phone: &newPhone,
 	}
 
-	err = s.profile.Update(requestUpdate)
+	err = s.profile.Update(ctx, requestUpdate)
 	s.ErrorContains(err, "no changes found")
 }
 
@@ -115,7 +115,7 @@ func (s *Suite) Test_UpdateProfile_AllFieldsAreEmpty() {
 		Phone: nil,
 	}
 
-	err := s.profile.Update(requestUpdate)
+	err := s.profile.Update(ctx, requestUpdate)
 	s.ErrorContains(err, "all fields for update are empty")
 }
 
@@ -135,6 +135,6 @@ func (s *Suite) Test_UpdateProfile_UUIDInvalid() {
 		Phone: &newPhone,
 	}
 
-	err := s.profile.Update(requestUpdate)
+	err := s.profile.Update(ctx, requestUpdate)
 	s.ErrorContains(err, "uuid is invalid")
 }
