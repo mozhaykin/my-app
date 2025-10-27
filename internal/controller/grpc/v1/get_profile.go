@@ -11,12 +11,15 @@ import (
 	pb "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/grpc/profile_v1"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto/baggage"
 )
 
 func (h Handlers) GetProfile(ctx context.Context, in *pb.GetProfileInput) (*pb.GetProfileOutput, error) {
 	input := dto.GetProfileInput{
 		ID: in.GetId(),
 	}
+
+	baggage.PutProfileID(ctx, input.ID)
 
 	output, err := h.usecase.GetProfile(ctx, input)
 	if err != nil {

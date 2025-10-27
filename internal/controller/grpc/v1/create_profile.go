@@ -8,6 +8,7 @@ import (
 
 	pb "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/grpc/profile_v1"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto/baggage"
 )
 
 func (h Handlers) CreateProfile(ctx context.Context, in *pb.CreateProfileInput) (*pb.CreateProfileOutput, error) {
@@ -22,6 +23,8 @@ func (h Handlers) CreateProfile(ctx context.Context, in *pb.CreateProfileInput) 
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
+
+	baggage.PutProfileID(ctx, output.ID.String())
 
 	return &pb.CreateProfileOutput{
 		Id: output.ID.String(),

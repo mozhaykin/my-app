@@ -18,7 +18,7 @@ func Interceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handl
 
 	resp, err := handler(ctx, req)
 	if err != nil {
-		event = log.Error().Err(bag.Err)
+		event = log.Error().Err(err)
 	}
 
 	event.

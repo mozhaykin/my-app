@@ -45,7 +45,7 @@ func (p *Postgres) GetProfile(ctx context.Context, profileID uuid.UUID) (domain.
 	err := txOrPool.QueryRow(ctx, sql, profileID).Scan(dest...)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return domain.Profile{}, fmt.Errorf("p.pool.QueryRow.Scan: %w", domain.ErrNotFound)
+			return domain.Profile{}, fmt.Errorf("txOrPool.QueryRow.Scan: %w", domain.ErrNotFound)
 		}
 
 		return domain.Profile{}, fmt.Errorf("txOrPool.QueryRow: %w", err)

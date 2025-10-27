@@ -11,6 +11,7 @@ import (
 	pb "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/grpc/profile_v1"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto/baggage"
 )
 
 func (h Handlers) UpdateProfile(ctx context.Context, in *pb.UpdateProfileInput) (*emptypb.Empty, error) {
@@ -21,6 +22,8 @@ func (h Handlers) UpdateProfile(ctx context.Context, in *pb.UpdateProfileInput) 
 		Email: in.Email,
 		Phone: in.Phone,
 	}
+
+	baggage.PutProfileID(ctx, input.ID)
 
 	err := h.usecase.UpdateProfile(ctx, input)
 	if err != nil {

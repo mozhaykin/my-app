@@ -11,12 +11,15 @@ import (
 	pb "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/grpc/profile_v1"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto/baggage"
 )
 
 func (h Handlers) DeleteProfile(ctx context.Context, in *pb.DeleteProfileInput) (*emptypb.Empty, error) {
 	input := dto.DeleteProfileInput{
 		ID: in.GetId(),
 	}
+
+	baggage.PutProfileID(ctx, input.ID)
 
 	err := h.usecase.DeleteProfile(ctx, input)
 	if err != nil {
