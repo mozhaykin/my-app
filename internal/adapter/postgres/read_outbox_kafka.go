@@ -1,9 +1,8 @@
 package postgres
 
 import (
+	"context"
 	"fmt"
-
-	"golang.org/x/net/context"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"

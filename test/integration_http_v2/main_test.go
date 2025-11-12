@@ -7,6 +7,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/segmentio/kafka-go"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/kafkaproducer"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/worker"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclientv2"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
@@ -32,7 +35,8 @@ type Suite struct {
 	suite.Suite
 	*require.Assertions
 
-	profile *httpclientv2.Client
+	profile     *httpclientv2.Client
+	kafkaWriter *kafka.Writer
 }
 
 // Запускается один раз, до тестов (например для поднятия коннекшена к базе).
@@ -63,9 +67,20 @@ func (s *Suite) SetupSuite() {
 			Password: "pass",
 			DBName:   "postgres",
 		},
+		KafkaProducer: kafkaproducer.Config{
+			Addr: []string{"localhost:9094"},
+		},
+		OutboxKafka: worker.OutboxKafkaConfig{
+			Limit: 10,
+		},
 	}
 
 	logger.Init(c.Logger)
+
+	// Kafka writer for direct produce messages
+	s.kafkaWriter = &kafka.Writer{
+		Addr: kafka.TCP(c.KafkaProducer.Addr...),
+	}
 
 	// Server
 	go func() {
