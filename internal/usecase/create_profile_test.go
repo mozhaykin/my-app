@@ -26,9 +26,12 @@ func Test_CreateProfile_Success(t *testing.T) {
 	postgres.On("CreateProfile", mock.Anything, mock.Anything).Return(nil)
 	// когда вызовут CreateProperty(любой аргумент, любой аргумент) → вернуть (nil)
 	postgres.On("CreateProperty", mock.Anything, mock.Anything).Return(nil)
+	// когда вызовут SaveOutboxKafka(любой аргумент, любой аргумент) → вернуть (nil)
+	postgres.On("SaveOutboxKafka", mock.Anything, mock.Anything).Return(nil)
 	// эти defer гарантируют, что после выполнения теста будет проверено, действительно ли методы мока вызывались
 	defer postgres.AssertCalled(t, "CreateProfile", mock.Anything, mock.Anything)
 	defer postgres.AssertCalled(t, "CreateProperty", mock.Anything, mock.Anything)
+	defer postgres.AssertCalled(t, "SaveOutboxKafka", mock.Anything, mock.Anything)
 
 	// создаём экземпляр UseCase, передавая в него мок базы
 	u := usecase.New(postgres, nil)
