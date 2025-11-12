@@ -6,7 +6,9 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/kafkaproducer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/grpc"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/worker"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
@@ -18,11 +20,13 @@ type App struct {
 }
 
 type Config struct {
-	App      App
-	HTTP     httpserver.Config
-	GRPC     grpc.Config
-	Logger   logger.Config
-	Postgres postgres.Config
+	App           App
+	HTTP          httpserver.Config
+	GRPC          grpc.Config
+	Logger        logger.Config
+	Postgres      postgres.Config
+	KafkaProducer kafkaproducer.Config
+	OutboxKafka   worker.OutboxKafkaConfig
 }
 
 func New() (Config, error) {

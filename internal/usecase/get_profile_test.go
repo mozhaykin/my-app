@@ -34,7 +34,7 @@ func Test_GetProfile_Success(t *testing.T) {
 	defer postgres.AssertCalled(t, "GetProfile", mock.Anything, id)
 
 	// создаём экземпляр UseCase, передавая в него мок базы
-	u := usecase.New(postgres)
+	u := usecase.New(postgres, nil)
 
 	{ // сам тест
 		input := dto.GetProfileInput{ID: id.String()}
@@ -50,7 +50,7 @@ func Test_GetProfile_InvalidUUID(t *testing.T) {
 	// otel.SilentModeInit()
 	// т.к. при невалидном ID до похода в базу дело всеравно не дойдет, то моки здесь не нужны
 	// Собираем UseCase
-	u := usecase.New(nil)
+	u := usecase.New(nil, nil)
 
 	{ // Сам тест
 		input := dto.GetProfileInput{ID: "invalid-uuid"} // невалидное значение id

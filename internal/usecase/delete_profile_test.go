@@ -31,7 +31,7 @@ func Test_DeleteProfile_Success(t *testing.T) {
 	defer postgres.AssertCalled(t, "DeleteProfile", mock.Anything, id)
 
 	// создаём экземпляр UseCase, передавая в него мок базы
-	u := usecase.New(postgres)
+	u := usecase.New(postgres, nil)
 
 	{ // сам тест
 		input := dto.DeleteProfileInput{ID: id.String()}
@@ -45,7 +45,7 @@ func Test_DeleteProfile_InvalidUUID(t *testing.T) {
 	// otel.SilentModeInit() // отключить open telemetry
 	// т.к. при невалидном ID до похода в базу дело всеравно не дойдет, то моки здесь не нужны
 	// собираем UseCase
-	u := usecase.New(nil)
+	u := usecase.New(nil, nil)
 
 	{ // Сам тест
 		input := dto.DeleteProfileInput{ID: "invalid-uuid"} // строка с невалидным id

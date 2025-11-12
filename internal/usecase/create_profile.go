@@ -19,6 +19,11 @@ func (u *UseCase) CreateProfile(ctx context.Context, input dto.CreateProfileInpu
 		return output, fmt.Errorf("domain.NewProfile: %w", err)
 	}
 
+	event, err := profile.ToEvent("awesome-topic")
+	if err != nil {
+		return output, fmt.Errorf("profile.ToEvent: %w", err)
+	}
+
 	property := domain.NewProperty(profile.ID, []string{"home", "primary"})
 
 	ctx, err = transaction.Begin(ctx)
@@ -36,6 +41,12 @@ func (u *UseCase) CreateProfile(ctx context.Context, input dto.CreateProfileInpu
 	err = u.postgres.CreateProperty(ctx, property)
 	if err != nil {
 		return output, fmt.Errorf("u.postgres.CreateProperty: %w", err)
+	}
+
+	// Запись в таблицу Outbox (из которой читает воркер и гарантировано отправляет в Кафку)
+	err = u.postgres.SaveOutboxKafka(ctx, event)
+	if err != nil {
+		return output, fmt.Errorf("u.postgres.SaveOutboxKafka: %w", err)
 	}
 
 	err = transaction.Commit(ctx)

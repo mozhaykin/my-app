@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -67,4 +68,17 @@ func (p Profile) Validate() error {
 
 func (p Profile) IsDeleted() bool {
 	return !p.DeletedAt.IsZero()
+}
+
+func (p Profile) ToEvent(topic string) (Event, error) {
+	value, err := json.Marshal(p)
+	if err != nil {
+		return Event{}, fmt.Errorf("json.Marshal: %w", err)
+	}
+
+	return Event{
+		Topic: topic,
+		Key:   []byte(p.ID.String()),
+		Value: value,
+	}, nil
 }

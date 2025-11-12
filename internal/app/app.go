@@ -10,9 +10,11 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/config"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/kafkaproducer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/postgres"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/grpc"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/http"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/worker"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
 	pgpool "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
@@ -29,8 +31,16 @@ func Run(ctx context.Context, c config.Config) error {
 
 	transaction.Init(pgPool)
 
-	// Создаем структуру UseCase, которая содержит интерфейс с методами обращения к базе данных
-	uc := usecase.New(postgres.New())
+	// Kafka producer
+	kafkaProducer := kafkaproducer.New(c.KafkaProducer)
+
+	// UseCase
+	uc := usecase.New(
+		postgres.New(),
+		kafkaProducer,
+	)
+
+	outboxKafkaWorker := worker.NewOutboxKafka(uc, c.OutboxKafka)
 
 	// GRPC
 	grpcServer, err := grpc.New(c.GRPC, uc)
@@ -52,9 +62,14 @@ func Run(ctx context.Context, c config.Config) error {
 
 	log.Info().Msg("App got signal to stop")
 
+	// Controllers close
 	grpcServer.Close()
 	httpServer.Close()
+	outboxKafkaWorker.Close()
+
+	// Adapters close
 	pgPool.Close()
+	kafkaProducer.Close()
 
 	log.Info().Msg("App stopped!")
 

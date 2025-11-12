@@ -31,7 +31,7 @@ func Test_CreateProfile_Success(t *testing.T) {
 	defer postgres.AssertCalled(t, "CreateProperty", mock.Anything, mock.Anything)
 
 	// создаём экземпляр UseCase, передавая в него мок базы
-	u := usecase.New(postgres)
+	u := usecase.New(postgres, nil)
 
 	{ // сам тест
 		input := dto.CreateProfileInput{
