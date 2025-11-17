@@ -8,6 +8,7 @@ import (
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/kafkaproducer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/grpc"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/kafkaconsumer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/worker"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
@@ -26,6 +27,7 @@ type Config struct {
 	Logger        logger.Config
 	Postgres      postgres.Config
 	KafkaProducer kafkaproducer.Config
+	KafkaConsumer kafkaconsumer.Config
 	OutboxKafka   worker.OutboxKafkaConfig
 }
 

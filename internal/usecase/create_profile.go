@@ -43,7 +43,7 @@ func (u *UseCase) CreateProfile(ctx context.Context, input dto.CreateProfileInpu
 		return output, fmt.Errorf("u.postgres.CreateProperty: %w", err)
 	}
 
-	// Запись в таблицу Outbox (из которой читает воркер и гарантировано отправляет в Кафку)
+	// Дополнительная запись profile в таблицу Outbox (из которой читает воркер и гарантировано отправляет в Кафку)
 	err = u.postgres.SaveOutboxKafka(ctx, event)
 	if err != nil {
 		return output, fmt.Errorf("u.postgres.SaveOutboxKafka: %w", err)

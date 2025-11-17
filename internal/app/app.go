@@ -14,6 +14,7 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/postgres"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/grpc"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/http"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/kafkaconsumer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/worker"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
@@ -40,6 +41,10 @@ func Run(ctx context.Context, c config.Config) error {
 		kafkaProducer,
 	)
 
+	// Kafka consumer
+	kafkaConsumer := kafkaconsumer.New(c.KafkaConsumer, uc)
+
+	// Outbox Kafka worker
 	outboxKafkaWorker := worker.NewOutboxKafka(uc, c.OutboxKafka)
 
 	// GRPC
@@ -66,6 +71,7 @@ func Run(ctx context.Context, c config.Config) error {
 	grpcServer.Close()
 	httpServer.Close()
 	outboxKafkaWorker.Close()
+	kafkaConsumer.Close()
 
 	// Adapters close
 	pgPool.Close()

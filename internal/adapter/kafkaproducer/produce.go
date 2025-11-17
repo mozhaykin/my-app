@@ -26,6 +26,8 @@ func New(c Config) *Producer {
 		RequiredAcks: kafka.RequireAll,
 		ErrorLogger:  logger.ErrorLogger(),
 		Async:        false, // можно включить отправку батчами (с интервалом в 1s) если producer захлёбывается
+		// BatchSize:    10,
+		// BatchTimeout: 100 * time.Millisecond,
 	}
 
 	return &Producer{

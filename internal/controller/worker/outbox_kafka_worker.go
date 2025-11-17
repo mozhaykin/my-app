@@ -10,18 +10,18 @@ import (
 )
 
 type OutboxKafkaConfig struct {
-	Limit int `default:"10" envconfig:"OUTBOX_KAFKA_WORKER_LIMIT"`
+	Limit int `default:"10" envconfig:"OUTBOX_KAFKA_WORKER_LIMIT"` // максимум 10 сообщений за один раз
 }
 
-type OutboxKafka struct {
+type OutboxKafkaWorker struct {
 	config  OutboxKafkaConfig
 	usecase *usecase.UseCase
-	stop    chan struct{}
-	done    chan struct{}
+	stop    chan struct{} // канал для команды стоп
+	done    chan struct{} // канал для получения сигнала, что стоп выполнен
 }
 
-func NewOutboxKafka(uc *usecase.UseCase, c OutboxKafkaConfig) *OutboxKafka {
-	w := &OutboxKafka{
+func NewOutboxKafka(uc *usecase.UseCase, c OutboxKafkaConfig) *OutboxKafkaWorker {
+	w := &OutboxKafkaWorker{
 		config:  c,
 		usecase: uc,
 		stop:    make(chan struct{}),
@@ -33,7 +33,7 @@ func NewOutboxKafka(uc *usecase.UseCase, c OutboxKafkaConfig) *OutboxKafka {
 	return w
 }
 
-func (w *OutboxKafka) run() {
+func (w *OutboxKafkaWorker) run() {
 	log.Info().Msg("outbox kafka worker: started")
 
 FOR:
@@ -47,6 +47,7 @@ FOR:
 
 		var duration time.Duration
 
+		// если пришло меньше 10 сообщений, значит их больше нет и надо поспать 10 секунд
 		if count < w.config.Limit {
 			duration = 10 * time.Second
 
@@ -63,7 +64,7 @@ FOR:
 	close(w.done)
 }
 
-func (w *OutboxKafka) Close() {
+func (w *OutboxKafkaWorker) Close() {
 	log.Info().Msg("outbox kafka worker: closing")
 
 	close(w.stop)
