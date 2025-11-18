@@ -32,20 +32,26 @@ func Run(ctx context.Context, c config.Config) error {
 
 	transaction.Init(pgPool)
 
-	// Kafka producer
+	// Kafka producer (устанавливаем соединение адаптера producer с kafka)
 	kafkaProducer := kafkaproducer.New(c.KafkaProducer)
 
-	// UseCase
+	// Создаем UseCase (передаем в структуру интерфейсы с методами которые вызываются в юзкейсах)
 	uc := usecase.New(
 		postgres.New(),
 		kafkaProducer,
 	)
 
-	// Kafka consumer
+	// Запускаем Outbox Kafka worker, в котором вызывается метод usecase OutboxReadAndProduce записывающий в kafka
+	outboxKafkaWorker := worker.NewOutboxKafka(uc, c.OutboxKafka)
+
+	// Запускаем kafka consumer, который читает сообщения из kafka, обрабатывает его вызывая метод usecase, и делает commit
 	kafkaConsumer := kafkaconsumer.New(c.KafkaConsumer, uc)
 
-	// Outbox Kafka worker
-	outboxKafkaWorker := worker.NewOutboxKafka(uc, c.OutboxKafka)
+	// Worker (просто пример воркера)
+	someWorker, err := worker.NewSomeWorker(uc)
+	if err != nil {
+		return fmt.Errorf("worker.NewSomeWorker: %w", err)
+	}
 
 	// GRPC
 	grpcServer, err := grpc.New(c.GRPC, uc)
@@ -68,10 +74,11 @@ func Run(ctx context.Context, c config.Config) error {
 	log.Info().Msg("App got signal to stop")
 
 	// Controllers close
+	outboxKafkaWorker.Stop()
+	kafkaConsumer.Close()
+	someWorker.Stop()
 	grpcServer.Close()
 	httpServer.Close()
-	outboxKafkaWorker.Close()
-	kafkaConsumer.Close()
 
 	// Adapters close
 	pgPool.Close()

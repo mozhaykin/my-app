@@ -17,7 +17,7 @@ type OutboxKafkaWorker struct {
 	config  OutboxKafkaConfig
 	usecase *usecase.UseCase
 	stop    chan struct{} // канал для команды стоп
-	done    chan struct{} // канал для получения сигнала, что стоп выполнен
+	done    chan struct{} // канал для получения сигнала о том, что стоп выполнен
 }
 
 func NewOutboxKafka(uc *usecase.UseCase, c OutboxKafkaConfig) *OutboxKafkaWorker {
@@ -56,7 +56,7 @@ FOR:
 
 		select {
 		case <-w.stop:
-			break FOR
+			break FOR // Метка FOR, чтобы выйти не только из select, а полностью из цикла for
 		case <-time.After(duration):
 		}
 	}
@@ -64,7 +64,7 @@ FOR:
 	close(w.done)
 }
 
-func (w *OutboxKafkaWorker) Close() {
+func (w *OutboxKafkaWorker) Stop() {
 	log.Info().Msg("outbox kafka worker: closing")
 
 	close(w.stop)

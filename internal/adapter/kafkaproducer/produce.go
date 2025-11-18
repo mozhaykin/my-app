@@ -1,11 +1,11 @@
 package kafkaproducer
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/rs/zerolog/log"
 	"github.com/segmentio/kafka-go"
-	"golang.org/x/net/context"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
