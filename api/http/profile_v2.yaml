@@ -67,6 +67,70 @@ paths:
               schema: # схема ответа
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /profiles: # путь
+    get: # метод GET
+      tags:
+        - Profile
+      operationId: getProfiles # уникальное имя операции
+      summary: Get a profiles
+      parameters:
+        - name: sort # параметр в URL
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Sort field. Possible values are id, name.
+          example: id
+        - name: order # параметр в URL
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+            default: asc
+          description: Sorting direction. Possible values are asc, desc or empty string.
+          example: asc
+        - name: offset # параметр в URL
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Number of items to skip before returning the results.
+          example: 10
+        - name: limit # параметр в URL
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 100
+            default: 10
+          description: Maximum number of items to return.
+          example: 10
+      responses:
+        200:
+          description: Profiles retrieved
+          content: # возвращается JSON
+            application/json:
+              schema: # схема ответа
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetProfileOutput'
+        400:
+          description: Bad Request
+          content: # возвращается JSON
+            application/json:
+              schema: # схема ответа
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Profiles not found
+          content: # возвращается JSON
+            application/json:
+              schema: # схема ответа
+                $ref: '#/components/schemas/ErrorResponse'
+
   /profile/{id}: # путь
     get: # метод GET
       tags:

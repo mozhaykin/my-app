@@ -20,8 +20,9 @@ func ProfileRouter(r *chi.Mux, uc *usecase.UseCase) {
 		r.Route("/v1", func(r chi.Router) {
 			r.Post("/profile", v1.CreateProfile)
 			r.Get("/profile/{id}", v1.GetProfile)
-			r.Delete("/profile/{id}", v1.DeleteProfile)
+			r.Get("/profiles", v1.GetProfiles) // Ручка с пагинацией
 			r.Put("/profile", v1.UpdateProfile)
+			r.Delete("/profile/{id}", v1.DeleteProfile)
 		})
 
 		r.Route("/v2", func(r chi.Router) {

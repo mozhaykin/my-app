@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	mock "github.com/stretchr/testify/mock"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
 )
 
 // NewPostgres creates a new instance of Postgres. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
@@ -228,6 +229,63 @@ func (_c *Postgres_GetProfile_Call) Return(profile domain.Profile, err error) *P
 }
 
 func (_c *Postgres_GetProfile_Call) RunAndReturn(run func(ctx context.Context, profileID uuid.UUID) (domain.Profile, error)) *Postgres_GetProfile_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetProfiles provides a mock function for the type Postgres
+func (_mock *Postgres) GetProfiles(ctx context.Context, input dto.GetProfilesInput) ([]domain.Profile, error) {
+	ret := _mock.Called(ctx, input)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetProfiles")
+	}
+
+	var r0 []domain.Profile
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, dto.GetProfilesInput) ([]domain.Profile, error)); ok {
+		return returnFunc(ctx, input)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, dto.GetProfilesInput) []domain.Profile); ok {
+		r0 = returnFunc(ctx, input)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]domain.Profile)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, dto.GetProfilesInput) error); ok {
+		r1 = returnFunc(ctx, input)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// Postgres_GetProfiles_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetProfiles'
+type Postgres_GetProfiles_Call struct {
+	*mock.Call
+}
+
+// GetProfiles is a helper method to define mock.On call
+//   - ctx
+//   - input
+func (_e *Postgres_Expecter) GetProfiles(ctx interface{}, input interface{}) *Postgres_GetProfiles_Call {
+	return &Postgres_GetProfiles_Call{Call: _e.mock.On("GetProfiles", ctx, input)}
+}
+
+func (_c *Postgres_GetProfiles_Call) Run(run func(ctx context.Context, input dto.GetProfilesInput)) *Postgres_GetProfiles_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(dto.GetProfilesInput))
+	})
+	return _c
+}
+
+func (_c *Postgres_GetProfiles_Call) Return(profiles []domain.Profile, err error) *Postgres_GetProfiles_Call {
+	_c.Call.Return(profiles, err)
+	return _c
+}
+
+func (_c *Postgres_GetProfiles_Call) RunAndReturn(run func(ctx context.Context, input dto.GetProfilesInput) ([]domain.Profile, error)) *Postgres_GetProfiles_Call {
 	_c.Call.Return(run)
 	return _c
 }

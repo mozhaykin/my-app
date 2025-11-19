@@ -94,6 +94,21 @@ type UpdateProfileInput struct {
 	Phone *string `json:"phone"`
 }
 
+// GetProfilesParams defines parameters for GetProfiles.
+type GetProfilesParams struct {
+	// Sort Sort field. Possible values are id, name.
+	Sort string `form:"sort" json:"sort"`
+
+	// Order Sorting direction. Possible values are asc, desc or empty string.
+	Order *string `form:"order,omitempty" json:"order,omitempty"`
+
+	// Offset Number of items to skip before returning the results.
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Limit Maximum number of items to return.
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
 // CreateProfileJSONRequestBody defines body for CreateProfile for application/json ContentType.
 type CreateProfileJSONRequestBody = CreateProfileInput
 
@@ -188,6 +203,9 @@ type ClientInterface interface {
 
 	// GetProfileByID request
 	GetProfileByID(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetProfiles request
+	GetProfiles(ctx context.Context, params *GetProfilesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) CreateProfileWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -252,6 +270,18 @@ func (c *Client) DeleteProfileByID(ctx context.Context, id string, reqEditors ..
 
 func (c *Client) GetProfileByID(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetProfileByIDRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetProfiles(ctx context.Context, params *GetProfilesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetProfilesRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -410,6 +440,99 @@ func NewGetProfileByIDRequest(server string, id string) (*http.Request, error) {
 	return req, nil
 }
 
+// NewGetProfilesRequest generates requests for GetProfiles
+func NewGetProfilesRequest(server string, params *GetProfilesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/profiles")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "sort", runtime.ParamLocationQuery, params.Sort); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if params.Order != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "order", runtime.ParamLocationQuery, *params.Order); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -468,6 +591,9 @@ type ClientWithResponsesInterface interface {
 
 	// GetProfileByIDWithResponse request
 	GetProfileByIDWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetProfileByIDResponse, error)
+
+	// GetProfilesWithResponse request
+	GetProfilesWithResponse(ctx context.Context, params *GetProfilesParams, reqEditors ...RequestEditorFn) (*GetProfilesResponse, error)
 }
 
 type CreateProfileResponse struct {
@@ -563,6 +689,30 @@ func (r GetProfileByIDResponse) StatusCode() int {
 	return 0
 }
 
+type GetProfilesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]GetProfileOutput
+	JSON400      *ErrorResponse
+	JSON404      *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetProfilesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetProfilesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 // CreateProfileWithBodyWithResponse request with arbitrary body returning *CreateProfileResponse
 func (c *ClientWithResponses) CreateProfileWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateProfileResponse, error) {
 	rsp, err := c.CreateProfileWithBody(ctx, contentType, body, reqEditors...)
@@ -613,6 +763,15 @@ func (c *ClientWithResponses) GetProfileByIDWithResponse(ctx context.Context, id
 		return nil, err
 	}
 	return ParseGetProfileByIDResponse(rsp)
+}
+
+// GetProfilesWithResponse request returning *GetProfilesResponse
+func (c *ClientWithResponses) GetProfilesWithResponse(ctx context.Context, params *GetProfilesParams, reqEditors ...RequestEditorFn) (*GetProfilesResponse, error) {
+	rsp, err := c.GetProfiles(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetProfilesResponse(rsp)
 }
 
 // ParseCreateProfileResponse parses an HTTP response from a CreateProfileWithResponse call
@@ -730,6 +889,46 @@ func ParseGetProfileByIDResponse(rsp *http.Response) (*GetProfileByIDResponse, e
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest GetProfileOutput
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetProfilesResponse parses an HTTP response from a GetProfilesWithResponse call
+func ParseGetProfilesResponse(rsp *http.Response) (*GetProfilesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetProfilesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []GetProfileOutput
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

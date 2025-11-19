@@ -13,6 +13,7 @@ func (s *Suite) Test_DeleteProfile() {
 		Email: "7n1987@gmail.com",
 		Phone: "+79634813074",
 	}
+
 	id, err := s.profile.Create(ctx, request)
 	s.NoError(err)
 

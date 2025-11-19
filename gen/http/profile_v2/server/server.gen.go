@@ -92,6 +92,21 @@ type UpdateProfileInput struct {
 	Phone *string `json:"phone"`
 }
 
+// GetProfilesParams defines parameters for GetProfiles.
+type GetProfilesParams struct {
+	// Sort Sort field. Possible values are id, name.
+	Sort string `form:"sort" json:"sort"`
+
+	// Order Sorting direction. Possible values are asc, desc or empty string.
+	Order *string `form:"order,omitempty" json:"order,omitempty"`
+
+	// Offset Number of items to skip before returning the results.
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Limit Maximum number of items to return.
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
 // CreateProfileJSONRequestBody defines body for CreateProfile for application/json ContentType.
 type CreateProfileJSONRequestBody = CreateProfileInput
 
@@ -112,6 +127,9 @@ type ServerInterface interface {
 	// Get a profile by ID
 	// (GET /profile/{id})
 	GetProfileByID(w http.ResponseWriter, r *http.Request, id string)
+	// Get a profiles
+	// (GET /profiles)
+	GetProfiles(w http.ResponseWriter, r *http.Request, params GetProfilesParams)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -139,6 +157,12 @@ func (_ Unimplemented) DeleteProfileByID(w http.ResponseWriter, r *http.Request,
 // Get a profile by ID
 // (GET /profile/{id})
 func (_ Unimplemented) GetProfileByID(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a profiles
+// (GET /profiles)
+func (_ Unimplemented) GetProfiles(w http.ResponseWriter, r *http.Request, params GetProfilesParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -220,6 +244,64 @@ func (siw *ServerInterfaceWrapper) GetProfileByID(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetProfileByID(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetProfiles operation middleware
+func (siw *ServerInterfaceWrapper) GetProfiles(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetProfilesParams
+
+	// ------------- Required query parameter "sort" -------------
+
+	if paramValue := r.URL.Query().Get("sort"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "sort"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "sort", r.URL.Query(), &params.Sort)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sort", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "order" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "order", r.URL.Query(), &params.Order)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "order", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetProfiles(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -354,6 +436,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/profile/{id}", wrapper.GetProfileByID)
 	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/profiles", wrapper.GetProfiles)
+	})
 
 	return r
 }
@@ -487,6 +572,41 @@ func (response GetProfileByID404JSONResponse) VisitGetProfileByIDResponse(w http
 	return json.NewEncoder(w).Encode(response)
 }
 
+type GetProfilesRequestObject struct {
+	Params GetProfilesParams
+}
+
+type GetProfilesResponseObject interface {
+	VisitGetProfilesResponse(w http.ResponseWriter) error
+}
+
+type GetProfiles200JSONResponse []GetProfileOutput
+
+func (response GetProfiles200JSONResponse) VisitGetProfilesResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetProfiles400JSONResponse ErrorResponse
+
+func (response GetProfiles400JSONResponse) VisitGetProfilesResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetProfiles404JSONResponse ErrorResponse
+
+func (response GetProfiles404JSONResponse) VisitGetProfilesResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// Create a new profile
@@ -501,6 +621,9 @@ type StrictServerInterface interface {
 	// Get a profile by ID
 	// (GET /profile/{id})
 	GetProfileByID(ctx context.Context, request GetProfileByIDRequestObject) (GetProfileByIDResponseObject, error)
+	// Get a profiles
+	// (GET /profiles)
+	GetProfiles(ctx context.Context, request GetProfilesRequestObject) (GetProfilesResponseObject, error)
 }
 
 type StrictHandlerFunc = strictnethttp.StrictHTTPHandlerFunc
@@ -639,6 +762,32 @@ func (sh *strictHandler) GetProfileByID(w http.ResponseWriter, r *http.Request, 
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetProfileByIDResponseObject); ok {
 		if err := validResponse.VisitGetProfileByIDResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetProfiles operation middleware
+func (sh *strictHandler) GetProfiles(w http.ResponseWriter, r *http.Request, params GetProfilesParams) {
+	var request GetProfilesRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetProfiles(ctx, request.(GetProfilesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetProfiles")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetProfilesResponseObject); ok {
+		if err := validResponse.VisitGetProfilesResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
