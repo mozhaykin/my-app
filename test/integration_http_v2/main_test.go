@@ -53,7 +53,7 @@ func (s *Suite) SetupSuite() {
 			Name:    "my-app",
 			Version: "test",
 		},
-		HTTP: httpserver.Config{
+		HTTPServer: httpserver.Config{
 			Port: "8080",
 		},
 		Logger: logger.Config{
@@ -69,6 +69,9 @@ func (s *Suite) SetupSuite() {
 			Password: "pass",
 			DBName:   "postgres",
 		},
+		HTTPClientV2: httpclientv2.Config{
+			Address: "http://localhost:8080/amozhaykin/my-app/api/v2",
+		},
 		KafkaProducer: kafkaproducer.Config{
 			Addr: []string{"localhost:9094"},
 		},
@@ -78,7 +81,7 @@ func (s *Suite) SetupSuite() {
 			Group:    "amozhaykin-my-app-group",
 			Disabled: true, // Disable consumer in test!
 		},
-		OutboxKafka: worker.OutboxKafkaConfig{
+		OutboxKafkaWorker: worker.OutboxKafkaConfig{
 			Limit: 10,
 		},
 	}
@@ -114,7 +117,7 @@ func (s *Suite) SetupSuite() {
 	}()
 
 	// Client V2
-	s.profile, err = httpclientv2.New("http://localhost:8080/amozhaykin/my-app/api/v2")
+	s.profile, err = httpclientv2.New(c.HTTPClientV2)
 	s.NoError(err)
 
 	time.Sleep(time.Second)

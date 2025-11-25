@@ -53,7 +53,7 @@ func (s *Suite) SetupSuite() {
 			Name:    "my-app",
 			Version: "test",
 		},
-		GRPC: grpc.Config{
+		GRPCServer: grpc.Config{
 			Host: "localhost",
 			Port: "50051",
 		},
@@ -70,6 +70,10 @@ func (s *Suite) SetupSuite() {
 			Password: "pass",
 			DBName:   "postgres",
 		},
+		GRPSClientV1: grpcclientv1.Config{
+			Host: "localhost",
+			Port: "50051",
+		},
 		KafkaProducer: kafkaproducer.Config{
 			Addr: []string{"localhost:9094"},
 		},
@@ -79,7 +83,7 @@ func (s *Suite) SetupSuite() {
 			Group:    "amozhaykin-my-app-group",
 			Disabled: true, // Disable consumer in test!
 		},
-		OutboxKafka: worker.OutboxKafkaConfig{
+		OutboxKafkaWorker: worker.OutboxKafkaConfig{
 			Limit: 10,
 		},
 	}
@@ -115,7 +119,7 @@ func (s *Suite) SetupSuite() {
 	}()
 
 	// Client
-	client, err := grpcclientv1.New(grpcclientv1.Config{Host: "localhost", Port: "50051"})
+	client, err := grpcclientv1.New(c.GRPSClientV1)
 	s.NoError(err)
 
 	s.profile = client

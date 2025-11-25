@@ -10,6 +10,9 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/grpc"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/kafkaconsumer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/worker"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/grpcclientv1"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclientv1"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclientv2"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
@@ -21,14 +24,17 @@ type App struct {
 }
 
 type Config struct {
-	App           App
-	HTTP          httpserver.Config
-	GRPC          grpc.Config
-	Logger        logger.Config
-	Postgres      postgres.Config
-	KafkaProducer kafkaproducer.Config
-	KafkaConsumer kafkaconsumer.Config
-	OutboxKafka   worker.OutboxKafkaConfig
+	App               App
+	HTTPServer        httpserver.Config
+	GRPCServer        grpc.Config
+	Logger            logger.Config
+	Postgres          postgres.Config
+	GRPSClientV1      grpcclientv1.Config
+	HTTPClientV1      httpclientv1.Config
+	HTTPClientV2      httpclientv2.Config
+	KafkaProducer     kafkaproducer.Config
+	KafkaConsumer     kafkaconsumer.Config
+	OutboxKafkaWorker worker.OutboxKafkaConfig
 }
 
 func New() (Config, error) {

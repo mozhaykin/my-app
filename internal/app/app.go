@@ -42,7 +42,7 @@ func Run(ctx context.Context, c config.Config) error {
 	)
 
 	// Запускаем Outbox Kafka worker, в котором вызывается метод usecase OutboxReadAndProduce записывающий в kafka
-	outboxKafkaWorker := worker.NewOutboxKafka(uc, c.OutboxKafka)
+	outboxKafkaWorker := worker.NewOutboxKafka(uc, c.OutboxKafkaWorker)
 
 	// Запускаем kafka consumer, который читает сообщения из kafka, обрабатывает его вызывая метод usecase, и делает commit
 	kafkaConsumer := kafkaconsumer.New(c.KafkaConsumer, uc)
@@ -54,7 +54,7 @@ func Run(ctx context.Context, c config.Config) error {
 	}
 
 	// GRPC
-	grpcServer, err := grpc.New(c.GRPC, uc)
+	grpcServer, err := grpc.New(c.GRPCServer, uc)
 	if err != nil {
 		return fmt.Errorf("grpc.New: %w", err)
 	}
@@ -63,7 +63,7 @@ func Run(ctx context.Context, c config.Config) error {
 	r := router.New()         // Создаем новый роутер chi
 	http.ProfileRouter(r, uc) // Прописываем ручки
 	// Создаем HTTP сервер, передавая в него роутер и используя данные из конфиг файла
-	httpServer := httpserver.New(r, c.HTTP)
+	httpServer := httpserver.New(r, c.HTTPServer)
 
 	log.Info().Msg("App started!")
 

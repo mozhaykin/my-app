@@ -9,15 +9,19 @@ import (
 
 var ErrNotFound = errors.New("not found")
 
+type Config struct {
+	Address string `envconfig:"HTTP_CLIENT_V2_ADDRESS" required:"true"`
+}
+
 type Client struct {
 	client *client.ClientWithResponses
 }
 
-func New(host string) (*Client, error) {
-	c, err := client.NewClientWithResponses(host)
+func New(c Config) (*Client, error) {
+	newClient, err := client.NewClientWithResponses(c.Address)
 	if err != nil {
 		return nil, fmt.Errorf("http_client.NewClient: %w", err)
 	}
 
-	return &Client{client: c}, nil
+	return &Client{client: newClient}, nil
 }
