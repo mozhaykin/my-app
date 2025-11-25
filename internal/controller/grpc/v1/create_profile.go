@@ -21,6 +21,8 @@ func (h Handlers) CreateProfile(ctx context.Context, in *pb.CreateProfileInput) 
 
 	output, err := h.usecase.CreateProfile(ctx, input)
 	if err != nil {
+		baggage.PutError(ctx, err)
+
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 

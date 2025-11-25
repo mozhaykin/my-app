@@ -27,6 +27,8 @@ func (h Handlers) UpdateProfile(ctx context.Context, in *pb.UpdateProfileInput) 
 
 	err := h.usecase.UpdateProfile(ctx, input)
 	if err != nil {
+		baggage.PutError(ctx, err)
+
 		switch {
 		case errors.Is(err, domain.ErrNotFound):
 			return nil, status.Error(codes.NotFound, err.Error())

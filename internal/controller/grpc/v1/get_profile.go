@@ -23,6 +23,8 @@ func (h Handlers) GetProfile(ctx context.Context, in *pb.GetProfileInput) (*pb.G
 
 	output, err := h.usecase.GetProfile(ctx, input)
 	if err != nil {
+		baggage.PutError(ctx, err)
+
 		switch {
 		case errors.Is(err, domain.ErrNotFound):
 			return nil, status.Error(codes.NotFound, err.Error())

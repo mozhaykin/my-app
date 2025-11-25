@@ -23,6 +23,8 @@ func (h Handlers) DeleteProfile(ctx context.Context, in *pb.DeleteProfileInput) 
 
 	err := h.usecase.DeleteProfile(ctx, input)
 	if err != nil {
+		baggage.PutError(ctx, err)
+
 		switch {
 		case errors.Is(err, domain.ErrNotFound):
 			return nil, status.Error(codes.NotFound, err.Error())
