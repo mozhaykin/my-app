@@ -2,7 +2,9 @@
 
 package test
 
-import "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclientv2"
+import (
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclientv2"
+)
 
 func (s *Suite) Test_GetProfiles_Ok() {
 	requestCreate1 := httpclientv2.CreateProfileRequest{

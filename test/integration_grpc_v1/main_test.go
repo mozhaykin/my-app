@@ -5,7 +5,6 @@ package test
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"testing"
 	"time"
 
@@ -25,7 +24,6 @@ import (
 )
 
 // make up 								поднимается база данных
-// migrate-up 							накатываются миграции
 // make test_integration_grpc_v1		запускаются тесты
 
 var ctx = context.Background()
@@ -90,29 +88,15 @@ func (s *Suite) SetupSuite() {
 
 	logger.Init(c.Logger)
 
-	// Подключение к базе для очистки таблиц перед каждым тестом
-	dsn := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		c.Postgres.Host,
-		c.Postgres.Port,
-		c.Postgres.User,
-		c.Postgres.Password,
-		c.Postgres.DBName,
-	)
-
-	db, err := sql.Open("postgres", dsn)
-	s.NoError(err)
-	s.db = db
-
-	err = s.db.Ping()
-	s.NoError(err)
+	// Подключение к базе и миграции
+	s.PrepareTestDB(c.Postgres)
 
 	// Kafka writer
 	s.kafkaWriter = &kafka.Writer{
 		Addr: kafka.TCP(c.KafkaProducer.Addr...),
 	}
 
-	// Server приложения
+	// Server
 	go func() {
 		err := app.Run(context.Background(), c)
 		s.NoError(err)
@@ -128,8 +112,11 @@ func (s *Suite) SetupSuite() {
 }
 
 // Запускается перед каждым кейсом
-func (s *Suite) SetupTest() {
-	// Очистка всех таблиц. Автоматически обходит все таблицы схемы и работает при любой структуре БД.
+func (s *Suite) SetupTest() {}
+
+// Запускается после каждого кейса
+func (s *Suite) TearDownTest() {
+	// Очистка данных из всех таблиц. Автоматически обходит все таблицы и работает при любой структуре БД.
 	_, err := s.db.Exec(`
 		DO $$
 		DECLARE
@@ -143,10 +130,7 @@ func (s *Suite) SetupTest() {
 	s.NoError(err)
 }
 
-// Запускается после каждого кейса (например очистить базу данных)
-func (s *Suite) TearDownTest() {}
-
-// Запускается один раз в вконце, после тестов (например закроет коннекшн к базе данных)
+// Запускается один раз в вконце, после тестов (например для закрытия коннекшн к базе данных)
 func (s *Suite) TearDownSuite() {
 	if s.db != nil {
 		_ = s.db.Close()

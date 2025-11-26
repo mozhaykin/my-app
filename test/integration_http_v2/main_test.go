@@ -5,27 +5,24 @@ package test
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"testing"
 	"time"
 
 	"github.com/segmentio/kafka-go"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/kafkaproducer"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/kafkaconsumer"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/worker"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclientv2"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
-
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/config"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/kafkaproducer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/app"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/kafkaconsumer"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/worker"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclientv2"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
 )
 
 // make up 								поднимается база данных
-// migrate-up 							накатываются миграции
 // make test_integration_http_v2 		запускаются тесты
 
 var ctx = context.Background()
@@ -40,6 +37,7 @@ type Suite struct {
 
 	profile     *httpclientv2.Client
 	kafkaWriter *kafka.Writer
+	kafkaReader *kafka.Reader
 	db          *sql.DB
 }
 
@@ -88,44 +86,41 @@ func (s *Suite) SetupSuite() {
 
 	logger.Init(c.Logger)
 
-	// Подключение к базе для очистки таблиц перед каждым тестом
-	dsn := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		c.Postgres.Host,
-		c.Postgres.Port,
-		c.Postgres.User,
-		c.Postgres.Password,
-		c.Postgres.DBName,
-	)
-
-	db, err := sql.Open("postgres", dsn)
-	s.NoError(err)
-	s.db = db
-
-	err = s.db.Ping()
-	s.NoError(err)
+	// Подключение к базе и миграции
+	s.PrepareTestDB(c.Postgres)
 
 	// Kafka writer
 	s.kafkaWriter = &kafka.Writer{
 		Addr: kafka.TCP(c.KafkaProducer.Addr...),
 	}
 
-	// Server с приложением
+	// Kafka reader
+	s.kafkaReader = kafka.NewReader(kafka.ReaderConfig{
+		Brokers: c.KafkaConsumer.Addr,
+		Topic:   c.KafkaConsumer.Topic,
+		GroupID: c.KafkaConsumer.Group,
+	})
+
+	// Server
 	go func() {
 		err := app.Run(context.Background(), c)
 		s.NoError(err)
 	}()
 
 	// Client V2
+	var err error
 	s.profile, err = httpclientv2.New(c.HTTPClientV2)
 	s.NoError(err)
 
-	time.Sleep(time.Second)
+	time.Sleep(time.Second) // Спим секунду, что горутина с сервером успела запуститься
 }
 
 // Запускается перед каждым кейсом
-func (s *Suite) SetupTest() {
-	// Очистка всех таблиц. Автоматически обходит все таблицы схемы и работает при любой структуре БД.
+func (s *Suite) SetupTest() {}
+
+// Запускается после каждого кейса
+func (s *Suite) TearDownTest() {
+	// Очистка данных из всех таблиц. Автоматически обходит все таблицы и работает при любой структуре БД.
 	_, err := s.db.Exec(`
 		DO $$
 		DECLARE
@@ -139,10 +134,7 @@ func (s *Suite) SetupTest() {
 	s.NoError(err)
 }
 
-// Запускается после каждого кейса
-func (s *Suite) TearDownTest() {}
-
-// Запускается один раз в вконце, после тестов (например закроет коннекшн к базе данных)
+// Запускается один раз в вконце, после тестов (например для закрытия коннекшн к базе данных)
 func (s *Suite) TearDownSuite() {
 	if s.db != nil {
 		_ = s.db.Close()

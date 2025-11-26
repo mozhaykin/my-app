@@ -62,6 +62,7 @@ func (d *GetProfilesDTO) Dest() []any {
 func (p *Postgres) GetProfiles(ctx context.Context, input dto.GetProfilesInput) ([]domain.Profile, error) {
 	sql := `SELECT id, created_at, updated_at, deleted_at, name, age, status, verified, contacts
                  FROM profile
+                 WHERE deleted_at IS NULL
                  ORDER BY %s %s
                  OFFSET %d
                  LIMIT %d`
