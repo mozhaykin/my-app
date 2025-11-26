@@ -2,22 +2,18 @@
 
 package test
 
-import (
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclientv2"
-)
-
 func (s *Suite) Test_CreateProfile() {
-	request := httpclientv2.CreateProfileRequest{
+	request := CreateProfileRequest{
 		Name:  "John_Create",
 		Age:   25,
 		Email: "7n1987@gmail.com",
 		Phone: "+79634813074",
 	}
 
-	id, err := s.profile.Create(ctx, request)
+	id, err := s.client.Create(ctx, request)
 	s.NoError(err)
 
-	p, err := s.profile.Get(ctx, id.String())
+	p, err := s.client.Get(ctx, id.String())
 	s.NoError(err)
 
 	s.Equal("John_Create", p.Name)
@@ -29,43 +25,43 @@ func (s *Suite) Test_CreateProfile() {
 }
 
 func (s *Suite) Test_CreateProfile_IsInvalid() {
-	request := httpclientv2.CreateProfileRequest{
+	request := CreateProfileRequest{
 		Name:  "",
 		Age:   25,
 		Email: "7n1987@gmail.com",
 		Phone: "+79634813074",
 	}
 
-	_, err := s.profile.Create(ctx, request)
+	_, err := s.client.Create(ctx, request)
 	s.ErrorContains(err, "validation")
 
-	request = httpclientv2.CreateProfileRequest{
+	request = CreateProfileRequest{
 		Name:  "John_Create",
 		Age:   17,
 		Email: "7n1987@gmail.com",
 		Phone: "+79634813074",
 	}
 
-	_, err = s.profile.Create(ctx, request)
+	_, err = s.client.Create(ctx, request)
 	s.ErrorContains(err, "validation")
 
-	request = httpclientv2.CreateProfileRequest{
+	request = CreateProfileRequest{
 		Name:  "John_Create",
 		Age:   25,
 		Email: "7n1987gmail.com",
 		Phone: "+79634813074",
 	}
 
-	_, err = s.profile.Create(ctx, request)
+	_, err = s.client.Create(ctx, request)
 	s.ErrorContains(err, "validation")
 
-	request = httpclientv2.CreateProfileRequest{
+	request = CreateProfileRequest{
 		Name:  "John_Create",
 		Age:   25,
 		Email: "7n1987@gmail.com",
 		Phone: "79634813074",
 	}
 
-	_, err = s.profile.Create(ctx, request)
+	_, err = s.client.Create(ctx, request)
 	s.ErrorContains(err, "validation")
 }

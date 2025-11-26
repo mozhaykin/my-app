@@ -27,6 +27,12 @@ import (
 
 var ctx = context.Background()
 
+type CreateProfileRequest = httpclientv2.CreateProfileRequest
+
+type GetProfilesRequest = httpclientv2.GetProfilesRequest
+
+type UpdateProfileRequest = httpclientv2.UpdateProfileRequest
+
 func Test_Integration(t *testing.T) {
 	suite.Run(t, &Suite{})
 }
@@ -35,7 +41,7 @@ type Suite struct {
 	suite.Suite
 	*require.Assertions
 
-	profile     *httpclientv2.Client
+	client      *httpclientv2.Client
 	kafkaWriter *kafka.Writer
 	kafkaReader *kafka.Reader
 	db          *sql.DB
@@ -109,7 +115,7 @@ func (s *Suite) SetupSuite() {
 
 	// Client V2
 	var err error
-	s.profile, err = httpclientv2.New(c.HTTPClientV2)
+	s.client, err = httpclientv2.New(c.HTTPClientV2)
 	s.NoError(err)
 
 	time.Sleep(time.Second) // Спим секунду, что горутина с сервером успела запуститься

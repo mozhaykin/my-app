@@ -28,6 +28,10 @@ import (
 
 var ctx = context.Background()
 
+type CreateProfileRequest = grpcclientv1.CreateProfileRequest
+
+type UpdateProfileRequest = grpcclientv1.UpdateProfileRequest
+
 func Test_Integration(t *testing.T) {
 	suite.Run(t, &Suite{})
 }
@@ -36,7 +40,7 @@ type Suite struct {
 	suite.Suite
 	*require.Assertions
 
-	profile     *grpcclientv1.Client
+	client      *grpcclientv1.Client
 	kafkaWriter *kafka.Writer
 	db          *sql.DB
 }
@@ -52,7 +56,6 @@ func (s *Suite) SetupSuite() {
 			Version: "test",
 		},
 		GRPCServer: grpc.Config{
-			Host: "localhost",
 			Port: "50051",
 		},
 		Logger: logger.Config{
@@ -103,10 +106,9 @@ func (s *Suite) SetupSuite() {
 	}()
 
 	// Client
-	client, err := grpcclientv1.New(c.GRPSClientV1)
+	var err error
+	s.client, err = grpcclientv1.New(c.GRPSClientV1)
 	s.NoError(err)
-
-	s.profile = client
 
 	time.Sleep(time.Second) // Спим секунду, что горутина с сервером успела запуститься
 }

@@ -13,10 +13,10 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
 )
 
-func (s *Suite) PrepareTestDB(cfg postgres.Config) {
+func (s *Suite) PrepareTestDB(c postgres.Config) {
 	dbURL := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.DBName,
+		c.User, c.Password, c.Host, c.Port, c.DBName,
 	)
 
 	filePath := "file://../../migration/postgres"

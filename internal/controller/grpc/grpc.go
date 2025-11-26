@@ -16,8 +16,7 @@ import (
 )
 
 type Config struct {
-	Host string `default:"localhost" envconfig:"HOST"`
-	Port string `default:"50051"     envconfig:"GRPC_PORT"`
+	Port string `default:"50051" envconfig:"GRPC_PORT"`
 }
 
 type Server struct {

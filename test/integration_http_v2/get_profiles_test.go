@@ -2,39 +2,35 @@
 
 package test
 
-import (
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclientv2"
-)
-
 func (s *Suite) Test_GetProfiles_Ok() {
-	requestCreate1 := httpclientv2.CreateProfileRequest{
+	requestCreate1 := CreateProfileRequest{
 		Name:  "John1_Get",
 		Age:   25,
 		Email: "7n1987@gmail.com",
 		Phone: "+79634813074",
 	}
 
-	requestCreate2 := httpclientv2.CreateProfileRequest{
+	requestCreate2 := CreateProfileRequest{
 		Name:  "John2_Get",
 		Age:   24,
 		Email: "1987@gmail.com",
 		Phone: "+79634813069",
 	}
 
-	_, err := s.profile.Create(ctx, requestCreate1)
+	_, err := s.client.Create(ctx, requestCreate1)
 	s.NoError(err)
 
-	_, err = s.profile.Create(ctx, requestCreate2)
+	_, err = s.client.Create(ctx, requestCreate2)
 	s.NoError(err)
 
-	requestGetProfiles := httpclientv2.GetProfilesRequest{
+	requestGet := GetProfilesRequest{
 		Sort:   "name",
 		Order:  "asc",
 		Offset: 0,
 		Limit:  10,
 	}
 
-	profiles, err := s.profile.GetProfiles(ctx, requestGetProfiles)
+	profiles, err := s.client.GetProfiles(ctx, requestGet)
 	s.NoError(err)
 
 	s.Equal(2, len(profiles))
@@ -55,23 +51,23 @@ func (s *Suite) Test_GetProfiles_Ok() {
 }
 
 func (s *Suite) Test_GetProfiles_NotFound() {
-	request := httpclientv2.GetProfilesRequest{
+	requestGet := GetProfilesRequest{
 		Sort:   "name",
 		Order:  "asc",
 		Offset: 0,
 		Limit:  10,
 	}
-	_, err := s.profile.GetProfiles(ctx, request)
+	_, err := s.client.GetProfiles(ctx, requestGet)
 	s.ErrorContains(err, "not found")
 }
 
 func (s *Suite) Test_GetProfiles_Input_IsInvalid() {
-	request := httpclientv2.GetProfilesRequest{
+	requestGet := GetProfilesRequest{
 		Sort:   "invalid",
 		Order:  "asc",
 		Offset: 0,
 		Limit:  10,
 	}
-	_, err := s.profile.GetProfiles(ctx, request)
+	_, err := s.client.GetProfiles(ctx, requestGet)
 	s.ErrorContains(err, "validation")
 }

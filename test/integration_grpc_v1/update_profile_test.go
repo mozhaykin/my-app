@@ -2,22 +2,18 @@
 
 package test
 
-import (
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/grpcclientv1"
-)
-
 func (s *Suite) Test_UpdateProfile() {
-	requestCreate := grpcclientv1.CreateProfileRequest{
+	requestCreate := CreateProfileRequest{
 		Name:  "John_Update",
 		Age:   25,
 		Email: "7n1987@gmail.com",
 		Phone: "+79634813074",
 	}
 
-	id, err := s.profile.Create(ctx, requestCreate)
+	id, err := s.client.Create(ctx, requestCreate)
 	s.NoError(err)
 
-	p, err := s.profile.Get(ctx, id.String())
+	p, err := s.client.Get(ctx, id.String())
 	s.NoError(err)
 
 	s.Equal("John_Update", p.Name)
@@ -34,7 +30,7 @@ func (s *Suite) Test_UpdateProfile() {
 		newPhone = "+79634813069"
 	)
 
-	requestUpdate := grpcclientv1.UpdateProfileRequest{
+	requestUpdate := UpdateProfileRequest{
 		ID:    id.String(),
 		Name:  &newName,
 		Age:   &newAge,
@@ -42,10 +38,10 @@ func (s *Suite) Test_UpdateProfile() {
 		Phone: &newPhone,
 	}
 
-	err = s.profile.Update(ctx, requestUpdate)
+	err = s.client.Update(ctx, requestUpdate)
 	s.NoError(err)
 
-	p, err = s.profile.Get(ctx, id.String())
+	p, err = s.client.Get(ctx, id.String())
 	s.NoError(err)
 
 	s.Equal("New_John_Update", p.Name)
@@ -64,7 +60,7 @@ func (s *Suite) Test_UpdateProfile_NotFound() {
 		newPhone = "+79634813069"
 	)
 
-	requestUpdate := grpcclientv1.UpdateProfileRequest{
+	requestUpdate := UpdateProfileRequest{
 		ID:    "c6799c89-c560-45a2-a3da-b3f1eb9bee2b",
 		Name:  &newName,
 		Age:   &newAge,
@@ -72,19 +68,19 @@ func (s *Suite) Test_UpdateProfile_NotFound() {
 		Phone: &newPhone,
 	}
 
-	err := s.profile.Update(ctx, requestUpdate)
+	err := s.client.Update(ctx, requestUpdate)
 	s.ErrorContains(err, "not found")
 }
 
 func (s *Suite) Test_UpdateProfile_NoChangesFound() {
-	requestCreate := grpcclientv1.CreateProfileRequest{
+	requestCreate := CreateProfileRequest{
 		Name:  "Ben_Update",
 		Age:   25,
 		Email: "7n1987@gmail.com",
 		Phone: "+79634813074",
 	}
 
-	id, err := s.profile.Create(ctx, requestCreate)
+	id, err := s.client.Create(ctx, requestCreate)
 	s.NoError(err)
 
 	var (
@@ -94,7 +90,7 @@ func (s *Suite) Test_UpdateProfile_NoChangesFound() {
 		newPhone = "+79634813074"
 	)
 
-	requestUpdate := grpcclientv1.UpdateProfileRequest{
+	requestUpdate := UpdateProfileRequest{
 		ID:    id.String(),
 		Name:  &newName,
 		Age:   &newAge,
@@ -102,12 +98,12 @@ func (s *Suite) Test_UpdateProfile_NoChangesFound() {
 		Phone: &newPhone,
 	}
 
-	err = s.profile.Update(ctx, requestUpdate)
+	err = s.client.Update(ctx, requestUpdate)
 	s.ErrorContains(err, "no changes found")
 }
 
 func (s *Suite) Test_UpdateProfile_AllFieldsAreEmpty() {
-	requestUpdate := grpcclientv1.UpdateProfileRequest{
+	requestUpdate := UpdateProfileRequest{
 		ID:    "c6799c89-c560-45a2-a3da-b3f1eb9bee2b",
 		Name:  nil,
 		Age:   nil,
@@ -115,7 +111,7 @@ func (s *Suite) Test_UpdateProfile_AllFieldsAreEmpty() {
 		Phone: nil,
 	}
 
-	err := s.profile.Update(ctx, requestUpdate)
+	err := s.client.Update(ctx, requestUpdate)
 	s.ErrorContains(err, "all fields for update are empty")
 }
 
@@ -127,7 +123,7 @@ func (s *Suite) Test_UpdateProfile_UUIDInvalid() {
 		newPhone = "+79634813069"
 	)
 
-	requestUpdate := grpcclientv1.UpdateProfileRequest{
+	requestUpdate := UpdateProfileRequest{
 		ID:    "c6799c89c560-45a2-a3da-b3f1eb9bee2b",
 		Name:  &newName,
 		Age:   &newAge,
@@ -135,6 +131,6 @@ func (s *Suite) Test_UpdateProfile_UUIDInvalid() {
 		Phone: &newPhone,
 	}
 
-	err := s.profile.Update(ctx, requestUpdate)
+	err := s.client.Update(ctx, requestUpdate)
 	s.ErrorContains(err, "uuid is invalid")
 }
