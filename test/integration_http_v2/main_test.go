@@ -112,13 +112,13 @@ func (s *Suite) SetupSuite() {
 	// Server
 	go func() {
 		err := app.Run(context.Background(), c)
-		s.NoError(err)
+		s.Require().NoError(err)
 	}()
 
 	// Client V2
 	var err error
 	s.client, err = httpclientv2.New(c.HTTPClientV2)
-	s.NoError(err)
+	s.Require().NoError(err)
 
 	time.Sleep(time.Second) // Спим секунду, что горутина с сервером успела запуститься
 }

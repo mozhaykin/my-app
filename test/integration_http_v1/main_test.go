@@ -106,7 +106,7 @@ func (s *Suite) SetupSuite() {
 	// Server
 	go func() {
 		err := app.Run(context.Background(), c)
-		s.NoError(err)
+		s.Require().NoError(err)
 	}()
 
 	// Client V1

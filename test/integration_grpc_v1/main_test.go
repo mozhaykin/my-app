@@ -104,13 +104,13 @@ func (s *Suite) SetupSuite() {
 	// Server
 	go func() {
 		err := app.Run(context.Background(), c)
-		s.NoError(err)
+		s.Require().NoError(err)
 	}()
 
 	// Client
 	var err error
 	s.client, err = grpcclientv1.New(c.GRPSClientV1)
-	s.NoError(err)
+	s.Require().NoError(err)
 
 	time.Sleep(time.Second) // Спим секунду, что горутина с сервером успела запуститься
 }
