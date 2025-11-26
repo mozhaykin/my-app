@@ -27,6 +27,8 @@ import (
 
 var ctx = context.Background()
 
+// Указываю типы здесь, чтобы все тесты были одинаковыми для всех протоколов, а различия были только
+// в файлах main_test.go
 type CreateProfileRequest = httpclientv2.CreateProfileRequest
 
 type GetProfilesRequest = httpclientv2.GetProfilesRequest

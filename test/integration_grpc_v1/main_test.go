@@ -28,6 +28,8 @@ import (
 
 var ctx = context.Background()
 
+// Указываю типы здесь для удобства, чтобы все тесты и миграции были одинаковыми для всех протоколов,
+// различия есть только в файлах main_test.go
 type CreateProfileRequest = grpcclientv1.CreateProfileRequest
 
 type UpdateProfileRequest = grpcclientv1.UpdateProfileRequest
