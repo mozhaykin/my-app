@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
@@ -22,39 +23,40 @@ func (u *UseCase) UpdateProfile(ctx context.Context, input dto.UpdateProfileInpu
 		return fmt.Errorf("uuid.Parse: %w", domain.ErrUUIDInvalid)
 	}
 
-	ctx, err = transaction.Begin(ctx)
+	err = transaction.Wrap(ctx, func(ctx context.Context) error {
+		profile, err := u.postgres.GetProfile(ctx, id)
+		if err != nil {
+			return fmt.Errorf("u.postgres.GetProfile: %w", err)
+		}
+
+		if profile.IsDeleted() {
+			return fmt.Errorf("profile.IsDeleted: %w", domain.ErrNotFound)
+		}
+
+		newProfile, err := update(profile, input)
+		if err != nil {
+			return fmt.Errorf("update: %w", err)
+		}
+
+		if newProfile == profile {
+			return domain.ErrNoChangesFound
+		}
+
+		err = u.postgres.UpdateProfile(ctx, newProfile)
+		if err != nil {
+			return fmt.Errorf("u.postgres.UpdateProfile: %w", err)
+		}
+
+		// Обновляем данные в Redis
+		err = u.redis.SetCache(ctx, newProfile)
+		if err != nil {
+			log.Error().Err(err).Str("profileID", profile.ID.String()).Msg("cache: UpdateProfile: set cache")
+		}
+
+		return nil
+	})
 	if err != nil {
-		return fmt.Errorf("transaction.Begin: %w", err)
-	}
-
-	defer transaction.Rollback(ctx)
-
-	profile, err := u.postgres.GetProfile(ctx, id)
-	if err != nil {
-		return fmt.Errorf("u.postgres.GetProfile: %w", err)
-	}
-
-	if profile.IsDeleted() {
-		return fmt.Errorf("profile.IsDeleted: %w", domain.ErrNotFound)
-	}
-
-	newProfile, err := update(profile, input)
-	if err != nil {
-		return fmt.Errorf("update: %w", err)
-	}
-
-	if newProfile == profile {
-		return domain.ErrNoChangesFound
-	}
-
-	err = u.postgres.UpdateProfile(ctx, newProfile)
-	if err != nil {
-		return fmt.Errorf("u.postgres.UpdateProfile: %w", err)
-	}
-
-	err = transaction.Commit(ctx)
-	if err != nil {
-		return fmt.Errorf("transaction.Commit: %w", err)
+		return fmt.Errorf("transaction.Wrap: %w", err)
 	}
 
 	return nil

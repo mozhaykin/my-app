@@ -1,6 +1,7 @@
 package usecase_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/google/uuid"
@@ -11,7 +12,6 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase/mocks"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
-	"golang.org/x/net/context"
 )
 
 // в usecase updateProfile, проверяем:
@@ -40,8 +40,13 @@ func Test_UpdateProfile_Success(t *testing.T) {
 	defer postgres.AssertCalled(t, "GetProfile", mock.Anything, id)
 	defer postgres.AssertCalled(t, "UpdateProfile", mock.Anything, mock.Anything)
 
+	// Настраиваем поведение Redis (так же как и у Postgres)
+	redis := new(mocks.Redis)
+	redis.On("SetCache", mock.Anything, mock.Anything).Return(nil)
+	defer redis.AssertCalled(t, "SetCache", mock.Anything, mock.Anything)
+
 	// создаём экземпляр UseCase, передавая в него мок базы
-	u := usecase.New(postgres, nil)
+	u := usecase.New(postgres, redis, nil)
 
 	{ // сам тест
 		var (
@@ -68,7 +73,7 @@ func Test_UpdateProfile_InvalidUUID(t *testing.T) {
 	// otel.SilentModeInit()
 	// т.к. при невалидном ID до похода в базу дело всеравно не дойдет, то моки здесь не нужны
 	// собираем UseCase
-	u := usecase.New(nil, nil)
+	u := usecase.New(nil, nil, nil)
 
 	{ // Сам тест
 		name := "John Doe"
@@ -86,9 +91,9 @@ func Test_UpdateProfile_InvalidUUID(t *testing.T) {
 
 func Test_UpdateProfile_AllFieldsAreEmpty(t *testing.T) {
 	// otel.SilentModeInit()
-	// т.к. при невалидном ID до похода в базу дело всеравно не дойдет, то моки здесь не нужны
+	// т.к. при невалидном запросе до похода в базу дело всеравно не дойдет, то моки здесь не нужны
 	// собираем UseCase
-	u := usecase.New(nil, nil)
+	u := usecase.New(nil, nil, nil)
 
 	{ // Сам тест
 		input := dto.UpdateProfileInput{ID: uuid.New().String()}
@@ -123,7 +128,7 @@ func Test_UpdateProfile_NoChanges(t *testing.T) {
 	defer postgres.AssertCalled(t, "GetProfile", mock.Anything, id)
 
 	// создаём экземпляр UseCase, передавая в него мок базы
-	u := usecase.New(postgres, nil)
+	u := usecase.New(postgres, nil, nil)
 
 	{ // сам тест
 		var (

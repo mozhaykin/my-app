@@ -3,12 +3,10 @@ package transaction
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/rs/zerolog/log"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
 )
@@ -24,64 +22,18 @@ var (
 	IsUnitTest bool
 )
 
-type ctxKey struct{}
-
 func Init(p *postgres.Pool) {
 	pool = p.Pool
 }
+
+type ctxKey struct{}
 
 type Transaction struct {
 	pgx.Tx
 }
 
-func Begin(ctx context.Context) (context.Context, error) {
-	if IsUnitTest {
-		return ctx, nil
-	}
-
-	if pool == nil {
-		return nil, errMissingInit
-	}
-
-	tx, err := pool.Begin(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("pool.Begin: %w", err)
-	}
-
-	ctx = context.WithValue(ctx, ctxKey{}, &Transaction{tx})
-
-	return ctx, nil
-}
-
-func Rollback(ctx context.Context) {
-	tx, ok := ctx.Value(ctxKey{}).(*Transaction)
-	if !ok {
-		return
-	}
-
-	err := tx.Rollback(ctx)
-	if err != nil && !errors.Is(err, pgx.ErrTxClosed) {
-		log.Error().Err(err).Msg("transaction: Rollback")
-	}
-}
-
-func Commit(ctx context.Context) error {
-	if IsUnitTest {
-		return nil
-	}
-
-	tx, ok := ctx.Value(ctxKey{}).(*Transaction)
-	if !ok {
-		return errMissingBegin
-	}
-
-	err := tx.Commit(ctx)
-	if err != nil {
-		return fmt.Errorf("tx.Commit: %w", err)
-	}
-
-	return nil
-}
+// Создаем интерфейс Executor, чтобы мы могли вернуть из функции TryExtractTX
+// хоть pgx.Tx, хоть *pgxpool.Pool, т.к. у них обоих есть эти нужные нам методы
 
 type Executor interface {
 	Exec(ctx context.Context, sql string, args ...any) (pgconn.CommandTag, error)
@@ -89,11 +41,17 @@ type Executor interface {
 	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
 }
 
+// Эта функция позволяет нам писать одинаковый код при запросах к базе данных в адаптерах,
+// независимо от того в транзакции мы хотим выполнять запрос или без.
+
 func TryExtractTX(ctx context.Context) Executor {
+	// Пробуем извлечь транзакцию
 	tx, ok := ctx.Value(ctxKey{}).(*Transaction)
+	// Если в ctx нет ключа с транзакцией, то возвращаем *pgxpool.Pool, чтобы запрос к базе был без транзакции
 	if !ok {
 		return pool
 	}
 
+	// Если ключ есть, то возвращаем pgx.Tx, чтобы запрос к базе был в транзакции
 	return tx
 }

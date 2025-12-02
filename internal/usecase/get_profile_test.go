@@ -1,16 +1,17 @@
 package usecase_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase/mocks"
-	"golang.org/x/net/context"
 )
 
 // в usecase getProfile, проверяем:
@@ -26,15 +27,24 @@ func Test_GetProfile_Success(t *testing.T) {
 	// создаём "фиктивный" профиль, который вернёт мок базы данных
 	profile := domain.Profile{ID: id}
 
-	// настраиваем поведение Postgres, создаём мок (заглушку) для Postgres
+	// Создаем ошибку которую вернет Redis, для того чтобы мы не вышли из основной функции раньше времени
+	// и выполнение кода продолжилось
+	SomeError := errors.New("SomeError")
+
+	// Настраиваем поведение Redis, создаём мок (заглушку)
+	redis := new(mocks.Redis)
+	redis.On("GetCache", mock.Anything, id).Return(profile, SomeError)
+	redis.On("SetCache", mock.Anything, profile).Return(nil)
+	defer redis.AssertCalled(t, "GetCache", mock.Anything, id)
+	defer redis.AssertCalled(t, "SetCache", mock.Anything, profile)
+
+	// Настраиваем поведение Postgres, создаём мок (заглушку)
 	postgres := new(mocks.Postgres)
-	// когда вызовут GetProfile(любой аргумент, id) → вернуть (profile, nil)
 	postgres.On("GetProfile", mock.Anything, id).Return(profile, nil)
-	// после теста проверим, что метод реально вызывался с нужными аргументами
 	defer postgres.AssertCalled(t, "GetProfile", mock.Anything, id)
 
-	// создаём экземпляр UseCase, передавая в него мок базы
-	u := usecase.New(postgres, nil)
+	// создаём экземпляр UseCase, передавая в него моки
+	u := usecase.New(postgres, redis, nil)
 
 	{ // сам тест
 		input := dto.GetProfileInput{ID: id.String()}
@@ -48,9 +58,9 @@ func Test_GetProfile_Success(t *testing.T) {
 
 func Test_GetProfile_InvalidUUID(t *testing.T) {
 	// otel.SilentModeInit()
-	// т.к. при невалидном ID до похода в базу дело всеравно не дойдет, то моки здесь не нужны
+	// т.к. при невалидном ID до похода в Redis или базу дело всеравно не дойдет, то моки здесь не нужны
 	// Собираем UseCase
-	u := usecase.New(nil, nil)
+	u := usecase.New(nil, nil, nil)
 
 	{ // Сам тест
 		input := dto.GetProfileInput{ID: "invalid-uuid"} // невалидное значение id

@@ -19,39 +19,34 @@ func (u *UseCase) CreateProfile(ctx context.Context, input dto.CreateProfileInpu
 		return output, fmt.Errorf("domain.NewProfile: %w", err)
 	}
 
+	property := domain.NewProperty(profile.ID, []string{"home", "primary"})
+
 	event, err := profile.ToEvent("awesome-topic")
 	if err != nil {
 		return output, fmt.Errorf("profile.ToEvent: %w", err)
 	}
 
-	property := domain.NewProperty(profile.ID, []string{"home", "primary"})
+	err = transaction.Wrap(ctx, func(ctx context.Context) error {
+		err = u.postgres.CreateProfile(ctx, profile)
+		if err != nil {
+			return fmt.Errorf("u.postgres.CreateProfile: %w", err)
+		}
 
-	ctx, err = transaction.Begin(ctx)
+		err = u.postgres.CreateProperty(ctx, property)
+		if err != nil {
+			return fmt.Errorf("u.postgres.CreateProperty: %w", err)
+		}
+
+		// Дополнительная запись profile в таблицу Outbox (из которой читает воркер и гарантировано отправляет в Кафку)
+		err = u.postgres.SaveOutboxKafka(ctx, event)
+		if err != nil {
+			return fmt.Errorf("u.postgres.SaveOutboxKafka: %w", err)
+		}
+
+		return nil
+	})
 	if err != nil {
-		return output, fmt.Errorf("transaction.Begin: %w", err)
-	}
-
-	defer transaction.Rollback(ctx)
-
-	err = u.postgres.CreateProfile(ctx, profile)
-	if err != nil {
-		return output, fmt.Errorf("u.postgres.CreateProfile: %w", err)
-	}
-
-	err = u.postgres.CreateProperty(ctx, property)
-	if err != nil {
-		return output, fmt.Errorf("u.postgres.CreateProperty: %w", err)
-	}
-
-	// Дополнительная запись profile в таблицу Outbox (из которой читает воркер и гарантировано отправляет в Кафку)
-	err = u.postgres.SaveOutboxKafka(ctx, event)
-	if err != nil {
-		return output, fmt.Errorf("u.postgres.SaveOutboxKafka: %w", err)
-	}
-
-	err = transaction.Commit(ctx)
-	if err != nil {
-		return output, fmt.Errorf("transaction.Commit: %w", err)
+		return output, fmt.Errorf("transaction.Wrap: %w", err)
 	}
 
 	return dto.CreateProfileOutput{

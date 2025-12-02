@@ -12,6 +12,7 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/config"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/kafkaproducer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/postgres"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/redis"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/grpc"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/http"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/kafkaconsumer"
@@ -19,6 +20,7 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
 	pgpool "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
+	redislib "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/redis"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/router"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
 )
@@ -32,12 +34,18 @@ func Run(ctx context.Context, c config.Config) error {
 
 	transaction.Init(pgPool)
 
-	// Kafka producer (устанавливаем соединение адаптера producer с kafka)
+	// Redis
+	redisClient, err := redislib.New(c.Redis)
+	if err != nil {
+		return fmt.Errorf("redis.New: %w", err)
+	}
+
 	kafkaProducer := kafkaproducer.New(c.KafkaProducer)
 
 	// Создаем UseCase (передаем в структуру интерфейсы с методами которые вызываются в юзкейсах)
 	uc := usecase.New(
 		postgres.New(),
+		redis.New(redisClient),
 		kafkaProducer,
 	)
 
@@ -81,8 +89,9 @@ func Run(ctx context.Context, c config.Config) error {
 	httpServer.Close()
 
 	// Adapters close
-	pgPool.Close()
+	redisClient.Close()
 	kafkaProducer.Close()
+	pgPool.Close()
 
 	log.Info().Msg("App stopped!")
 

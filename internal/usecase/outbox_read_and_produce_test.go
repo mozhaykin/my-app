@@ -29,7 +29,7 @@ func Test_OutboxReadAndProduce_Success(t *testing.T) {
 	defer kafka.AssertCalled(t, "Produce", mock.Anything, mock.Anything)
 
 	// Создаём экземпляр UseCase, передавая в него мок базы
-	u := usecase.New(postgres, kafka)
+	u := usecase.New(postgres, nil, kafka)
 
 	{ // Сам тест
 		count, err := u.OutboxReadAndProduce(context.Background(), 10)

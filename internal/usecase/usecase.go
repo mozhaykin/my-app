@@ -23,18 +23,26 @@ type Postgres interface {
 	ReadOutboxKafka(ctx context.Context, limit int) ([]domain.Event, error)
 }
 
+type Redis interface {
+	GetCache(context.Context, uuid.UUID) (domain.Profile, error)
+	SetCache(context.Context, domain.Profile) error
+	DeleteCache(context.Context, uuid.UUID) error
+}
+
 type Kafka interface {
 	Produce(ctx context.Context, events ...domain.Event) error
 }
 
 type UseCase struct {
 	postgres Postgres
+	redis    Redis
 	kafka    Kafka
 }
 
-func New(postgres Postgres, kafka Kafka) *UseCase {
+func New(postgres Postgres, redis Redis, kafka Kafka) *UseCase {
 	return &UseCase{
 		postgres: postgres,
+		redis:    redis,
 		kafka:    kafka,
 	}
 }

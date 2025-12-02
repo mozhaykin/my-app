@@ -24,6 +24,9 @@ func (u *UseCase) GetProfiles(ctx context.Context, input dto.GetProfilesInput) (
 		input.Order = "asc"
 	}
 
+	// Будем считать что запрос на получение нескольких профилей сразу редкий, поэтому
+	// в Redis данные не проверяем, а сразу идем в базу
+
 	profiles, err := u.postgres.GetProfiles(ctx, input)
 	if err != nil {
 		return output, fmt.Errorf("u.postgres.GetProfiles: %w", err)

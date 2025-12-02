@@ -1,40 +1,38 @@
 package usecase
 
 import (
+	"context"
 	"fmt"
 
-	"golang.org/x/net/context"
+	"github.com/rs/zerolog/log"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
 )
 
 //nolint:nonamedreturns
-func (u *UseCase) OutboxReadAndProduce(ctx context.Context, limit int) (count int, err error) {
-	ctx, err = transaction.Begin(ctx)
+func (u *UseCase) OutboxReadAndProduce(ctx context.Context, limit int) (batchSize int, err error) {
+	err = transaction.Wrap(ctx, func(ctx context.Context) error {
+		// Читаем сообщения из outbox таблицы БД
+		batch, err := u.postgres.ReadOutboxKafka(ctx, limit)
+		if err != nil {
+			return fmt.Errorf("u.postgres.ReadOutboxKafka: %w", err)
+		}
+
+		batchSize = len(batch)
+
+		// Пишем в Kafka
+		err = u.kafka.Produce(ctx, batch...)
+		if err != nil {
+			return fmt.Errorf("u.kafka.Produce: %w", err)
+		}
+
+		return nil
+	})
 	if err != nil {
-		return count, fmt.Errorf("transaction.Begin: %w", err)
+		return batchSize, fmt.Errorf("transaction.Wrap: %w", err)
 	}
 
-	defer transaction.Rollback(ctx)
+	log.Info().Int("msgs", batchSize).Msg("outbox kafka read and produce")
 
-	// Читаем сообщения из outbox таблицы БД
-	msgs, err := u.postgres.ReadOutboxKafka(ctx, limit)
-	if err != nil {
-		return count, fmt.Errorf("u.postgres.ReadOutboxKafka: %w", err)
-	}
-
-	count = len(msgs)
-
-	// Пишем в Kafka
-	err = u.kafka.Produce(ctx, msgs...)
-	if err != nil {
-		return count, fmt.Errorf("u.kafka.Produce: %w", err)
-	}
-
-	err = transaction.Commit(ctx)
-	if err != nil {
-		return count, fmt.Errorf("transaction.Commit: %w", err)
-	}
-
-	return count, nil
+	return batchSize, nil
 }

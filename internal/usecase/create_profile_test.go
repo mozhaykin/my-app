@@ -1,6 +1,7 @@
 package usecase_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/mock"
@@ -9,7 +10,6 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase/mocks"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
-	"golang.org/x/net/context"
 )
 
 // в usecase createProfile проверяем только успешный кейс
@@ -34,7 +34,7 @@ func Test_CreateProfile_Success(t *testing.T) {
 	defer postgres.AssertCalled(t, "SaveOutboxKafka", mock.Anything, mock.Anything)
 
 	// создаём экземпляр UseCase, передавая в него мок базы
-	u := usecase.New(postgres, nil)
+	u := usecase.New(postgres, nil, nil)
 
 	{ // сам тест
 		input := dto.CreateProfileInput{
