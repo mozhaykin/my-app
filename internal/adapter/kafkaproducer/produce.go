@@ -7,7 +7,6 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/segmentio/kafka-go"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
 )
 
@@ -36,21 +35,8 @@ func New(c Config) *Producer {
 	}
 }
 
-func (p *Producer) Produce(ctx context.Context, events ...domain.Event) error {
-	//nolint:prealloc
-	var msgs []kafka.Message
-
-	for _, event := range events {
-		msg := kafka.Message{
-			Topic: event.Topic,
-			Key:   event.Key,
-			Value: event.Value,
-		}
-
-		msgs = append(msgs, msg)
-	}
-
-	err := p.writer.WriteMessages(ctx, msgs...)
+func (p *Producer) Produce(ctx context.Context, messages ...kafka.Message) error {
+	err := p.writer.WriteMessages(ctx, messages...)
 	if err != nil {
 		return fmt.Errorf("p.writer.WriteMessages: %w", err)
 	}

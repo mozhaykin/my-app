@@ -4,28 +4,29 @@ import (
 	"fmt"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/segmentio/kafka-go"
 	"golang.org/x/net/context"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
 )
 
-func (p *Postgres) SaveOutboxKafka(ctx context.Context, events ...domain.Event) error {
-	if len(events) == 0 {
+func (p *Postgres) SaveOutboxKafka(ctx context.Context, messages ...kafka.Message) error {
+	if len(messages) == 0 {
 		return nil
 	}
 
-	batch := make([]any, 0, len(events))
+	batch := make([]any, 0, len(messages))
 
-	for _, event := range events {
-		if event.Topic == "" {
+	for _, msg := range messages {
+		if msg.Topic == "" {
 			return domain.ErrEmptyTopic
 		}
 
 		batch = append(batch, goqu.Record{
-			"topic": event.Topic,
-			"key":   event.Key,
-			"value": event.Value,
+			"topic": msg.Topic,
+			"key":   msg.Key,
+			"value": msg.Value,
 		})
 	}
 

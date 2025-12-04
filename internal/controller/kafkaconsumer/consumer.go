@@ -2,13 +2,16 @@ package kafkaconsumer
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"time"
 
 	"github.com/rs/zerolog/log"
 	"github.com/segmentio/kafka-go"
 
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
 )
@@ -75,7 +78,18 @@ FOR:
 
 		log.Info().Str("key", string(m.Key)).Msg("kafka consumer: message received")
 
-		// Тут вызываем метод из usecase для обработки сообщения
+		// Тут по идее нужно вызывать метод из usecase для обработки сообщения
+		// Я же просто печатаю сообщение
+		var p domain.Profile
+
+		err = json.Unmarshal(m.Value, &p)
+		if err != nil {
+			log.Error().Err(err).Msg("kafka consumer: json.Unmarshal")
+		}
+
+		fmt.Printf("Topic: %s, Partition: %d, Offset: %d, Key: %s\n", m.Topic, m.Partition, m.Offset, string(m.Key))
+
+		fmt.Printf("Profile: %+v\n", p)
 
 		// Коммитим оффсет в consumer group
 		err = c.reader.CommitMessages(ctx, m)

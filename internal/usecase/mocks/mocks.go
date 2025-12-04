@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/segmentio/kafka-go"
 	mock "github.com/stretchr/testify/mock"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
@@ -291,23 +292,23 @@ func (_c *Postgres_GetProfiles_Call) RunAndReturn(run func(ctx context.Context, 
 }
 
 // ReadOutboxKafka provides a mock function for the type Postgres
-func (_mock *Postgres) ReadOutboxKafka(ctx context.Context, limit int) ([]domain.Event, error) {
+func (_mock *Postgres) ReadOutboxKafka(ctx context.Context, limit int) ([]kafka.Message, error) {
 	ret := _mock.Called(ctx, limit)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ReadOutboxKafka")
 	}
 
-	var r0 []domain.Event
+	var r0 []kafka.Message
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int) ([]domain.Event, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int) ([]kafka.Message, error)); ok {
 		return returnFunc(ctx, limit)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int) []domain.Event); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int) []kafka.Message); ok {
 		r0 = returnFunc(ctx, limit)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.Event)
+			r0 = ret.Get(0).([]kafka.Message)
 		}
 	}
 	if returnFunc, ok := ret.Get(1).(func(context.Context, int) error); ok {
@@ -337,18 +338,18 @@ func (_c *Postgres_ReadOutboxKafka_Call) Run(run func(ctx context.Context, limit
 	return _c
 }
 
-func (_c *Postgres_ReadOutboxKafka_Call) Return(events []domain.Event, err error) *Postgres_ReadOutboxKafka_Call {
-	_c.Call.Return(events, err)
+func (_c *Postgres_ReadOutboxKafka_Call) Return(messages []kafka.Message, err error) *Postgres_ReadOutboxKafka_Call {
+	_c.Call.Return(messages, err)
 	return _c
 }
 
-func (_c *Postgres_ReadOutboxKafka_Call) RunAndReturn(run func(ctx context.Context, limit int) ([]domain.Event, error)) *Postgres_ReadOutboxKafka_Call {
+func (_c *Postgres_ReadOutboxKafka_Call) RunAndReturn(run func(ctx context.Context, limit int) ([]kafka.Message, error)) *Postgres_ReadOutboxKafka_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // SaveOutboxKafka provides a mock function for the type Postgres
-func (_mock *Postgres) SaveOutboxKafka(ctx context.Context, events ...domain.Event) error {
+func (_mock *Postgres) SaveOutboxKafka(ctx context.Context, events ...kafka.Message) error {
 	var tmpRet mock.Arguments
 	if len(events) > 0 {
 		tmpRet = _mock.Called(ctx, events)
@@ -362,7 +363,7 @@ func (_mock *Postgres) SaveOutboxKafka(ctx context.Context, events ...domain.Eve
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, ...domain.Event) error); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, ...kafka.Message) error); ok {
 		r0 = returnFunc(ctx, events...)
 	} else {
 		r0 = ret.Error(0)
@@ -383,9 +384,9 @@ func (_e *Postgres_Expecter) SaveOutboxKafka(ctx interface{}, events ...interfac
 		append([]interface{}{ctx}, events...)...)}
 }
 
-func (_c *Postgres_SaveOutboxKafka_Call) Run(run func(ctx context.Context, events ...domain.Event)) *Postgres_SaveOutboxKafka_Call {
+func (_c *Postgres_SaveOutboxKafka_Call) Run(run func(ctx context.Context, events ...kafka.Message)) *Postgres_SaveOutboxKafka_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		variadicArgs := args[1].([]domain.Event)
+		variadicArgs := args[1].([]kafka.Message)
 		run(args[0].(context.Context), variadicArgs...)
 	})
 	return _c
@@ -396,7 +397,7 @@ func (_c *Postgres_SaveOutboxKafka_Call) Return(err error) *Postgres_SaveOutboxK
 	return _c
 }
 
-func (_c *Postgres_SaveOutboxKafka_Call) RunAndReturn(run func(ctx context.Context, events ...domain.Event) error) *Postgres_SaveOutboxKafka_Call {
+func (_c *Postgres_SaveOutboxKafka_Call) RunAndReturn(run func(ctx context.Context, events ...kafka.Message) error) *Postgres_SaveOutboxKafka_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -475,8 +476,8 @@ func (_m *Redis) EXPECT() *Redis_Expecter {
 }
 
 // DeleteCache provides a mock function for the type Redis
-func (_mock *Redis) DeleteCache(context1 context.Context, uUID uuid.UUID) error {
-	ret := _mock.Called(context1, uUID)
+func (_mock *Redis) DeleteCache(ctx context.Context, id uuid.UUID) error {
+	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteCache")
@@ -484,7 +485,7 @@ func (_mock *Redis) DeleteCache(context1 context.Context, uUID uuid.UUID) error 
 
 	var r0 error
 	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) error); ok {
-		r0 = returnFunc(context1, uUID)
+		r0 = returnFunc(ctx, id)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -497,13 +498,13 @@ type Redis_DeleteCache_Call struct {
 }
 
 // DeleteCache is a helper method to define mock.On call
-//   - context1
-//   - uUID
-func (_e *Redis_Expecter) DeleteCache(context1 interface{}, uUID interface{}) *Redis_DeleteCache_Call {
-	return &Redis_DeleteCache_Call{Call: _e.mock.On("DeleteCache", context1, uUID)}
+//   - ctx
+//   - id
+func (_e *Redis_Expecter) DeleteCache(ctx interface{}, id interface{}) *Redis_DeleteCache_Call {
+	return &Redis_DeleteCache_Call{Call: _e.mock.On("DeleteCache", ctx, id)}
 }
 
-func (_c *Redis_DeleteCache_Call) Run(run func(context1 context.Context, uUID uuid.UUID)) *Redis_DeleteCache_Call {
+func (_c *Redis_DeleteCache_Call) Run(run func(ctx context.Context, id uuid.UUID)) *Redis_DeleteCache_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(uuid.UUID))
 	})
@@ -515,14 +516,14 @@ func (_c *Redis_DeleteCache_Call) Return(err error) *Redis_DeleteCache_Call {
 	return _c
 }
 
-func (_c *Redis_DeleteCache_Call) RunAndReturn(run func(context1 context.Context, uUID uuid.UUID) error) *Redis_DeleteCache_Call {
+func (_c *Redis_DeleteCache_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *Redis_DeleteCache_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetCache provides a mock function for the type Redis
-func (_mock *Redis) GetCache(context1 context.Context, uUID uuid.UUID) (domain.Profile, error) {
-	ret := _mock.Called(context1, uUID)
+func (_mock *Redis) GetCache(ctx context.Context, id uuid.UUID) (domain.Profile, error) {
+	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetCache")
@@ -531,15 +532,15 @@ func (_mock *Redis) GetCache(context1 context.Context, uUID uuid.UUID) (domain.P
 	var r0 domain.Profile
 	var r1 error
 	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) (domain.Profile, error)); ok {
-		return returnFunc(context1, uUID)
+		return returnFunc(ctx, id)
 	}
 	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) domain.Profile); ok {
-		r0 = returnFunc(context1, uUID)
+		r0 = returnFunc(ctx, id)
 	} else {
 		r0 = ret.Get(0).(domain.Profile)
 	}
 	if returnFunc, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
-		r1 = returnFunc(context1, uUID)
+		r1 = returnFunc(ctx, id)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -552,13 +553,13 @@ type Redis_GetCache_Call struct {
 }
 
 // GetCache is a helper method to define mock.On call
-//   - context1
-//   - uUID
-func (_e *Redis_Expecter) GetCache(context1 interface{}, uUID interface{}) *Redis_GetCache_Call {
-	return &Redis_GetCache_Call{Call: _e.mock.On("GetCache", context1, uUID)}
+//   - ctx
+//   - id
+func (_e *Redis_Expecter) GetCache(ctx interface{}, id interface{}) *Redis_GetCache_Call {
+	return &Redis_GetCache_Call{Call: _e.mock.On("GetCache", ctx, id)}
 }
 
-func (_c *Redis_GetCache_Call) Run(run func(context1 context.Context, uUID uuid.UUID)) *Redis_GetCache_Call {
+func (_c *Redis_GetCache_Call) Run(run func(ctx context.Context, id uuid.UUID)) *Redis_GetCache_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(uuid.UUID))
 	})
@@ -570,14 +571,14 @@ func (_c *Redis_GetCache_Call) Return(profile domain.Profile, err error) *Redis_
 	return _c
 }
 
-func (_c *Redis_GetCache_Call) RunAndReturn(run func(context1 context.Context, uUID uuid.UUID) (domain.Profile, error)) *Redis_GetCache_Call {
+func (_c *Redis_GetCache_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (domain.Profile, error)) *Redis_GetCache_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // SetCache provides a mock function for the type Redis
-func (_mock *Redis) SetCache(context1 context.Context, profile domain.Profile) error {
-	ret := _mock.Called(context1, profile)
+func (_mock *Redis) SetCache(ctx context.Context, profile domain.Profile) error {
+	ret := _mock.Called(ctx, profile)
 
 	if len(ret) == 0 {
 		panic("no return value specified for SetCache")
@@ -585,7 +586,7 @@ func (_mock *Redis) SetCache(context1 context.Context, profile domain.Profile) e
 
 	var r0 error
 	if returnFunc, ok := ret.Get(0).(func(context.Context, domain.Profile) error); ok {
-		r0 = returnFunc(context1, profile)
+		r0 = returnFunc(ctx, profile)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -598,13 +599,13 @@ type Redis_SetCache_Call struct {
 }
 
 // SetCache is a helper method to define mock.On call
-//   - context1
+//   - ctx
 //   - profile
-func (_e *Redis_Expecter) SetCache(context1 interface{}, profile interface{}) *Redis_SetCache_Call {
-	return &Redis_SetCache_Call{Call: _e.mock.On("SetCache", context1, profile)}
+func (_e *Redis_Expecter) SetCache(ctx interface{}, profile interface{}) *Redis_SetCache_Call {
+	return &Redis_SetCache_Call{Call: _e.mock.On("SetCache", ctx, profile)}
 }
 
-func (_c *Redis_SetCache_Call) Run(run func(context1 context.Context, profile domain.Profile)) *Redis_SetCache_Call {
+func (_c *Redis_SetCache_Call) Run(run func(ctx context.Context, profile domain.Profile)) *Redis_SetCache_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(domain.Profile))
 	})
@@ -616,7 +617,7 @@ func (_c *Redis_SetCache_Call) Return(err error) *Redis_SetCache_Call {
 	return _c
 }
 
-func (_c *Redis_SetCache_Call) RunAndReturn(run func(context1 context.Context, profile domain.Profile) error) *Redis_SetCache_Call {
+func (_c *Redis_SetCache_Call) RunAndReturn(run func(ctx context.Context, profile domain.Profile) error) *Redis_SetCache_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -649,7 +650,7 @@ func (_m *Kafka) EXPECT() *Kafka_Expecter {
 }
 
 // Produce provides a mock function for the type Kafka
-func (_mock *Kafka) Produce(ctx context.Context, events ...domain.Event) error {
+func (_mock *Kafka) Produce(ctx context.Context, events ...kafka.Message) error {
 	var tmpRet mock.Arguments
 	if len(events) > 0 {
 		tmpRet = _mock.Called(ctx, events)
@@ -663,7 +664,7 @@ func (_mock *Kafka) Produce(ctx context.Context, events ...domain.Event) error {
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, ...domain.Event) error); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, ...kafka.Message) error); ok {
 		r0 = returnFunc(ctx, events...)
 	} else {
 		r0 = ret.Error(0)
@@ -684,9 +685,9 @@ func (_e *Kafka_Expecter) Produce(ctx interface{}, events ...interface{}) *Kafka
 		append([]interface{}{ctx}, events...)...)}
 }
 
-func (_c *Kafka_Produce_Call) Run(run func(ctx context.Context, events ...domain.Event)) *Kafka_Produce_Call {
+func (_c *Kafka_Produce_Call) Run(run func(ctx context.Context, events ...kafka.Message)) *Kafka_Produce_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		variadicArgs := args[1].([]domain.Event)
+		variadicArgs := args[1].([]kafka.Message)
 		run(args[0].(context.Context), variadicArgs...)
 	})
 	return _c
@@ -697,7 +698,7 @@ func (_c *Kafka_Produce_Call) Return(err error) *Kafka_Produce_Call {
 	return _c
 }
 
-func (_c *Kafka_Produce_Call) RunAndReturn(run func(ctx context.Context, events ...domain.Event) error) *Kafka_Produce_Call {
+func (_c *Kafka_Produce_Call) RunAndReturn(run func(ctx context.Context, events ...kafka.Message) error) *Kafka_Produce_Call {
 	_c.Call.Return(run)
 	return _c
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
+	"github.com/segmentio/kafka-go"
 )
 
 // Сущность (структура) которая располагается в базе данных
@@ -70,13 +71,13 @@ func (p Profile) IsDeleted() bool {
 	return !p.DeletedAt.IsZero()
 }
 
-func (p Profile) ToEvent(topic string) (Event, error) {
+func (p Profile) ToKafkaMsg(topic string) (kafka.Message, error) {
 	value, err := json.Marshal(p)
 	if err != nil {
-		return Event{}, fmt.Errorf("json.Marshal: %w", err)
+		return kafka.Message{}, fmt.Errorf("json.Marshal: %w", err)
 	}
 
-	return Event{
+	return kafka.Message{
 		Topic: topic,
 		Key:   []byte(p.ID.String()),
 		Value: value,

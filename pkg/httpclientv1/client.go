@@ -10,8 +10,8 @@ import (
 var ErrNotFound = errors.New("not found")
 
 type Config struct {
-	Host string `default:"localhost" envconfig:"HTTP_CLIENT_HOST"`
-	Port string `default:"8080"      envconfig:"HTTP_CLIENT_PORT"`
+	Host string `default:"localhost" envconfig:"HTTP_CLIENT_V1_HOST"`
+	Port string `default:"8080"      envconfig:"HTTP_CLIENT_V1_PORT"`
 }
 type Client struct {
 	client http.Client

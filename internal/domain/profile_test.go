@@ -1,6 +1,7 @@
 package domain_test
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -50,4 +51,44 @@ func TestProfile_IsDeleted(t *testing.T) {
 
 	p.DeletedAt = time.Now()
 	require.True(t, p.IsDeleted())
+}
+
+func TestProfile_ToKafkaMsg(t *testing.T) {
+	id := uuid.New()
+	p := domain.Profile{
+		ID:        id,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name:      domain.Name("John"),
+		Age:       domain.Age(30),
+		Status:    domain.Status(1),
+		Verified:  true,
+		Contacts: domain.Contacts{
+			Phone: "+79123456789",
+			Email: "test@example.com",
+		},
+	}
+
+	topic := "profile.created"
+
+	msg, err := p.ToKafkaMsg(topic)
+	require.NoError(t, err)
+
+	require.Equal(t, topic, msg.Topic)
+	require.Equal(t, []byte(id.String()), msg.Key)
+
+	// Проверяем, что JSON идентичен ожидаемому
+	var decoded domain.Profile
+	err = json.Unmarshal(msg.Value, &decoded)
+	require.NoError(t, err)
+	require.Equal(t, p.ID, decoded.ID)
+	require.Equal(t, p.Name, decoded.Name)
+	require.Equal(t, p.Age, decoded.Age)
+	require.Equal(t, p.Status, decoded.Status)
+	require.Equal(t, p.Verified, decoded.Verified)
+	require.Equal(t, p.Contacts, decoded.Contacts)
+	// т.к. во время теста время меняется (на наносекунды),
+	// то чтобы тест прошел без ошибок, сравниваем время с округлением до секунды
+	require.WithinDuration(t, p.CreatedAt, decoded.CreatedAt, time.Second)
+	require.WithinDuration(t, p.UpdatedAt, decoded.UpdatedAt, time.Second)
 }

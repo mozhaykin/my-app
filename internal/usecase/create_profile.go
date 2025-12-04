@@ -21,7 +21,7 @@ func (u *UseCase) CreateProfile(ctx context.Context, input dto.CreateProfileInpu
 
 	property := domain.NewProperty(profile.ID, []string{"home", "primary"})
 
-	event, err := profile.ToEvent("awesome-topic")
+	kafkaMsg, err := profile.ToKafkaMsg("awesome-topic")
 	if err != nil {
 		return output, fmt.Errorf("profile.ToEvent: %w", err)
 	}
@@ -38,7 +38,7 @@ func (u *UseCase) CreateProfile(ctx context.Context, input dto.CreateProfileInpu
 		}
 
 		// Дополнительная запись profile в таблицу Outbox (из которой читает воркер и гарантировано отправляет в Кафку)
-		err = u.postgres.SaveOutboxKafka(ctx, event)
+		err = u.postgres.SaveOutboxKafka(ctx, kafkaMsg)
 		if err != nil {
 			return fmt.Errorf("u.postgres.SaveOutboxKafka: %w", err)
 		}

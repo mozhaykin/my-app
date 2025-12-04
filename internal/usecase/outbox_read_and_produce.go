@@ -10,18 +10,18 @@ import (
 )
 
 //nolint:nonamedreturns
-func (u *UseCase) OutboxReadAndProduce(ctx context.Context, limit int) (batchSize int, err error) {
+func (u *UseCase) OutboxReadAndProduce(ctx context.Context, limit int) (messageCount int, err error) {
 	err = transaction.Wrap(ctx, func(ctx context.Context) error {
 		// Читаем сообщения из outbox таблицы БД
-		batch, err := u.postgres.ReadOutboxKafka(ctx, limit)
+		messages, err := u.postgres.ReadOutboxKafka(ctx, limit)
 		if err != nil {
 			return fmt.Errorf("u.postgres.ReadOutboxKafka: %w", err)
 		}
 
-		batchSize = len(batch)
+		messageCount = len(messages)
 
 		// Пишем в Kafka
-		err = u.kafka.Produce(ctx, batch...)
+		err = u.kafka.Produce(ctx, messages...)
 		if err != nil {
 			return fmt.Errorf("u.kafka.Produce: %w", err)
 		}
@@ -29,10 +29,10 @@ func (u *UseCase) OutboxReadAndProduce(ctx context.Context, limit int) (batchSiz
 		return nil
 	})
 	if err != nil {
-		return batchSize, fmt.Errorf("transaction.Wrap: %w", err)
+		return messageCount, fmt.Errorf("transaction.Wrap: %w", err)
 	}
 
-	log.Info().Int("msgs", batchSize).Msg("outbox kafka read and produce")
+	log.Info().Int("msgs", messageCount).Msg("outbox kafka read and produce")
 
-	return batchSize, nil
+	return messageCount, nil
 }

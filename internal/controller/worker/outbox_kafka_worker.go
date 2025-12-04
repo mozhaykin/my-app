@@ -38,17 +38,17 @@ func (w *OutboxKafkaWorker) run() {
 
 FOR:
 	for {
-		count, err := w.usecase.OutboxReadAndProduce(context.Background(), w.config.Limit)
+		messageCount, err := w.usecase.OutboxReadAndProduce(context.Background(), w.config.Limit)
 		if err != nil {
 			log.Error().Err(err).Msg("outbox kafka worker: read and produce failed")
 		}
 
-		log.Info().Int("count", count).Msg("outbox kafka worker: read and produce")
+		log.Info().Int("count", messageCount).Msg("outbox kafka worker: read and produce")
 
 		var duration time.Duration
 
 		// если пришло меньше 10 сообщений, значит их больше нет и надо поспать 10 секунд
-		if count < w.config.Limit {
+		if messageCount < w.config.Limit {
 			duration = 10 * time.Second
 
 			log.Info().Msg("outbox kafka worker: sleeping 10s")

@@ -4,11 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
+	"github.com/segmentio/kafka-go"
+
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
 )
 
-func (p *Postgres) ReadOutboxKafka(ctx context.Context, limit int) ([]domain.Event, error) {
+func (p *Postgres) ReadOutboxKafka(ctx context.Context, limit int) ([]kafka.Message, error) {
 	const sql = `WITH taken AS (SELECT id, topic, key, value
 					   FROM outbox
 					   ORDER BY created_at
@@ -27,18 +28,18 @@ func (p *Postgres) ReadOutboxKafka(ctx context.Context, limit int) ([]domain.Eve
 
 	defer rows.Close()
 
-	events := make([]domain.Event, 0, limit)
+	messages := make([]kafka.Message, 0, limit)
 
 	for rows.Next() {
-		var e domain.Event
+		var msg kafka.Message
 
-		err := rows.Scan(&e.Topic, &e.Key, &e.Value)
+		err := rows.Scan(&msg.Topic, &msg.Key, &msg.Value)
 		if err != nil {
 			return nil, fmt.Errorf("rows.Scan: %w", err)
 		}
 
-		events = append(events, e)
+		messages = append(messages, msg)
 	}
 
-	return events, nil
+	return messages, nil
 }

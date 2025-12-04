@@ -8,6 +8,8 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 )
 
+// In memory cache
+
 type Cache struct {
 	mx sync.RWMutex
 	m  map[uuid.UUID]domain.Profile

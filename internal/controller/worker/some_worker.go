@@ -10,6 +10,8 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 )
 
+// Здесь показана работа воркера, который при определенных событиях запускает какой-то usecase
+
 type SomeWorker struct {
 	usecase    *usecase.UseCase
 	cron       *cron.Cron

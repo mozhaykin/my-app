@@ -29,11 +29,11 @@ func Test_GetProfile_Success(t *testing.T) {
 
 	// Создаем ошибку которую вернет Redis, для того чтобы мы не вышли из основной функции раньше времени
 	// и выполнение кода продолжилось
-	SomeError := errors.New("SomeError")
+	someError := errors.New("SomeError")
 
 	// Настраиваем поведение Redis, создаём мок (заглушку)
 	redis := new(mocks.Redis)
-	redis.On("GetCache", mock.Anything, id).Return(profile, SomeError)
+	redis.On("GetCache", mock.Anything, id).Return(profile, someError)
 	redis.On("SetCache", mock.Anything, profile).Return(nil)
 	defer redis.AssertCalled(t, "GetCache", mock.Anything, id)
 	defer redis.AssertCalled(t, "SetCache", mock.Anything, profile)

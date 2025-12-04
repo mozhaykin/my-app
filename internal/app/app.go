@@ -12,7 +12,7 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/config"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/kafkaproducer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/postgres"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/redis"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/rediscache"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/grpc"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/http"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/kafkaconsumer"
@@ -20,7 +20,7 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
 	pgpool "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
-	redislib "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/redis"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/redisclient"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/router"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
 )
@@ -35,7 +35,7 @@ func Run(ctx context.Context, c config.Config) error {
 	transaction.Init(pgPool)
 
 	// Redis
-	redisClient, err := redislib.New(c.Redis)
+	redisClient, err := redisclient.New(c.Redis)
 	if err != nil {
 		return fmt.Errorf("redis.New: %w", err)
 	}
@@ -45,7 +45,7 @@ func Run(ctx context.Context, c config.Config) error {
 	// Создаем UseCase (передаем в структуру интерфейсы с методами которые вызываются в юзкейсах)
 	uc := usecase.New(
 		postgres.New(),
-		redis.New(redisClient),
+		rediscache.New(redisClient),
 		kafkaProducer,
 	)
 
