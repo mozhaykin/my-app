@@ -1,14 +1,13 @@
 package httpclientv1
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"strconv"
-
-	"golang.org/x/net/context"
 )
 
 type GetProfilesRequest struct {

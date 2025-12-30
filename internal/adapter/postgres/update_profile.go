@@ -9,10 +9,14 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
 )
 
 func (p *Postgres) UpdateProfile(ctx context.Context, profile domain.Profile) error {
+	ctx, span := tracer.Start(ctx, "adapter postgres UpdateProfile")
+	defer span.End()
+
 	const sql = `UPDATE profile SET name = $1, age = $2, contacts = $3, updated_at = NOW()
                WHERE id = $4`
 

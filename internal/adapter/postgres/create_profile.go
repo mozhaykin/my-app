@@ -6,10 +6,14 @@ import (
 	"fmt"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
 )
 
 func (p *Postgres) CreateProfile(ctx context.Context, profile domain.Profile) error {
+	ctx, span := tracer.Start(ctx, "adapter postgres CreateProfile")
+	defer span.End()
+
 	const sql = `INSERT INTO profile (id, name, age, status, verified, contacts) VALUES ($1, $2, $3, $4, $5, $6)`
 
 	contacts, err := json.Marshal(profile.Contacts)

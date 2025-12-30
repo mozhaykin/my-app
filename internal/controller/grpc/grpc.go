@@ -13,6 +13,7 @@ import (
 	ver1 "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/grpc/v1"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
 )
 
 type Config struct {
@@ -26,7 +27,7 @@ type Server struct {
 func New(c Config, uc *usecase.UseCase) (*Server, error) {
 	s := grpc.NewServer(
 		grpc.Creds(insecure.NewCredentials()),
-		grpc.ChainUnaryInterceptor(logger.Interceptor),
+		grpc.ChainUnaryInterceptor(logger.Interceptor, otel.Interceptor),
 	)
 
 	// для просмотра через инсомнию или постман

@@ -8,8 +8,9 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/segmentio/kafka-go"
+
 	mock "github.com/stretchr/testify/mock"
+
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
 )
@@ -19,7 +20,8 @@ import (
 func NewPostgres(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *Postgres {
+},
+) *Postgres {
 	mock := &Postgres{}
 	mock.Mock.Test(t)
 
@@ -39,6 +41,52 @@ type Postgres_Expecter struct {
 
 func (_m *Postgres) EXPECT() *Postgres_Expecter {
 	return &Postgres_Expecter{mock: &_m.Mock}
+}
+
+// ClearOutbox provides a mock function for the type Postgres
+func (_mock *Postgres) ClearOutbox(ctx context.Context, ids []uuid.UUID) error {
+	ret := _mock.Called(ctx, ids)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ClearOutbox")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, []uuid.UUID) error); ok {
+		r0 = returnFunc(ctx, ids)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// Postgres_ClearOutbox_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ClearOutbox'
+type Postgres_ClearOutbox_Call struct {
+	*mock.Call
+}
+
+// ClearOutbox is a helper method to define mock.On call
+//   - ctx
+//   - ids
+func (_e *Postgres_Expecter) ClearOutbox(ctx, ids interface{}) *Postgres_ClearOutbox_Call {
+	return &Postgres_ClearOutbox_Call{Call: _e.mock.On("ClearOutbox", ctx, ids)}
+}
+
+func (_c *Postgres_ClearOutbox_Call) Run(run func(ctx context.Context, ids []uuid.UUID)) *Postgres_ClearOutbox_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].([]uuid.UUID))
+	})
+	return _c
+}
+
+func (_c *Postgres_ClearOutbox_Call) Return(err error) *Postgres_ClearOutbox_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *Postgres_ClearOutbox_Call) RunAndReturn(run func(ctx context.Context, ids []uuid.UUID) error) *Postgres_ClearOutbox_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // CreateProfile provides a mock function for the type Postgres
@@ -66,7 +114,7 @@ type Postgres_CreateProfile_Call struct {
 // CreateProfile is a helper method to define mock.On call
 //   - ctx
 //   - profile
-func (_e *Postgres_Expecter) CreateProfile(ctx interface{}, profile interface{}) *Postgres_CreateProfile_Call {
+func (_e *Postgres_Expecter) CreateProfile(ctx, profile interface{}) *Postgres_CreateProfile_Call {
 	return &Postgres_CreateProfile_Call{Call: _e.mock.On("CreateProfile", ctx, profile)}
 }
 
@@ -112,7 +160,7 @@ type Postgres_CreateProperty_Call struct {
 // CreateProperty is a helper method to define mock.On call
 //   - ctx
 //   - property
-func (_e *Postgres_Expecter) CreateProperty(ctx interface{}, property interface{}) *Postgres_CreateProperty_Call {
+func (_e *Postgres_Expecter) CreateProperty(ctx, property interface{}) *Postgres_CreateProperty_Call {
 	return &Postgres_CreateProperty_Call{Call: _e.mock.On("CreateProperty", ctx, property)}
 }
 
@@ -158,7 +206,7 @@ type Postgres_DeleteProfile_Call struct {
 // DeleteProfile is a helper method to define mock.On call
 //   - ctx
 //   - profileID
-func (_e *Postgres_Expecter) DeleteProfile(ctx interface{}, profileID interface{}) *Postgres_DeleteProfile_Call {
+func (_e *Postgres_Expecter) DeleteProfile(ctx, profileID interface{}) *Postgres_DeleteProfile_Call {
 	return &Postgres_DeleteProfile_Call{Call: _e.mock.On("DeleteProfile", ctx, profileID)}
 }
 
@@ -213,7 +261,7 @@ type Postgres_GetProfile_Call struct {
 // GetProfile is a helper method to define mock.On call
 //   - ctx
 //   - profileID
-func (_e *Postgres_Expecter) GetProfile(ctx interface{}, profileID interface{}) *Postgres_GetProfile_Call {
+func (_e *Postgres_Expecter) GetProfile(ctx, profileID interface{}) *Postgres_GetProfile_Call {
 	return &Postgres_GetProfile_Call{Call: _e.mock.On("GetProfile", ctx, profileID)}
 }
 
@@ -270,7 +318,7 @@ type Postgres_GetProfiles_Call struct {
 // GetProfiles is a helper method to define mock.On call
 //   - ctx
 //   - input
-func (_e *Postgres_Expecter) GetProfiles(ctx interface{}, input interface{}) *Postgres_GetProfiles_Call {
+func (_e *Postgres_Expecter) GetProfiles(ctx, input interface{}) *Postgres_GetProfiles_Call {
 	return &Postgres_GetProfiles_Call{Call: _e.mock.On("GetProfiles", ctx, input)}
 }
 
@@ -291,24 +339,24 @@ func (_c *Postgres_GetProfiles_Call) RunAndReturn(run func(ctx context.Context, 
 	return _c
 }
 
-// ReadOutboxKafka provides a mock function for the type Postgres
-func (_mock *Postgres) ReadOutboxKafka(ctx context.Context, limit int) ([]kafka.Message, error) {
+// ReadOutbox provides a mock function for the type Postgres
+func (_mock *Postgres) ReadOutbox(ctx context.Context, limit int) ([]domain.Event, error) {
 	ret := _mock.Called(ctx, limit)
 
 	if len(ret) == 0 {
-		panic("no return value specified for ReadOutboxKafka")
+		panic("no return value specified for ReadOutbox")
 	}
 
-	var r0 []kafka.Message
+	var r0 []domain.Event
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int) ([]kafka.Message, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int) ([]domain.Event, error)); ok {
 		return returnFunc(ctx, limit)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int) []kafka.Message); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int) []domain.Event); ok {
 		r0 = returnFunc(ctx, limit)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]kafka.Message)
+			r0 = ret.Get(0).([]domain.Event)
 		}
 	}
 	if returnFunc, ok := ret.Get(1).(func(context.Context, int) error); ok {
@@ -319,37 +367,37 @@ func (_mock *Postgres) ReadOutboxKafka(ctx context.Context, limit int) ([]kafka.
 	return r0, r1
 }
 
-// Postgres_ReadOutboxKafka_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ReadOutboxKafka'
-type Postgres_ReadOutboxKafka_Call struct {
+// Postgres_ReadOutbox_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ReadOutbox'
+type Postgres_ReadOutbox_Call struct {
 	*mock.Call
 }
 
-// ReadOutboxKafka is a helper method to define mock.On call
+// ReadOutbox is a helper method to define mock.On call
 //   - ctx
 //   - limit
-func (_e *Postgres_Expecter) ReadOutboxKafka(ctx interface{}, limit interface{}) *Postgres_ReadOutboxKafka_Call {
-	return &Postgres_ReadOutboxKafka_Call{Call: _e.mock.On("ReadOutboxKafka", ctx, limit)}
+func (_e *Postgres_Expecter) ReadOutbox(ctx, limit interface{}) *Postgres_ReadOutbox_Call {
+	return &Postgres_ReadOutbox_Call{Call: _e.mock.On("ReadOutbox", ctx, limit)}
 }
 
-func (_c *Postgres_ReadOutboxKafka_Call) Run(run func(ctx context.Context, limit int)) *Postgres_ReadOutboxKafka_Call {
+func (_c *Postgres_ReadOutbox_Call) Run(run func(ctx context.Context, limit int)) *Postgres_ReadOutbox_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int))
 	})
 	return _c
 }
 
-func (_c *Postgres_ReadOutboxKafka_Call) Return(messages []kafka.Message, err error) *Postgres_ReadOutboxKafka_Call {
-	_c.Call.Return(messages, err)
+func (_c *Postgres_ReadOutbox_Call) Return(events []domain.Event, err error) *Postgres_ReadOutbox_Call {
+	_c.Call.Return(events, err)
 	return _c
 }
 
-func (_c *Postgres_ReadOutboxKafka_Call) RunAndReturn(run func(ctx context.Context, limit int) ([]kafka.Message, error)) *Postgres_ReadOutboxKafka_Call {
+func (_c *Postgres_ReadOutbox_Call) RunAndReturn(run func(ctx context.Context, limit int) ([]domain.Event, error)) *Postgres_ReadOutbox_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// SaveOutboxKafka provides a mock function for the type Postgres
-func (_mock *Postgres) SaveOutboxKafka(ctx context.Context, events ...kafka.Message) error {
+// SaveOutbox provides a mock function for the type Postgres
+func (_mock *Postgres) SaveOutbox(ctx context.Context, events ...domain.Event) error {
 	var tmpRet mock.Arguments
 	if len(events) > 0 {
 		tmpRet = _mock.Called(ctx, events)
@@ -359,11 +407,11 @@ func (_mock *Postgres) SaveOutboxKafka(ctx context.Context, events ...kafka.Mess
 	ret := tmpRet
 
 	if len(ret) == 0 {
-		panic("no return value specified for SaveOutboxKafka")
+		panic("no return value specified for SaveOutbox")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, ...kafka.Message) error); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, ...domain.Event) error); ok {
 		r0 = returnFunc(ctx, events...)
 	} else {
 		r0 = ret.Error(0)
@@ -371,33 +419,33 @@ func (_mock *Postgres) SaveOutboxKafka(ctx context.Context, events ...kafka.Mess
 	return r0
 }
 
-// Postgres_SaveOutboxKafka_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SaveOutboxKafka'
-type Postgres_SaveOutboxKafka_Call struct {
+// Postgres_SaveOutbox_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SaveOutbox'
+type Postgres_SaveOutbox_Call struct {
 	*mock.Call
 }
 
-// SaveOutboxKafka is a helper method to define mock.On call
+// SaveOutbox is a helper method to define mock.On call
 //   - ctx
 //   - events
-func (_e *Postgres_Expecter) SaveOutboxKafka(ctx interface{}, events ...interface{}) *Postgres_SaveOutboxKafka_Call {
-	return &Postgres_SaveOutboxKafka_Call{Call: _e.mock.On("SaveOutboxKafka",
+func (_e *Postgres_Expecter) SaveOutbox(ctx interface{}, events ...interface{}) *Postgres_SaveOutbox_Call {
+	return &Postgres_SaveOutbox_Call{Call: _e.mock.On("SaveOutbox",
 		append([]interface{}{ctx}, events...)...)}
 }
 
-func (_c *Postgres_SaveOutboxKafka_Call) Run(run func(ctx context.Context, events ...kafka.Message)) *Postgres_SaveOutboxKafka_Call {
+func (_c *Postgres_SaveOutbox_Call) Run(run func(ctx context.Context, events ...domain.Event)) *Postgres_SaveOutbox_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		variadicArgs := args[1].([]kafka.Message)
+		variadicArgs := args[1].([]domain.Event)
 		run(args[0].(context.Context), variadicArgs...)
 	})
 	return _c
 }
 
-func (_c *Postgres_SaveOutboxKafka_Call) Return(err error) *Postgres_SaveOutboxKafka_Call {
+func (_c *Postgres_SaveOutbox_Call) Return(err error) *Postgres_SaveOutbox_Call {
 	_c.Call.Return(err)
 	return _c
 }
 
-func (_c *Postgres_SaveOutboxKafka_Call) RunAndReturn(run func(ctx context.Context, events ...kafka.Message) error) *Postgres_SaveOutboxKafka_Call {
+func (_c *Postgres_SaveOutbox_Call) RunAndReturn(run func(ctx context.Context, events ...domain.Event) error) *Postgres_SaveOutbox_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -427,7 +475,7 @@ type Postgres_UpdateProfile_Call struct {
 // UpdateProfile is a helper method to define mock.On call
 //   - ctx
 //   - profile
-func (_e *Postgres_Expecter) UpdateProfile(ctx interface{}, profile interface{}) *Postgres_UpdateProfile_Call {
+func (_e *Postgres_Expecter) UpdateProfile(ctx, profile interface{}) *Postgres_UpdateProfile_Call {
 	return &Postgres_UpdateProfile_Call{Call: _e.mock.On("UpdateProfile", ctx, profile)}
 }
 
@@ -453,7 +501,8 @@ func (_c *Postgres_UpdateProfile_Call) RunAndReturn(run func(ctx context.Context
 func NewRedis(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *Redis {
+},
+) *Redis {
 	mock := &Redis{}
 	mock.Mock.Test(t)
 
@@ -500,7 +549,7 @@ type Redis_DeleteCache_Call struct {
 // DeleteCache is a helper method to define mock.On call
 //   - ctx
 //   - id
-func (_e *Redis_Expecter) DeleteCache(ctx interface{}, id interface{}) *Redis_DeleteCache_Call {
+func (_e *Redis_Expecter) DeleteCache(ctx, id interface{}) *Redis_DeleteCache_Call {
 	return &Redis_DeleteCache_Call{Call: _e.mock.On("DeleteCache", ctx, id)}
 }
 
@@ -555,7 +604,7 @@ type Redis_GetCache_Call struct {
 // GetCache is a helper method to define mock.On call
 //   - ctx
 //   - id
-func (_e *Redis_Expecter) GetCache(ctx interface{}, id interface{}) *Redis_GetCache_Call {
+func (_e *Redis_Expecter) GetCache(ctx, id interface{}) *Redis_GetCache_Call {
 	return &Redis_GetCache_Call{Call: _e.mock.On("GetCache", ctx, id)}
 }
 
@@ -572,6 +621,52 @@ func (_c *Redis_GetCache_Call) Return(profile domain.Profile, err error) *Redis_
 }
 
 func (_c *Redis_GetCache_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (domain.Profile, error)) *Redis_GetCache_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// IsIdempotencyKeyExists provides a mock function for the type Redis
+func (_mock *Redis) IsIdempotencyKeyExists(ctx context.Context, idempotencyKey string) bool {
+	ret := _mock.Called(ctx, idempotencyKey)
+
+	if len(ret) == 0 {
+		panic("no return value specified for IsIdempotencyKeyExists")
+	}
+
+	var r0 bool
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) bool); ok {
+		r0 = returnFunc(ctx, idempotencyKey)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+	return r0
+}
+
+// Redis_IsIdempotencyKeyExists_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'IsIdempotencyKeyExists'
+type Redis_IsIdempotencyKeyExists_Call struct {
+	*mock.Call
+}
+
+// IsIdempotencyKeyExists is a helper method to define mock.On call
+//   - ctx
+//   - idempotencyKey
+func (_e *Redis_Expecter) IsIdempotencyKeyExists(ctx, idempotencyKey interface{}) *Redis_IsIdempotencyKeyExists_Call {
+	return &Redis_IsIdempotencyKeyExists_Call{Call: _e.mock.On("IsIdempotencyKeyExists", ctx, idempotencyKey)}
+}
+
+func (_c *Redis_IsIdempotencyKeyExists_Call) Run(run func(ctx context.Context, idempotencyKey string)) *Redis_IsIdempotencyKeyExists_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string))
+	})
+	return _c
+}
+
+func (_c *Redis_IsIdempotencyKeyExists_Call) Return(b bool) *Redis_IsIdempotencyKeyExists_Call {
+	_c.Call.Return(b)
+	return _c
+}
+
+func (_c *Redis_IsIdempotencyKeyExists_Call) RunAndReturn(run func(ctx context.Context, idempotencyKey string) bool) *Redis_IsIdempotencyKeyExists_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -601,7 +696,7 @@ type Redis_SetCache_Call struct {
 // SetCache is a helper method to define mock.On call
 //   - ctx
 //   - profile
-func (_e *Redis_Expecter) SetCache(ctx interface{}, profile interface{}) *Redis_SetCache_Call {
+func (_e *Redis_Expecter) SetCache(ctx, profile interface{}) *Redis_SetCache_Call {
 	return &Redis_SetCache_Call{Call: _e.mock.On("SetCache", ctx, profile)}
 }
 
@@ -627,7 +722,8 @@ func (_c *Redis_SetCache_Call) RunAndReturn(run func(ctx context.Context, profil
 func NewKafka(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *Kafka {
+},
+) *Kafka {
 	mock := &Kafka{}
 	mock.Mock.Test(t)
 
@@ -650,22 +746,16 @@ func (_m *Kafka) EXPECT() *Kafka_Expecter {
 }
 
 // Produce provides a mock function for the type Kafka
-func (_mock *Kafka) Produce(ctx context.Context, events ...kafka.Message) error {
-	var tmpRet mock.Arguments
-	if len(events) > 0 {
-		tmpRet = _mock.Called(ctx, events)
-	} else {
-		tmpRet = _mock.Called(ctx)
-	}
-	ret := tmpRet
+func (_mock *Kafka) Produce(ctx context.Context, events []domain.Event) error {
+	ret := _mock.Called(ctx, events)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Produce")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, ...kafka.Message) error); ok {
-		r0 = returnFunc(ctx, events...)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, []domain.Event) error); ok {
+		r0 = returnFunc(ctx, events)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -680,15 +770,13 @@ type Kafka_Produce_Call struct {
 // Produce is a helper method to define mock.On call
 //   - ctx
 //   - events
-func (_e *Kafka_Expecter) Produce(ctx interface{}, events ...interface{}) *Kafka_Produce_Call {
-	return &Kafka_Produce_Call{Call: _e.mock.On("Produce",
-		append([]interface{}{ctx}, events...)...)}
+func (_e *Kafka_Expecter) Produce(ctx, events interface{}) *Kafka_Produce_Call {
+	return &Kafka_Produce_Call{Call: _e.mock.On("Produce", ctx, events)}
 }
 
-func (_c *Kafka_Produce_Call) Run(run func(ctx context.Context, events ...kafka.Message)) *Kafka_Produce_Call {
+func (_c *Kafka_Produce_Call) Run(run func(ctx context.Context, events []domain.Event)) *Kafka_Produce_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		variadicArgs := args[1].([]kafka.Message)
-		run(args[0].(context.Context), variadicArgs...)
+		run(args[0].(context.Context), args[1].([]domain.Event))
 	})
 	return _c
 }
@@ -698,7 +786,7 @@ func (_c *Kafka_Produce_Call) Return(err error) *Kafka_Produce_Call {
 	return _c
 }
 
-func (_c *Kafka_Produce_Call) RunAndReturn(run func(ctx context.Context, events ...kafka.Message) error) *Kafka_Produce_Call {
+func (_c *Kafka_Produce_Call) RunAndReturn(run func(ctx context.Context, events []domain.Event) error) *Kafka_Produce_Call {
 	_c.Call.Return(run)
 	return _c
 }

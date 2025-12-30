@@ -1,9 +1,8 @@
 package httpclientv2
 
 import (
+	"context"
 	"fmt"
-
-	"golang.org/x/net/context"
 )
 
 func Example() { //nolint: funlen

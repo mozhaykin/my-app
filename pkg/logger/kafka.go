@@ -13,6 +13,6 @@ type KafkaLogger struct {
 	logger zerolog.Logger
 }
 
-func (l KafkaLogger) Printf(format string, v ...interface{}) {
+func (l KafkaLogger) Printf(format string, v ...any) {
 	l.logger.Error().Msgf(format, v...)
 }

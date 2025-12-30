@@ -1,4 +1,4 @@
-package rediscache
+package redis
 
 import (
 	"context"
@@ -10,12 +10,16 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
 )
 
 func (r *Redis) GetCache(ctx context.Context, id uuid.UUID) (domain.Profile, error) {
+	ctx, span := tracer.Start(ctx, "adapter rediscache GetCache")
+	defer span.End()
+
 	var profile domain.Profile
 
-	key := prefix + id.String()
+	key := cacheKeyPrefix + id.String()
 
 	data, err := r.redis.Get(ctx, key).Bytes()
 	if err != nil {
@@ -35,14 +39,17 @@ func (r *Redis) GetCache(ctx context.Context, id uuid.UUID) (domain.Profile, err
 }
 
 func (r *Redis) SetCache(ctx context.Context, profile domain.Profile) error {
+	ctx, span := tracer.Start(ctx, "adapter rediscache SetCache")
+	defer span.End()
+
 	data, err := json.Marshal(profile)
 	if err != nil {
 		return fmt.Errorf("json.Marshal: %w", err)
 	}
 
-	key := prefix + profile.ID.String()
+	key := cacheKeyPrefix + profile.ID.String()
 
-	err = r.redis.Set(ctx, key, data, ttl).Err()
+	err = r.redis.Set(ctx, key, data, cacheTTL).Err()
 	if err != nil {
 		return fmt.Errorf("r.client.Set: %w", err)
 	}
@@ -51,7 +58,10 @@ func (r *Redis) SetCache(ctx context.Context, profile domain.Profile) error {
 }
 
 func (r *Redis) DeleteCache(ctx context.Context, id uuid.UUID) error {
-	key := prefix + id.String()
+	ctx, span := tracer.Start(ctx, "adapter rediscache DeleteCache")
+	defer span.End()
+
+	key := cacheKeyPrefix + id.String()
 
 	err := r.redis.Del(ctx, key).Err()
 	if err != nil {

@@ -6,12 +6,18 @@ import (
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
 )
 
 // Внутренняя логика нашего приложения (все что происходит после получения input, до преобразования в output)
 
 func (u *UseCase) CreateProfile(ctx context.Context, input dto.CreateProfileInput) (dto.CreateProfileOutput, error) {
+	// Создаем новый трейс, указываем spanName(название пакета и функция)
+	ctx, span := tracer.Start(ctx, "usecase CreateProfile")
+	defer span.End() // Обязательно закрываем span
+
 	var output dto.CreateProfileOutput
 
 	profile, err := domain.NewProfile(input.Name, input.Age, input.Email, input.Phone)
@@ -21,9 +27,16 @@ func (u *UseCase) CreateProfile(ctx context.Context, input dto.CreateProfileInpu
 
 	property := domain.NewProperty(profile.ID, []string{"home", "primary"})
 
-	kafkaMsg, err := profile.ToKafkaMsg("awesome-topic")
+	// Создаю событие для записи в таблицу Outbox
+	event, err := domain.EventProfileCreated(profile)
 	if err != nil {
-		return output, fmt.Errorf("profile.ToEvent: %w", err)
+		return output, fmt.Errorf("profile.ToProfileCreatedEvent: %w", err)
+	}
+
+	// Дополняю event трейсом
+	event.TraceContext, err = otel.ExtractTraceContext(ctx)
+	if err != nil {
+		return output, fmt.Errorf("extract trace context: %w", err)
 	}
 
 	err = transaction.Wrap(ctx, func(ctx context.Context) error {
@@ -37,8 +50,10 @@ func (u *UseCase) CreateProfile(ctx context.Context, input dto.CreateProfileInpu
 			return fmt.Errorf("u.postgres.CreateProperty: %w", err)
 		}
 
-		// Дополнительная запись profile в таблицу Outbox (из которой читает воркер и гарантировано отправляет в Кафку)
-		err = u.postgres.SaveOutboxKafka(ctx, kafkaMsg)
+		// Фиксирую бизнес факт и атомарно сохраняю событие и трейс в таблицу Outbox.
+		// Отправка в Kafka - асинхронная инфраструктурная задача, вынесенная в отдельный воркер,
+		// который к тому же формирует message из event.
+		err = u.postgres.SaveOutbox(ctx, event)
 		if err != nil {
 			return fmt.Errorf("u.postgres.SaveOutboxKafka: %w", err)
 		}

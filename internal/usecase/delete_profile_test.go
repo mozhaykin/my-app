@@ -8,10 +8,12 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase/mocks"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
 )
 
 // в usecase deleteProfile, проверяем:
@@ -19,7 +21,7 @@ import (
 // кейс с ошибкой функции uuid.Parse (когда передан невалидный id)
 
 func Test_DeleteProfile_Success(t *testing.T) {
-	// otel.SilentModeInit() // отключить open telemetry
+	otel.SilentModeInit() // отключить open telemetry
 
 	// создаём случайный UUID для теста
 	id := uuid.New()
@@ -51,7 +53,7 @@ func Test_DeleteProfile_Success(t *testing.T) {
 }
 
 func Test_DeleteProfile_InvalidUUID(t *testing.T) {
-	// otel.SilentModeInit() // отключить open telemetry
+	otel.SilentModeInit() // отключить open telemetry
 	// т.к. при невалидном ID до похода в Redis или базу дело всеравно не дойдет, то моки здесь не нужны
 	// собираем UseCase
 	u := usecase.New(nil, nil, nil)
@@ -66,7 +68,7 @@ func Test_DeleteProfile_InvalidUUID(t *testing.T) {
 }
 
 func Test_DeleteProfile_NotFound(t *testing.T) {
-	// otel.SilentModeInit() // отключить open telemetry
+	otel.SilentModeInit() // отключить open telemetry
 
 	// создаём случайный UUID для теста
 	id := uuid.New()

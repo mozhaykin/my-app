@@ -1,9 +1,8 @@
 package grpcclientv1
 
 import (
+	"context"
 	"fmt"
-
-	"golang.org/x/net/context"
 
 	pb "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/grpc/profile_v1"
 )

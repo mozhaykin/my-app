@@ -10,6 +10,7 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/config"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/app"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
 )
 
 // В пакете main создаем новый конфиг, инициализируем сторонний логгер и запускаем основную функцию
@@ -28,8 +29,15 @@ func main() {
 
 	ctx := context.Background()
 
+	err = otel.Init(ctx, c.OTEL)
+	if err != nil {
+		log.Fatal().Err(err).Msg("otel.Init")
+	}
+
+	defer otel.Close()
+
 	err = app.Run(ctx, c)
 	if err != nil {
-		log.Fatal().Err(err).Msg("app.Run")
+		log.Error().Err(err).Msg("app.Run")
 	}
 }

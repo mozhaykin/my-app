@@ -4,36 +4,57 @@ import (
 	"context"
 	"testing"
 
-	"github.com/segmentio/kafka-go"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase/mocks"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
 )
 
 func Test_OutboxReadAndProduce_Success(t *testing.T) {
-	transaction.IsUnitTest = true
+	otel.SilentModeInit()         // отключить open telemetry
+	transaction.IsUnitTest = true // отключить транзакции
+
+	ctx := context.Background()
+	limit := 10
 
 	// Данные для поведения
-	messages := []kafka.Message{{}, {}, {}}
+	events := []domain.Event{
+		{ID: uuid.New()},
+		{ID: uuid.New()},
+		{ID: uuid.New()},
+	}
 
-	// Настраиваем поведение Postgres
+	expectedIDs := []uuid.UUID{
+		events[0].ID,
+		events[1].ID,
+		events[2].ID,
+	}
+
+	// Настраиваем поведение Postgres и kafka
 	postgres := new(mocks.Postgres)
-	postgres.On("ReadOutboxKafka", mock.Anything, mock.Anything).Return(messages, nil)
-	defer postgres.AssertCalled(t, "ReadOutboxKafka", mock.Anything, mock.Anything)
-
-	// Настройка поведения kafka
 	k := new(mocks.Kafka)
-	k.On("Produce", mock.Anything, mock.Anything).Return(nil)
-	defer k.AssertCalled(t, "Produce", mock.Anything, mock.Anything)
+
+	// Ожидаемый порядок вызовов
+	mock.InOrder(
+		postgres.On("ReadOutbox", mock.Anything, limit).Once().Return(events, nil),
+		k.On("Produce", mock.Anything, events).Once().Return(nil),
+		postgres.On("ClearOutbox", mock.Anything, expectedIDs).Once().Return(nil),
+	)
+
+	defer postgres.AssertExpectations(t)
+	defer k.AssertExpectations(t)
 
 	// Создаём экземпляр UseCase, передавая в него мок базы
 	u := usecase.New(postgres, nil, k)
 
 	{ // Сам тест
-		count, err := u.OutboxReadAndProduce(context.Background(), 10)
+		count, err := u.OutboxReadAndProduce(ctx, limit)
 		require.NoError(t, err)
-		require.Equal(t, len(messages), count)
+		require.Equal(t, len(events), count)
 	}
 }

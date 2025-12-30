@@ -1,32 +1,29 @@
 package postgres
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/doug-martin/goqu/v9"
-	"github.com/segmentio/kafka-go"
-	"golang.org/x/net/context"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
 )
 
-func (p *Postgres) SaveOutboxKafka(ctx context.Context, messages ...kafka.Message) error {
-	if len(messages) == 0 {
-		return nil
-	}
+func (p *Postgres) SaveOutbox(ctx context.Context, events ...domain.Event) error {
+	ctx, span := tracer.Start(ctx, "adapter postgres SaveOutbox")
+	defer span.End()
 
-	batch := make([]any, 0, len(messages))
+	batch := make([]any, 0, len(events))
 
-	for _, msg := range messages {
-		if msg.Topic == "" {
-			return domain.ErrEmptyTopic
-		}
-
+	for _, e := range events {
 		batch = append(batch, goqu.Record{
-			"topic": msg.Topic,
-			"key":   msg.Key,
-			"value": msg.Value,
+			"event_id":      e.ID,
+			"event_type":    e.Type,
+			"occurred_at":   e.OccurredAt,
+			"value":         e.Value,
+			"trace_context": e.TraceContext, // jsonb
 		})
 	}
 

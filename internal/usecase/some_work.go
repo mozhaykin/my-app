@@ -1,11 +1,18 @@
 package usecase
 
 import (
+	"context"
+
 	"github.com/rs/zerolog/log"
-	"golang.org/x/net/context"
+
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
 )
 
-func (u *UseCase) SomeWork(ctx context.Context) error { //nolint:revive
+func (u *UseCase) SomeWork(ctx context.Context) error {
+	// Создаем новый трейс, указываем spanName(название пакета и функция)
+	_, span := tracer.Start(ctx, "usecase SomeWork")
+	defer span.End() // Обязательно закрываем span
+
 	log.Info().Msg("SomeWork called")
 
 	// Выполняется какая то работа, например вызова клиента другого сервиса.

@@ -9,6 +9,7 @@ import (
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
 )
 
@@ -60,6 +61,9 @@ func (d *GetProfilesDTO) Dest() []any {
 }
 
 func (p *Postgres) GetProfiles(ctx context.Context, input dto.GetProfilesInput) ([]domain.Profile, error) {
+	ctx, span := tracer.Start(ctx, "adapter postgres GetProfiles")
+	defer span.End()
+
 	sql := `SELECT id, created_at, updated_at, deleted_at, name, age, status, verified, contacts
                  FROM profile
                  WHERE deleted_at IS NULL

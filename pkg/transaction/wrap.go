@@ -7,6 +7,8 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/rs/zerolog/log"
+
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
 )
 
 // Функция - обертка для транзакций
@@ -18,6 +20,10 @@ func Wrap(ctx context.Context, fn func(context.Context) error) error {
 	if IsUnitTest {
 		return fn(ctx)
 	}
+
+	// Создаем новый трейс, указываем spanName(название пакета и функция)
+	ctx, span := tracer.Start(ctx, "transaction Wrap")
+	defer span.End() // Обязательно закрываем span
 
 	tx, err := pool.Begin(ctx)
 	if err != nil {

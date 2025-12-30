@@ -9,10 +9,15 @@ import (
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
 )
 
 func (u *UseCase) UpdateProfile(ctx context.Context, input dto.UpdateProfileInput) error {
+	// Создаем новый трейс, указываем spanName(название пакета и функция)
+	ctx, span := tracer.Start(ctx, "usecase UpdateProfile")
+	defer span.End() // Обязательно закрываем span
+
 	err := input.Validate()
 	if err != nil {
 		return fmt.Errorf("input.Validate: %w", err)

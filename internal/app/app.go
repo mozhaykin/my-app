@@ -12,13 +12,14 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/config"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/kafkaproducer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/postgres"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/rediscache"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/redis"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/grpc"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/http"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/kafkaconsumer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/worker"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/metrics"
 	pgpool "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/redisclient"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/router"
@@ -40,12 +41,16 @@ func Run(ctx context.Context, c config.Config) error {
 		return fmt.Errorf("redis.New: %w", err)
 	}
 
-	kafkaProducer := kafkaproducer.New(c.KafkaProducer)
+	// Инициализация сервера с метриками.
+	entityMetrics := metrics.NewEntity()   // Для kafka consumer
+	httpMetrics := metrics.NewHTTPServer() // Основные метрики
+
+	kafkaProducer := kafkaproducer.New(c.KafkaProducer, entityMetrics)
 
 	// Создаем UseCase (передаем в структуру интерфейсы с методами которые вызываются в юзкейсах)
 	uc := usecase.New(
 		postgres.New(),
-		rediscache.New(redisClient),
+		redis.New(redisClient),
 		kafkaProducer,
 	)
 
@@ -53,7 +58,7 @@ func Run(ctx context.Context, c config.Config) error {
 	outboxKafkaWorker := worker.NewOutboxKafka(uc, c.OutboxKafkaWorker)
 
 	// Запускаем kafka consumer, который читает сообщения из kafka, обрабатывает его вызывая метод usecase, и делает commit
-	kafkaConsumer := kafkaconsumer.New(c.KafkaConsumer, uc)
+	kafkaConsumer := kafkaconsumer.New(c.KafkaConsumer, entityMetrics, uc)
 
 	// Worker (просто пример воркера)
 	someWorker, err := worker.NewSomeWorker(uc)
@@ -68,8 +73,8 @@ func Run(ctx context.Context, c config.Config) error {
 	}
 
 	// HTTP
-	r := router.New()         // Создаем новый роутер chi
-	http.ProfileRouter(r, uc) // Прописываем ручки
+	r := router.New()                      // Создаем новый роутер chi
+	http.ProfileRouter(r, uc, httpMetrics) // Прописываем ручки
 	// Создаем HTTP сервер, передавая в него роутер и используя данные из конфиг файла
 	httpServer := httpserver.New(r, c.HTTPServer)
 

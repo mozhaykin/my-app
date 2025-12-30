@@ -11,10 +11,14 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
 )
 
 func (p *Postgres) GetProfile(ctx context.Context, profileID uuid.UUID) (domain.Profile, error) {
+	ctx, span := tracer.Start(ctx, "adapter postgres GetProfile")
+	defer span.End()
+
 	const sql = `SELECT created_at, updated_at, deleted_at, name, age, status, verified, contacts 
 				FROM profile WHERE id = $1`
 

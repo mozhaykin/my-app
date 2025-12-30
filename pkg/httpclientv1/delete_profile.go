@@ -1,11 +1,10 @@
 package httpclientv1
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
-
-	"golang.org/x/net/context"
 )
 
 func (c *Client) Delete(ctx context.Context, id string) error {

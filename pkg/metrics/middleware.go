@@ -1,0 +1,27 @@
+package metrics
+
+import (
+	"net/http"
+	"time"
+
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/router"
+)
+
+func NewMiddleware(metrics *HTTPServer) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		fn := func(w http.ResponseWriter, r *http.Request) {
+			now := time.Now()
+
+			ww := router.WriterWrapper(w)
+			next.ServeHTTP(ww, r)
+
+			method := r.Method + " " + router.ExtractPath(r.Context())
+
+			// Metrics
+			metrics.Duration(method, now)       // Записывем продолжительность запроса
+			metrics.TotalInc(method, ww.Code()) // Инкрементим счетчик запроса
+		}
+
+		return http.HandlerFunc(fn)
+	}
+}

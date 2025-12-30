@@ -1,4 +1,4 @@
-package http
+package http //nolint:revive
 
 import (
 	"github.com/go-chi/chi/v5"
@@ -8,14 +8,18 @@ import (
 	ver2 "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/http/v2"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/metrics"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
 )
 
-func ProfileRouter(r *chi.Mux, uc *usecase.UseCase) {
+func ProfileRouter(r *chi.Mux, uc *usecase.UseCase, m *metrics.HTTPServer) {
 	v1 := ver1.New(uc)
 	v2 := ver2.New(uc)
 
 	r.Route("/amozhaykin/my-app/api", func(r chi.Router) {
 		r.Use(logger.Middleware)
+		r.Use(metrics.NewMiddleware(m))
+		r.Use(otel.Middleware)
 
 		r.Route("/v1", func(r chi.Router) {
 			r.Post("/profile", v1.CreateProfile)

@@ -2,18 +2,21 @@ package kafkaconsumer
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"time"
 
 	"github.com/rs/zerolog/log"
 	"github.com/segmentio/kafka-go"
+	"go.opentelemetry.io/otel/trace"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
+	semconv "go.opentelemetry.io/otel/semconv/v1.38.0"
+
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/metrics"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
 )
 
 type Config struct {
@@ -26,17 +29,19 @@ type Consumer struct {
 	config  Config
 	reader  *kafka.Reader
 	usecase *usecase.UseCase
+	metrics *metrics.Entity
 	stop    context.CancelFunc
 	done    chan struct{}
 }
 
-func New(cfg Config, uc *usecase.UseCase) *Consumer {
+func New(cfg Config, m *metrics.Entity, uc *usecase.UseCase) *Consumer {
 	r := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:        cfg.Addr,
-		Topic:          cfg.Topic,
-		GroupID:        cfg.Group,
-		ErrorLogger:    logger.ErrorLogger(),
-		CommitInterval: 100 * time.Millisecond,
+		Brokers:          cfg.Addr,
+		Topic:            cfg.Topic,
+		GroupID:          cfg.Group,
+		ErrorLogger:      logger.ErrorLogger(),
+		ReadBatchTimeout: time.Second,
+		CommitInterval:   100 * time.Millisecond,
 	})
 
 	ctx, stop := context.WithCancel(context.Background())
@@ -45,8 +50,15 @@ func New(cfg Config, uc *usecase.UseCase) *Consumer {
 		config:  cfg,
 		reader:  r,
 		usecase: uc,
+		metrics: m,
 		stop:    stop,
 		done:    make(chan struct{}),
+	}
+
+	if c.config.Disabled {
+		log.Info().Msg("kafka consumer: disabled")
+
+		return c
 	}
 
 	go c.run(ctx)
@@ -57,51 +69,74 @@ func New(cfg Config, uc *usecase.UseCase) *Consumer {
 func (c *Consumer) run(ctx context.Context) {
 	log.Info().Msg("kafka consumer: started")
 
-FOR:
+	const consume = "consume"
+
 	for {
+		now := time.Now()
+
 		// Читаем сообщение из kafka
 		m, err := c.reader.FetchMessage(ctx)
 		if err != nil {
-			switch {
-			case errors.Is(err, context.Canceled):
-				log.Info().Msg("kafka consumer: context canceled")
+			log.Error().Err(err).Msg("kafka consumer: FetchMessage")
 
-				break FOR
-			case errors.Is(err, io.EOF):
-				log.Warn().Err(err).Msg("kafka consumer: FetchMassage")
-
-				break FOR
+			if errors.Is(err, io.EOF) || errors.Is(err, context.Canceled) {
+				break
 			}
 
-			log.Error().Err(err).Msg("kafka consumer: FetchMessage")
+			continue
 		}
 
-		log.Info().Str("key", string(m.Key)).Msg("kafka consumer: message received")
+		// Восстанавливаем контекст из Kafka headers
+		msgCtx := otel.CtxFromKafkaHeaders(ctx, m.Headers)
 
-		// Тут по идее нужно вызывать метод из usecase для обработки сообщения
-		// Я же просто печатаю сообщение
-		var p domain.Profile
+		// Создаем span от извлеченного контекста
+		msgCtx, span := tracer.Start(msgCtx, "kafka consume "+m.Topic,
+			trace.WithSpanKind(trace.SpanKindConsumer),
+			trace.WithAttributes(
+				semconv.MessagingSystemKafka,
+				semconv.MessagingDestinationName(m.Topic),
+				semconv.MessagingKafkaOffset(int(m.Offset)),
+				semconv.MessagingConsumerGroupName(c.config.Group),
+				semconv.MessagingKafkaMessageKey(string(m.Key)),
+			),
+		)
 
-		err = json.Unmarshal(m.Value, &p)
+		// Обрабатываем сообщение
+		err = c.usecase.Consume(msgCtx, m)
 		if err != nil {
-			log.Error().Err(err).Msg("kafka consumer: json.Unmarshal")
+			c.metrics.Total(consume, metrics.Error) // Инкрементим счетчик с ошибками
+			log.Error().Err(err).Msg("kafka consumer: some work failed")
+
+			span.End()
+
+			continue
 		}
-
-		fmt.Printf("Topic: %s, Partition: %d, Offset: %d, Key: %s\n", m.Topic, m.Partition, m.Offset, string(m.Key))
-
-		fmt.Printf("Profile: %+v\n", p)
 
 		// Коммитим оффсет в consumer group
 		err = c.reader.CommitMessages(ctx, m)
 		if err != nil {
+			c.metrics.Total(consume, metrics.Error) // Инкрементим счетчик с ошибками
 			log.Error().Err(err).Msg("kafka consumer: CommitMessages")
+
+			span.End()
+
+			continue
 		}
+
+		c.metrics.Duration(consume, now)     // Считаем и записываем в метрику продолжительность обработки запроса
+		c.metrics.Total(consume, metrics.Ok) // Инкрементим счетчик со статусом OK.
+
+		span.End() // Закрываем span
 	}
 
 	close(c.done)
 }
 
 func (c *Consumer) Close() {
+	if c.config.Disabled {
+		return
+	}
+
 	log.Info().Msg("kafka consumer: closing")
 
 	c.stop()

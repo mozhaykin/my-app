@@ -15,6 +15,7 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclientv2"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/redisclient"
 )
@@ -29,6 +30,7 @@ type Config struct {
 	HTTPServer        httpserver.Config
 	GRPCServer        grpc.Config
 	Logger            logger.Config
+	OTEL              otel.Config
 	Postgres          postgres.Config
 	Redis             redisclient.Config
 	GRPSClientV1      grpcclientv1.Config

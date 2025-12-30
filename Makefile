@@ -6,9 +6,6 @@ MIGRATE_PATH = ./migration/postgres
 run: mod
 	CGO_ENABLED=0 go run ./cmd/app
 
-lint:
-	golangci-lint run
-
 mod:
 	go mod tidy
 	go mod download
@@ -17,6 +14,12 @@ mod-update:
 	go get -u all
 	go mod tidy
 	go mod download
+
+fmt:
+	golangci-lint fmt
+
+lint:
+	golangci-lint run --fix
 
 seeder:
 	go run ./cmd/seeder

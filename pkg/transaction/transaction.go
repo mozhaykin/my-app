@@ -38,6 +38,12 @@ type Executor interface {
 // Эта функция позволяет нам писать одинаковый код при запросах к базе данных в адаптерах,
 // независимо от того в транзакции мы хотим выполнять запрос или без.
 
+func ExtractTX(ctx context.Context) (pgx.Tx, bool) {
+	tx, ok := ctx.Value(ctxKey{}).(pgx.Tx)
+
+	return tx, ok
+}
+
 func TryExtractTX(ctx context.Context) Executor {
 	// Пробуем извлечь транзакцию
 	tx, ok := ctx.Value(ctxKey{}).(*Transaction)

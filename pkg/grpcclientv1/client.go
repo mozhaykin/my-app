@@ -43,7 +43,7 @@ func (c *Client) Close() {
 	}
 }
 
-func timeoutInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn,
+func timeoutInterceptor(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn,
 	invoker grpc.UnaryInvoker, opts ...grpc.CallOption,
 ) error {
 	// Устанавливаем таймаут для каждого вызова

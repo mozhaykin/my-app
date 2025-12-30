@@ -9,5 +9,4 @@ var (
 	ErrAllFieldsAreEmpty = errors.New("all fields for update are empty")
 	ErrUUIDInvalid       = errors.New("uuid is invalid")
 	ErrNoChangesFound    = errors.New("no changes found")
-	ErrEmptyTopic        = errors.New("topic is empty")
 )

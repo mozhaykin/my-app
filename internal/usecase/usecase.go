@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/segmentio/kafka-go"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
@@ -20,18 +19,21 @@ type Postgres interface {
 	UpdateProfile(ctx context.Context, profile domain.Profile) error
 	DeleteProfile(ctx context.Context, profileID uuid.UUID) error
 
-	SaveOutboxKafka(ctx context.Context, events ...kafka.Message) error
-	ReadOutboxKafka(ctx context.Context, limit int) ([]kafka.Message, error)
+	SaveOutbox(ctx context.Context, events ...domain.Event) error
+	ReadOutbox(ctx context.Context, limit int) ([]domain.Event, error)
+	ClearOutbox(ctx context.Context, ids []uuid.UUID) error
 }
 
 type Redis interface {
 	GetCache(ctx context.Context, id uuid.UUID) (domain.Profile, error)
 	SetCache(ctx context.Context, profile domain.Profile) error
 	DeleteCache(ctx context.Context, id uuid.UUID) error
+
+	IsIdempotencyKeyExists(ctx context.Context, idempotencyKey string) bool
 }
 
 type Kafka interface {
-	Produce(ctx context.Context, events ...kafka.Message) error
+	Produce(ctx context.Context, events []domain.Event) error
 }
 
 type UseCase struct {

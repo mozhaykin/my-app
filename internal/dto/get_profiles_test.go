@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
 )
 

@@ -8,10 +8,12 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase/mocks"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
 )
 
 // в usecase getProfile, проверяем:
@@ -20,7 +22,7 @@ import (
 // функция profile.IsDeleted уже проверена в unit тесте на domain
 
 func Test_GetProfile_Success(t *testing.T) {
-	// otel.SilentModeInit() // отключить open telemetry
+	otel.SilentModeInit() // отключить open telemetry
 
 	// создаём случайный UUID для теста
 	id := uuid.New()
@@ -57,7 +59,7 @@ func Test_GetProfile_Success(t *testing.T) {
 }
 
 func Test_GetProfile_InvalidUUID(t *testing.T) {
-	// otel.SilentModeInit()
+	otel.SilentModeInit()
 	// т.к. при невалидном ID до похода в Redis или базу дело всеравно не дойдет, то моки здесь не нужны
 	// Собираем UseCase
 	u := usecase.New(nil, nil, nil)

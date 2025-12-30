@@ -12,6 +12,7 @@ linters:
     - varnamelen          # Проверяет длину имён переменных, чтобы избежать слишком коротких или слишком длинных имён.
     - depguard
     - wsl                 # устарел и заменен на wsl_v5
+    - godoclint           # не дает писать комментарии над функцией
 
   # Тонкая настройка нужного линтера (если есть)
   # См. отдельную секцию документации https://golangci-lint.run/usage/linters/#linters-configuration
@@ -76,7 +77,6 @@ linters:
 formatters:
   enable:
     - gci          # Упорядочивает импорты по группам (стандартные, сторонние, локальные)
-    - gofmt        # Стандартный инструмент форматирования кода Go
     - gofumpt      # Более строгая версия gofmt с улучшенной читаемостью
     - goimports    # Форматирует код и автоматически управляет импортами
 
@@ -86,7 +86,7 @@ formatters:
     gofumpt:
       extra-rules: true
     gci:
-      sections:
+       sections:
         - standard # Standard section: captures all standard packages.
         - default # Default section: contains all imports that could not be matched to another section type.
         - blank # Blank section: contains all blank imports. This section is not present unless explicitly enabled.

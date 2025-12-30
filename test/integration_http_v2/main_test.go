@@ -11,6 +11,7 @@ import (
 	"github.com/segmentio/kafka-go"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/config"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/kafkaproducer"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/app"
@@ -19,7 +20,9 @@ import (
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclientv2"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
+	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/redisclient"
 )
 
 // make up 								поднимается база данных
@@ -75,6 +78,9 @@ func (s *Suite) SetupSuite() {
 			Password: "pass",
 			DBName:   "postgres",
 		},
+		Redis: redisclient.Config{
+			Addr: "localhost:6379",
+		},
 		HTTPClientV2: httpclientv2.Config{
 			Address: "http://localhost:8080/amozhaykin/my-app/api/v2",
 		},
@@ -93,6 +99,7 @@ func (s *Suite) SetupSuite() {
 	}
 
 	logger.Init(c.Logger)
+	otel.SilentModeInit() // явно отключаем otel
 
 	// Подключение к базе и миграции
 	s.PrepareTestDB(c.Postgres)

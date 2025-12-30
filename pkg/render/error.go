@@ -1,11 +1,10 @@
 package render
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
-
-	"golang.org/x/net/context"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto/baggage"
 )

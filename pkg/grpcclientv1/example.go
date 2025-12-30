@@ -1,9 +1,8 @@
 package grpcclientv1
 
 import (
+	"context"
 	"fmt"
-
-	"golang.org/x/net/context"
 )
 
 func Example() { //nolint: funlen
