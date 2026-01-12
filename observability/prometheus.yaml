@@ -1,8 +1,8 @@
 global:
-  scrape_interval:     15s
+  scrape_interval:     15s # каждые 15 секунд прометеус забирает данные
   evaluation_interval: 15s
 
 scrape_configs:
-  - job_name: 'prometheus'
+  - job_name: 'my-app'
     static_configs:
-      - targets: [ 'app:8080' ]
+      - targets: [ 'host.docker.internal:8080' ] # для обращения из докер на локалхост машины

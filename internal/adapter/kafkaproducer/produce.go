@@ -32,7 +32,6 @@ type Producer struct {
 func New(c Config, m *metrics.Entity) *Producer {
 	w := &kafka.Writer{
 		Addr:         kafka.TCP(c.Addr...),
-		Topic:        c.Topic,
 		Balancer:     &kafka.Hash{Hasher: fnv.New32a()},
 		RequiredAcks: kafka.RequireAll,
 		ErrorLogger:  logger.ErrorLogger(),

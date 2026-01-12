@@ -2,6 +2,7 @@ package http //nolint:revive
 
 import (
 	"github.com/go-chi/chi/v5"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http/profile_v2/server"
 	ver1 "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/http/v1"
@@ -15,6 +16,8 @@ import (
 func ProfileRouter(r *chi.Mux, uc *usecase.UseCase, m *metrics.HTTPServer) {
 	v1 := ver1.New(uc)
 	v2 := ver2.New(uc)
+
+	r.Handle("/metrics", promhttp.Handler())
 
 	r.Route("/amozhaykin/my-app/api", func(r chi.Router) {
 		r.Use(logger.Middleware)

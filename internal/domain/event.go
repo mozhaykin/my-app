@@ -12,7 +12,7 @@ type Payload struct {
 	ID         uuid.UUID `json:"id"`
 	Name       string    `json:"name"`
 	Age        int       `json:"age"`
-	Status     string    `json:"status"`
+	Status     Status    `json:"status"`
 	Verified   bool      `json:"verified"`
 	Email      string    `json:"email"`
 	Phone      string    `json:"phone"`
@@ -37,7 +37,7 @@ func EventProfileCreated(p Profile) (Event, error) {
 		ID:         p.ID,
 		Name:       string(p.Name),
 		Age:        int(p.Age),
-		Status:     p.Status.String(),
+		Status:     p.Status,
 		Verified:   p.Verified,
 		Email:      p.Contacts.Email,
 		Phone:      p.Contacts.Phone,

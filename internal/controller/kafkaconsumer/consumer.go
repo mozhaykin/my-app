@@ -21,7 +21,7 @@ import (
 
 type Config struct {
 	Addr     []string `envconfig:"KAFKA_CONSUMER_ADDR"     required:"true"`
-	Topic    string   `default:"awesome-topic"             envconfig:"KAFKA_CONSUMER_TOPIC"`
+	Topic    string   `default:"profiles.created"          envconfig:"KAFKA_CONSUMER_TOPIC"`
 	Group    string   `default:"awesome-group"             envconfig:"KAFKA_CONSUMER_GROUP"`
 	Disabled bool     `envconfig:"KAFKA_CONSUMER_DISABLED"`
 }
