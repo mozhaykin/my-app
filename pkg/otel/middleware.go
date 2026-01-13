@@ -31,7 +31,7 @@ func Middleware(next http.Handler) http.Handler {
 		// Вызываем следующий обработчик (или сам handler)
 		next.ServeHTTP(ww, r.WithContext(ctx))
 
-		// После того, как мы прошли по всему пути, мы знаем роут и теперь можем записать имя
+		// После того, как мы прошли по всему пути, мы знаем роут и теперь можем записать имя трейса
 		span.SetName("http " + r.Method + " " + router.ExtractPath(ctx))
 
 		// Записываем полезные атрибуты
