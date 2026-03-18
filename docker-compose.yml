@@ -41,8 +41,8 @@ services:
   kafka: # однонодовая кафка для локальной разработки
     image: confluentinc/cp-kafka:latest
     ports:
-      - '9092:9092' # internal
-      - '9094:9094' # external
+      - '9092:9092' # internal. Для подключения приложений из docker-compose к kafka
+      - '9094:9094' # external. Для подключения из приложений на ноуте к kafka
     environment:
       KAFKA_NODE_ID: 0
       KAFKA_PROCESS_ROLES: 'controller,broker'
