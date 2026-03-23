@@ -7,7 +7,7 @@ import (
 	"github.com/robfig/cron/v3"
 	"github.com/rs/zerolog/log"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
+	"github.com/mozhaykin/my-app/internal/usecase"
 )
 
 // Здесь показана работа воркера, который при определенных событиях запускает какой-то usecase

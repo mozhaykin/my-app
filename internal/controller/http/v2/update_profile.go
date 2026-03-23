@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http/profile_v2/server"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto/baggage"
+	"github.com/mozhaykin/my-app/gen/http/profile_v2/server"
+	"github.com/mozhaykin/my-app/internal/domain"
+	"github.com/mozhaykin/my-app/internal/dto"
+	"github.com/mozhaykin/my-app/internal/dto/baggage"
 )
 
 func (h *Handlers) UpdateProfile(ctx context.Context, request server.UpdateProfileRequestObject) (

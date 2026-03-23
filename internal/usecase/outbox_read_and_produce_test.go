@@ -8,11 +8,11 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase/mocks"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
+	"github.com/mozhaykin/my-app/internal/domain"
+	"github.com/mozhaykin/my-app/internal/usecase"
+	"github.com/mozhaykin/my-app/internal/usecase/mocks"
+	"github.com/mozhaykin/my-app/pkg/otel"
+	"github.com/mozhaykin/my-app/pkg/transaction"
 )
 
 func Test_OutboxReadAndProduce_Success(t *testing.T) {

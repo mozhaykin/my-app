@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
+	"github.com/mozhaykin/my-app/internal/domain"
 )
 
 func TestNewProfile(t *testing.T) {

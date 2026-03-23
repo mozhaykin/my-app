@@ -6,10 +6,10 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto/baggage"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/render"
+	"github.com/mozhaykin/my-app/internal/domain"
+	"github.com/mozhaykin/my-app/internal/dto"
+	"github.com/mozhaykin/my-app/internal/dto/baggage"
+	"github.com/mozhaykin/my-app/pkg/render"
 )
 
 func (h *Handlers) GetProfile(w http.ResponseWriter, r *http.Request) {

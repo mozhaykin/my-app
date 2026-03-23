@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
+	"github.com/mozhaykin/my-app/internal/domain"
+	"github.com/mozhaykin/my-app/pkg/otel/tracer"
+	"github.com/mozhaykin/my-app/pkg/transaction"
 )
 
 func (p *Postgres) CreateProfile(ctx context.Context, profile domain.Profile) error {

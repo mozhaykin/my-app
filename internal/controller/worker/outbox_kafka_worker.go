@@ -7,8 +7,8 @@ import (
 	"github.com/rs/zerolog/log"
 	"go.opentelemetry.io/otel/trace"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
+	"github.com/mozhaykin/my-app/internal/usecase"
+	"github.com/mozhaykin/my-app/pkg/otel/tracer"
 )
 
 type OutboxKafkaConfig struct {

@@ -4,13 +4,13 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http/profile_v2/server"
-	ver1 "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/http/v1"
-	ver2 "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/http/v2"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/metrics"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
+	"github.com/mozhaykin/my-app/gen/http/profile_v2/server"
+	ver1 "github.com/mozhaykin/my-app/internal/controller/http/v1"
+	ver2 "github.com/mozhaykin/my-app/internal/controller/http/v2"
+	"github.com/mozhaykin/my-app/internal/usecase"
+	"github.com/mozhaykin/my-app/pkg/logger"
+	"github.com/mozhaykin/my-app/pkg/metrics"
+	"github.com/mozhaykin/my-app/pkg/otel"
 )
 
 func ProfileRouter(r *chi.Mux, uc *usecase.UseCase, m *metrics.HTTPServer) {

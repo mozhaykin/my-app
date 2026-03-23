@@ -3,7 +3,7 @@ package redis
 import (
 	"time"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/redisclient"
+	"github.com/mozhaykin/my-app/pkg/redisclient"
 )
 
 const (

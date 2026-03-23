@@ -9,11 +9,11 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
-	pb "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/grpc/profile_v1"
-	ver1 "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/grpc/v1"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
+	pb "github.com/mozhaykin/my-app/gen/grpc/profile_v1"
+	ver1 "github.com/mozhaykin/my-app/internal/controller/grpc/v1"
+	"github.com/mozhaykin/my-app/internal/usecase"
+	"github.com/mozhaykin/my-app/pkg/logger"
+	"github.com/mozhaykin/my-app/pkg/otel"
 )
 
 type Config struct {

@@ -5,7 +5,7 @@ package profile_v1;
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
-option go_package = "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/grpc/profile_v1";
+option go_package = "github.com/mozhaykin/my-app/gen/grpc/profile_v1";
 
 // этот раздел с методами, пишется, только если мы хоти использовать protobuf с протоколом grpc.
 service ProfileV1 {

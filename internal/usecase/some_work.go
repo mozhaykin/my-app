@@ -5,7 +5,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
+	"github.com/mozhaykin/my-app/pkg/otel/tracer"
 )
 
 func (u *UseCase) SomeWork(ctx context.Context) error {

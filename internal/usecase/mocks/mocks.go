@@ -11,8 +11,8 @@ import (
 
 	mock "github.com/stretchr/testify/mock"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+	"github.com/mozhaykin/my-app/internal/domain"
+	"github.com/mozhaykin/my-app/internal/dto"
 )
 
 // NewPostgres creates a new instance of Postgres. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

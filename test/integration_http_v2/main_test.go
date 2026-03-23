@@ -12,17 +12,17 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/config"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/kafkaproducer"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/app"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/kafkaconsumer"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/worker"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclientv2"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/redisclient"
+	"github.com/mozhaykin/my-app/config"
+	"github.com/mozhaykin/my-app/internal/adapter/kafkaproducer"
+	"github.com/mozhaykin/my-app/internal/app"
+	"github.com/mozhaykin/my-app/internal/controller/kafkaconsumer"
+	"github.com/mozhaykin/my-app/internal/controller/worker"
+	"github.com/mozhaykin/my-app/pkg/httpclientv2"
+	"github.com/mozhaykin/my-app/pkg/httpserver"
+	"github.com/mozhaykin/my-app/pkg/logger"
+	"github.com/mozhaykin/my-app/pkg/otel"
+	"github.com/mozhaykin/my-app/pkg/postgres"
+	"github.com/mozhaykin/my-app/pkg/redisclient"
 )
 
 // make up 								поднимается база данных

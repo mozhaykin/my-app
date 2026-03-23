@@ -15,7 +15,7 @@ import (
 
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
+	"github.com/mozhaykin/my-app/pkg/otel/tracer"
 )
 
 type Config struct {

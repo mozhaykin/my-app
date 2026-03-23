@@ -497,7 +497,7 @@ const file_profile_v1_proto_rawDesc = "" +
 	"\n" +
 	"GetProfile\x12\x1b.profile_v1.GetProfileInput\x1a\x1c.profile_v1.GetProfileOutput\x12G\n" +
 	"\rUpdateProfile\x12\x1e.profile_v1.UpdateProfileInput\x1a\x16.google.protobuf.Empty\x12G\n" +
-	"\rDeleteProfile\x12\x1e.profile_v1.DeleteProfileInput\x1a\x16.google.protobuf.EmptyBGZEgitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/grpc/profile_v1b\x06proto3"
+	"\rDeleteProfile\x12\x1e.profile_v1.DeleteProfileInput\x1a\x16.google.protobuf.EmptyBGZEgithub.com/mozhaykin/my-app/gen/grpc/profile_v1b\x06proto3"
 
 var (
 	file_profile_v1_proto_rawDescOnce sync.Once

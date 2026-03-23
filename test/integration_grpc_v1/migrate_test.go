@@ -12,7 +12,7 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
+	"github.com/mozhaykin/my-app/pkg/postgres"
 )
 
 func (s *Suite) PrepareTestDB(c postgres.Config) {

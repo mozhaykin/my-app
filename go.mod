@@ -1,4 +1,4 @@
-module gitlab.golang-school.ru/potok-1/amozhaykin/my-app
+module github.com/mozhaykin/my-app
 
 go 1.24.9
 

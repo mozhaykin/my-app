@@ -9,6 +9,6 @@ recursive: false                    # не проходить рекурсивн
 template: testify
 structname: '{{.InterfaceName}}'    # сгенерированные структуры будут называться по имени наших интерфейсов
 packages:                           # пакет для которого будут сгенерированы моки (для всех интерфесов в пакете)
-  gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase:
+  github.com/mozhaykin/my-app/internal/usecase:
     config:
       all: True

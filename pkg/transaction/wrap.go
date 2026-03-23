@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/rs/zerolog/log"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
+	"github.com/mozhaykin/my-app/pkg/otel/tracer"
 )
 
 // Функция - обертка для транзакций

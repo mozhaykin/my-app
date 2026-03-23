@@ -7,7 +7,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
+	"github.com/mozhaykin/my-app/pkg/postgres"
 )
 
 //nolint:gochecknoglobals

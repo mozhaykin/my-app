@@ -9,8 +9,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/redis/go-redis/v9"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
+	"github.com/mozhaykin/my-app/internal/domain"
+	"github.com/mozhaykin/my-app/pkg/otel/tracer"
 )
 
 func (r *Redis) GetCache(ctx context.Context, id uuid.UUID) (domain.Profile, error) {

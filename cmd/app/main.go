@@ -7,10 +7,10 @@ import (
 
 	_ "go.uber.org/automaxprocs"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/config"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/app"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
+	"github.com/mozhaykin/my-app/config"
+	"github.com/mozhaykin/my-app/internal/app"
+	"github.com/mozhaykin/my-app/pkg/logger"
+	"github.com/mozhaykin/my-app/pkg/otel"
 )
 
 // В пакете main создаем новый конфиг, инициализируем сторонний логгер и запускаем основную функцию

@@ -6,9 +6,9 @@ import (
 
 	"github.com/doug-martin/goqu/v9"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
+	"github.com/mozhaykin/my-app/internal/domain"
+	"github.com/mozhaykin/my-app/pkg/otel/tracer"
+	"github.com/mozhaykin/my-app/pkg/transaction"
 )
 
 func (p *Postgres) SaveOutbox(ctx context.Context, events ...domain.Event) error {

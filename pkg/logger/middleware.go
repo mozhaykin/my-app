@@ -6,8 +6,8 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto/baggage"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/router"
+	"github.com/mozhaykin/my-app/internal/dto/baggage"
+	"github.com/mozhaykin/my-app/pkg/router"
 )
 
 func Middleware(next http.Handler) http.Handler {

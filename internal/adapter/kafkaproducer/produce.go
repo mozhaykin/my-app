@@ -12,10 +12,10 @@ import (
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/metrics"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
+	"github.com/mozhaykin/my-app/internal/domain"
+	"github.com/mozhaykin/my-app/pkg/logger"
+	"github.com/mozhaykin/my-app/pkg/metrics"
+	"github.com/mozhaykin/my-app/pkg/otel/tracer"
 )
 
 type Config struct {

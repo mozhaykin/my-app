@@ -11,8 +11,8 @@ import (
 
 	semconv "go.opentelemetry.io/otel/semconv/v1.30.0"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/router"
+	"github.com/mozhaykin/my-app/pkg/otel/tracer"
+	"github.com/mozhaykin/my-app/pkg/router"
 )
 
 func Middleware(next http.Handler) http.Handler {

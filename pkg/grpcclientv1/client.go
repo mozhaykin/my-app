@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	pb "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/grpc/profile_v1"
+	pb "github.com/mozhaykin/my-app/gen/grpc/profile_v1"
 )
 
 type Config struct {

@@ -5,9 +5,9 @@ import (
 
 	"github.com/pkg/errors"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http/profile_v2/server"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+	"github.com/mozhaykin/my-app/gen/http/profile_v2/server"
+	"github.com/mozhaykin/my-app/internal/domain"
+	"github.com/mozhaykin/my-app/internal/dto"
 )
 
 func (h *Handlers) GetProfiles(ctx context.Context, request server.GetProfilesRequestObject,

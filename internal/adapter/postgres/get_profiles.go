@@ -7,10 +7,10 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
+	"github.com/mozhaykin/my-app/internal/domain"
+	"github.com/mozhaykin/my-app/internal/dto"
+	"github.com/mozhaykin/my-app/pkg/otel/tracer"
+	"github.com/mozhaykin/my-app/pkg/transaction"
 )
 
 type GetProfilesDTO struct {

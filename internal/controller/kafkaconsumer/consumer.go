@@ -12,11 +12,11 @@ import (
 
 	semconv "go.opentelemetry.io/otel/semconv/v1.38.0"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/metrics"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
+	"github.com/mozhaykin/my-app/internal/usecase"
+	"github.com/mozhaykin/my-app/pkg/logger"
+	"github.com/mozhaykin/my-app/pkg/metrics"
+	"github.com/mozhaykin/my-app/pkg/otel"
+	"github.com/mozhaykin/my-app/pkg/otel/tracer"
 )
 
 type Config struct {

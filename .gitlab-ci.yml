@@ -44,7 +44,7 @@ update-tag: # этой секции может здесь не быть, в эт
   variables:
     IMAGE: $REGISTRY/$USERNAME/$APP_NAME
     TAG: $CI_COMMIT_SHORT_SHA # устанавливаем тег, как short SHA последнего коммита
-    REPOSITORY: https://$GITLAB_DEPLOY_USER:$GITLAB_DEPLOY_PASS@gitlab.golang-school.ru/potok-1/deploy.git
+    REPOSITORY: https://$GITLAB_DEPLOY_USER:$GITLAB_DEPLOY_PASS@gitlab.golang.ru/mozhaykin/deploy.git
     DEPLOYMENT: 1-deployment.yaml
   script:
     - git config --global user.email "ci@gitlab.bot" # прописываем глобального пользователя "ci@gitlab.bot"

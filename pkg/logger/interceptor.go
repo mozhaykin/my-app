@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto/baggage"
+	"github.com/mozhaykin/my-app/internal/dto/baggage"
 )
 
 func Interceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
