@@ -19,7 +19,7 @@ type CreateProfileRequest struct {
 }
 
 func (c *Client) Create(ctx context.Context, request CreateProfileRequest) (uuid.UUID, error) {
-	const createProfile = "amozhaykin/my-app/api/v1/profile"
+	const createProfile = "mozhaykin/my-app/api/v1/profile"
 
 	path := fmt.Sprintf("http://%s/%s", c.host, createProfile)
 

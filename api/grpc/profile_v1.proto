@@ -7,7 +7,6 @@ import "google/protobuf/empty.proto";
 
 option go_package = "github.com/mozhaykin/my-app/gen/grpc/profile_v1";
 
-// этот раздел с методами, пишется, только если мы хоти использовать protobuf с протоколом grpc.
 service ProfileV1 {
   rpc CreateProfile(CreateProfileInput) returns (CreateProfileOutput);
   rpc GetProfile(GetProfileInput) returns (GetProfileOutput);

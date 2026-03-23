@@ -18,7 +18,7 @@ type UpdateProfileRequest struct {
 }
 
 func (c *Client) Update(ctx context.Context, request UpdateProfileRequest) error {
-	const updateProfile = "amozhaykin/my-app/api/v1/profile"
+	const updateProfile = "mozhaykin/my-app/api/v1/profile"
 
 	path := fmt.Sprintf("http://%s/%s", c.host, updateProfile)
 

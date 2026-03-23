@@ -82,15 +82,15 @@ func (s *Suite) SetupSuite() {
 			Addr: "localhost:6379",
 		},
 		HTTPClientV2: httpclientv2.Config{
-			Address: "http://localhost:8080/amozhaykin/my-app/api/v2",
+			Address: "http://localhost:8080/mozhaykin/my-app/api/v2",
 		},
 		KafkaProducer: kafkaproducer.Config{
 			Addr: []string{"localhost:9094"},
 		},
 		KafkaConsumer: kafkaconsumer.Config{
 			Addr:     []string{"localhost:9094"},
-			Topic:    "amozhaykin-my-app-topic",
-			Group:    "amozhaykin-my-app-group",
+			Topic:    "mozhaykin-my-app-topic",
+			Group:    "mozhaykin-my-app-group",
 			Disabled: true, // Disable consumer in test!
 		},
 		OutboxKafkaWorker: worker.OutboxKafkaConfig{

@@ -89,8 +89,8 @@ func (s *Suite) SetupSuite() {
 		},
 		KafkaConsumer: kafkaconsumer.Config{
 			Addr:     []string{"localhost:9094"},
-			Topic:    "amozhaykin-my-app-topic",
-			Group:    "amozhaykin-my-app-group",
+			Topic:    "mozhaykin-my-app-topic",
+			Group:    "mozhaykin-my-app-group",
 			Disabled: true, // Disable consumer in test!
 		},
 		OutboxKafkaWorker: worker.OutboxKafkaConfig{

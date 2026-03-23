@@ -1,7 +1,7 @@
 variables:
-  USERNAME: "amozhaykin"
+  USERNAME: "mozhaykin"
   APP_NAME: "my-app"
-  POSTGRES_DB_NAME: "amozhaykin_my_app"
+  POSTGRES_DB_NAME: "mozhaykin_my_app"
 
 stages:
   - lint

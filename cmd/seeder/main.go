@@ -16,7 +16,7 @@ import (
 const (
 	iterates  = 1_000
 	batchSize = 1000
-	dbURL     = "postgres://login:pass@localhost:5432/amozhaykin"
+	dbURL     = "postgres://login:pass@localhost:5432/mozhaykin"
 )
 
 // go tool pprof -http=:8080 -base=a_cpu.pprof b_cpu.pprof

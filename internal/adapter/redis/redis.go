@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	redisNamespace       = "amozhaykin:my-app:"
+	redisNamespace       = "mozhaykin:my-app:"
 	cacheKeyPrefix       = redisNamespace + "cache:"
 	idempotencyKeyPrefix = redisNamespace + "idempotency:"
 	cacheTTL             = 10 * time.Minute

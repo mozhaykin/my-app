@@ -19,7 +19,7 @@ func ProfileRouter(r *chi.Mux, uc *usecase.UseCase, m *metrics.HTTPServer) {
 
 	r.Handle("/metrics", promhttp.Handler())
 
-	r.Route("/amozhaykin/my-app/api", func(r chi.Router) {
+	r.Route("/mozhaykin/my-app/api", func(r chi.Router) {
 		r.Use(logger.Middleware)
 		r.Use(metrics.NewMiddleware(m))
 		r.Use(otel.Middleware)
