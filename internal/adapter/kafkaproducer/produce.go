@@ -55,25 +55,23 @@ func (p *Producer) Produce(ctx context.Context, events []domain.Event) error {
 
 	eventsCount := len(events)
 
-	defer p.metrics.Duration(produce, time.Now()) // Записываем в метрику продолжительность записи в кафку
+	defer p.metrics.Duration(produce, time.Now())
 
-	// Преобразуем события их outbox в сообщения для Kafka
 	messages, err := buildKafkaMessages(events)
 	if err != nil {
-		p.metrics.TotalAdd(produce, metrics.Error, eventsCount) // Инкрементим счетчик ошибок
+		p.metrics.TotalAdd(produce, metrics.Error, eventsCount)
 
 		return fmt.Errorf("p.buildKafkaMessages: %w", err)
 	}
 
-	// Пишем сообщения в kafka
 	err = p.writer.WriteMessages(ctx, messages...)
 	if err != nil {
-		p.metrics.TotalAdd(produce, metrics.Error, eventsCount) // Инкрементим счетчик ошибок
+		p.metrics.TotalAdd(produce, metrics.Error, eventsCount)
 
 		return fmt.Errorf("p.writer.WriteMessages: %w", err)
 	}
 
-	p.metrics.TotalAdd(produce, metrics.Ok, eventsCount) // Инкрементим счетчик отправленных в kafka сообщений
+	p.metrics.TotalAdd(produce, metrics.Ok, eventsCount)
 
 	return nil
 }

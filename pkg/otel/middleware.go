@@ -17,12 +17,10 @@ import (
 
 func Middleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		// Извлекаем контекст из заголовков запроса, если они заполнены
 		ctx := otel.GetTextMapPropagator().Extract(r.Context(), propagation.HeaderCarrier(r.Header))
 
 		// Создаем корневой span (name пока указываем пустой, т.к. в этом месте мы еще не знаем, какой обработчик был вызван)
 		ctx, span := tracer.Start(ctx, "", trace.WithSpanKind(trace.SpanKindServer))
-		// При выходе из middleware закроется span и замеррет общее время выполнения трейса
 		defer span.End()
 
 		// Оборачиваем writer для захвата статуса ответа

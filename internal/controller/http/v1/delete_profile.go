@@ -16,7 +16,7 @@ func (h *Handlers) DeleteProfile(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	input := dto.DeleteProfileInput{
-		ID: chi.URLParam(r, "id"), // Достаем ключ из запроса
+		ID: chi.URLParam(r, "id"),
 	}
 
 	baggage.PutProfileID(ctx, input.ID)

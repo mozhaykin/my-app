@@ -1,10 +1,7 @@
 # Запуск приложения
 ```shell
-# запуск всего что в docker compose
 make up
-# накатить миграции
 make migrate-up
-# запуск самого приложения локально
 make run
 ```
 
@@ -49,7 +46,6 @@ histogram_quantile(0.999, sum(rate(http_server_request_duration_seconds_bucket[1
 ```
 
 # TraceQL (Grafana Tempo)
-Документация: https://grafana.com/docs/tempo/latest/traceql/
 ```shell
 # Найти все трейсы дольше 5 сек
 {duration > 5s}
@@ -78,7 +74,6 @@ histogram_quantile(0.999, sum(rate(http_server_request_duration_seconds_bucket[1
 # Логическое И
 {span.http.request.method="GET" && span.http.response.status_code=200}
 {span.http.request.method="GET"} && {span.http.response.status_code=200}
-
 
 # Логическое ИЛИ
 {span.http.request.method="GET" || span.http.request.method="POST"}

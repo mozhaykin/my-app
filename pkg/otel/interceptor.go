@@ -14,7 +14,6 @@ import (
 )
 
 func Interceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
-	// Создаем корневой span
 	ctx, span := tracer.Start(ctx, "grpc "+info.FullMethod, trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 

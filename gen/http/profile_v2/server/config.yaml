@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/HEAD/configuration-schema.json
-package: server    # название пакета, который будет сгенерирован
+package: server
 generate:
-  chi-server: true      # какой сервер использовать
-  models: true          # генерировать или нет модели
+  chi-server: true
+  models: true
   strict-server: true   # включает более строгую валидацию и генерирует удобные dto структуры
 output: server.gen.go   # название файла, который будет сгенерирован
 output-options:

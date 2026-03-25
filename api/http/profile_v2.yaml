@@ -14,24 +14,24 @@ servers:
 
 # описание всех REST-эндпоинтов
 paths:
-  /profile: # путь
-    post: # метод POST
+  /profile:
+    post:
       tags:
         - Profile
       operationId: createProfile # уникальное имя операции
       summary: Create a new profile
-      requestBody: # описание тела запроса
-        required: true # тело обязательно
-        content: # ожидается JSON
+      requestBody:
+        required: true
+        content:
           application/json:
-            schema: # схема данных
+            schema:
               $ref: '#/components/schemas/CreateProfileInput'
-      responses: # возможные ответы
+      responses:
         201:
           description: Profile created
-          content: # возвращается JSON
+          content:
             application/json:
-              schema: # схема ответа
+              schema:
                 $ref: '#/components/schemas/CreateProfileOutput'
         400:
           description: Bad Request
@@ -40,48 +40,48 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-    put: # метод PUT
+    put:
       tags:
         - Profile
-      operationId: updateProfile # уникальное имя операции
+      operationId: updateProfile
       summary: Update an existing profile
-      requestBody: # описание тела запроса
-        required: true # тело обязательно
-        content: # ожидается JSON
+      requestBody:
+        required: true
+        content:
           application/json:
-            schema: # схема данных
+            schema:
               $ref: '#/components/schemas/UpdateProfileInput'
-      responses: # возможные ответы
+      responses:
         204:
           description: Profile updated
         400:
           description: Bad Request
-          content: # возвращается JSON
+          content:
             application/json:
-              schema: # схема ответа
+              schema:
                 $ref: '#/components/schemas/ErrorResponse'
         404:
           description: Profile not found
-          content: # возвращается JSON
+          content:
             application/json:
-              schema: # схема ответа
+              schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /profiles: # путь
-    get: # метод GET
+  /profiles:
+    get:
       tags:
         - Profile
-      operationId: getProfiles # уникальное имя операции
+      operationId: getProfiles
       summary: Get a profiles
       parameters:
-        - name: sort # параметр в URL
+        - name: sort
           in: query
           required: true
           schema:
             type: string
           description: Sort field. Possible values are id, name.
           example: id
-        - name: order # параметр в URL
+        - name: order
           in: query
           required: false
           allowEmptyValue: true
@@ -90,7 +90,7 @@ paths:
             default: asc
           description: Sorting direction. Possible values are asc, desc or empty string.
           example: asc
-        - name: offset # параметр в URL
+        - name: offset
           in: query
           required: false
           schema:
@@ -99,7 +99,7 @@ paths:
             default: 0
           description: Number of items to skip before returning the results.
           example: 10
-        - name: limit # параметр в URL
+        - name: limit
           in: query
           required: false
           schema:
@@ -112,90 +112,90 @@ paths:
       responses:
         200:
           description: Profiles retrieved
-          content: # возвращается JSON
+          content:
             application/json:
-              schema: # схема ответа
+              schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/GetProfileOutput'
         400:
           description: Bad Request
-          content: # возвращается JSON
+          content:
             application/json:
-              schema: # схема ответа
+              schema:
                 $ref: '#/components/schemas/ErrorResponse'
         404:
           description: Profiles not found
-          content: # возвращается JSON
+          content:
             application/json:
-              schema: # схема ответа
+              schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /profile/{id}: # путь
-    get: # метод GET
+  /profile/{id}:
+    get:
       tags:
         - Profile
-      operationId: getProfileById # уникальное имя операции
+      operationId: getProfileById
       summary: Get a profile by ID
       parameters:
-        - name: id # параметр в URL
-          in: path # параметр находится в пути
+        - name: id
+          in: path
           required: true
           schema:
             type: string
           description: User's ID
           example: 550e8400-e29b-41d4-a716-446655440000
-      responses: # возможные ответы
+      responses:
         200:
           description: Profile retrieved
-          content: # возвращается JSON
+          content:
             application/json:
-              schema: # схема ответа
+              schema:
                 $ref: '#/components/schemas/GetProfileOutput'
         400:
           description: Bad Request
-          content: # возвращается JSON
+          content:
             application/json:
-              schema: # схема ответа
+              schema:
                 $ref: '#/components/schemas/ErrorResponse'
         404:
           description: Profile not found
-          content: # возвращается JSON
+          content:
             application/json:
-              schema: # схема ответа
+              schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-    delete: # метод DELETE
+    delete:
       tags:
         - Profile
-      operationId: deleteProfileById # уникальное имя операции
+      operationId: deleteProfileById
       summary: Delete a profile by ID
       parameters:
-        - name: id # параметр в URL
-          in: path # параметр находится в пути
+        - name: id
+          in: path
           required: true
           schema:
             type: string
           description: User's ID
           example: 550e8400-e29b-41d4-a716-446655440000
-      responses: # возможные ответы
+      responses:
         204:
           description: Profile deleted
         404:
           description: Profile not found
-          content: # возвращается JSON
+          content:
             application/json:
-              schema: # схема ответа
+              schema:
                 $ref: '#/components/schemas/ErrorResponse'
         400:
           description: Bad Request
-          content: # возвращается JSON
+          content:
             application/json:
-              schema: # схема ответа
+              schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-components: # переиспользуемые структуры данных
-  schemas: # JSON-схемы объектов
+components:
+  schemas:
     CreateProfileInput:
       type: object
       required:
@@ -247,26 +247,26 @@ components: # переиспользуемые структуры данных
           example: 550e8400-e29b-41d4-a716-446655440000
         name:
           type: string
-          nullable: true # строка, может быть null
+          nullable: true
           description: Full name of the user
           example: John Doe
           minLength: 3
           maxLength: 64
         age:
           type: integer
-          nullable: true # число, может быть null
+          nullable: true
           description: Age of the user
           example: 30
           minimum: 18
           maximum: 120
         email:
           type: string
-          nullable: true # строка, может быть null
+          nullable: true
           description: Email address of the user
           example: john.doe@example.com
         phone:
           type: string
-          nullable: true # строка, может быть null
+          nullable: true
           description: Phone number of the user
           example: '+1234567890'
 

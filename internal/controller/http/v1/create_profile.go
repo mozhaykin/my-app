@@ -9,9 +9,6 @@ import (
 	"github.com/mozhaykin/my-app/pkg/render"
 )
 
-// Получаем данные из запроса и передаем их в функцию обработчик в UseCase,
-// получаем ответ (output) и передаем его пользователю
-
 func (h *Handlers) CreateProfile(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

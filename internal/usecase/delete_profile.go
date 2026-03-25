@@ -13,9 +13,8 @@ import (
 )
 
 func (u *UseCase) DeleteProfile(ctx context.Context, input dto.DeleteProfileInput) error {
-	// Создаем новый трейс, указываем spanName(название пакета и функция)
 	ctx, span := tracer.Start(ctx, "usecase DeleteProfile")
-	defer span.End() // Обязательно закрываем span
+	defer span.End()
 
 	id, err := uuid.Parse(input.ID)
 	if err != nil {

@@ -25,13 +25,11 @@ import (
 	"github.com/mozhaykin/my-app/pkg/redisclient"
 )
 
-// make up 								поднимается база данных
-// make test_integration_http_v1 		запускаются тесты
+// make up
+// make test_integration_http_v1
 
 var ctx = context.Background()
 
-// Указываю типы здесь, чтобы все тесты были одинаковыми для всех протоколов, а различия были только
-// в файлах main_test.go
 type CreateProfileRequest = httpclientv1.CreateProfileRequest
 
 type GetProfilesRequest = httpclientv1.GetProfilesRequest
@@ -99,26 +97,22 @@ func (s *Suite) SetupSuite() {
 	}
 
 	logger.Init(c.Logger)
-	otel.SilentModeInit() // явно отключаем otel
+	otel.SilentModeInit()
 
-	// Подключение к базе и миграции
 	s.PrepareTestDB(c.Postgres)
 
-	// Kafka writer
 	s.kafkaWriter = &kafka.Writer{
 		Addr: kafka.TCP(c.KafkaProducer.Addr...),
 	}
 
-	// Server
 	go func() {
 		err := app.Run(context.Background(), c)
 		s.Require().NoError(err)
 	}()
 
-	// Client V1
 	s.client = httpclientv1.New(c.HTTPClientV1)
 
-	time.Sleep(time.Second) // Спим секунду, что горутина с сервером успела запуститься
+	time.Sleep(time.Second)
 }
 
 // Запускается перед каждым кейсом

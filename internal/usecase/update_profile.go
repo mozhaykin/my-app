@@ -14,9 +14,8 @@ import (
 )
 
 func (u *UseCase) UpdateProfile(ctx context.Context, input dto.UpdateProfileInput) error {
-	// Создаем новый трейс, указываем spanName(название пакета и функция)
 	ctx, span := tracer.Start(ctx, "usecase UpdateProfile")
-	defer span.End() // Обязательно закрываем span
+	defer span.End()
 
 	err := input.Validate()
 	if err != nil {
@@ -52,7 +51,6 @@ func (u *UseCase) UpdateProfile(ctx context.Context, input dto.UpdateProfileInpu
 			return fmt.Errorf("u.postgres.UpdateProfile: %w", err)
 		}
 
-		// Обновляем данные в Redis
 		err = u.redis.SetCache(ctx, newProfile)
 		if err != nil {
 			log.Error().Err(err).Str("profileID", profile.ID.String()).Msg("cache: UpdateProfile: set cache")

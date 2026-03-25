@@ -10,9 +10,8 @@ import (
 )
 
 func (u *UseCase) GetProfiles(ctx context.Context, input dto.GetProfilesInput) (dto.GetProfilesOutput, error) {
-	// Создаем новый трейс, указываем spanName(название пакета и функция)
 	ctx, span := tracer.Start(ctx, "usecase GetProfiles")
-	defer span.End() // Обязательно закрываем span
+	defer span.End()
 
 	var output dto.GetProfilesOutput
 

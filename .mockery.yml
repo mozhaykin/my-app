@@ -1,5 +1,5 @@
 all: false                          # генерировать моки только для указанных пакетов/интерфейсов
-dir: '{{.InterfaceDir}}/mocks'      # создать папку mocks рядом с интерфейсами (в папке usecase)
+dir: '{{.InterfaceDir}}/mocks'      # создать папку mocks рядом с интерфейсами
 filename: mocks.go                  # все моки складываются в один файл mocks.go
 force-file-write: true              # перезаписывать файл, даже если он уже существует
 formatter: goimports                # после генерации автоматически форматировать код и импорты
@@ -7,7 +7,7 @@ log-level: info
 pkgname: 'mocks'                    # все моки будут в пакете mocks
 recursive: false                    # не проходить рекурсивно по подпапкам
 template: testify
-structname: '{{.InterfaceName}}'    # сгенерированные структуры будут называться по имени наших интерфейсов
+structname: '{{.InterfaceName}}'    # сгенерированные структуры будут называться по имени интерфейсов
 packages:                           # пакет для которого будут сгенерированы моки (для всех интерфесов в пакете)
   github.com/mozhaykin/my-app/internal/usecase:
     config:

@@ -63,7 +63,7 @@ FOR:
 		// Если мы хотим чтобы worker срабатывал только по условию, то пишем select вначале цикла for
 		select {
 		case <-w.stop:
-			break FOR // Метка FOR, чтобы выйти не только из select, а полностью из цикла for
+			break FOR
 		case <-w.timeToWork:
 		}
 	}

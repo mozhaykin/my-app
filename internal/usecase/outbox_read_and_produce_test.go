@@ -16,13 +16,12 @@ import (
 )
 
 func Test_OutboxReadAndProduce_Success(t *testing.T) {
-	otel.SilentModeInit()         // отключить open telemetry
-	transaction.IsUnitTest = true // отключить транзакции
+	otel.SilentModeInit()
+	transaction.IsUnitTest = true
 
 	ctx := context.Background()
 	limit := 10
 
-	// Данные для поведения
 	events := []domain.Event{
 		{ID: uuid.New()},
 		{ID: uuid.New()},
@@ -35,11 +34,9 @@ func Test_OutboxReadAndProduce_Success(t *testing.T) {
 		events[2].ID,
 	}
 
-	// Настраиваем поведение Postgres и kafka
 	postgres := new(mocks.Postgres)
 	k := new(mocks.Kafka)
 
-	// Ожидаемый порядок вызовов
 	mock.InOrder(
 		postgres.On("ReadOutbox", mock.Anything, limit).Once().Return(events, nil),
 		k.On("Produce", mock.Anything, events).Once().Return(nil),
@@ -49,7 +46,6 @@ func Test_OutboxReadAndProduce_Success(t *testing.T) {
 	defer postgres.AssertExpectations(t)
 	defer k.AssertExpectations(t)
 
-	// Создаём экземпляр UseCase, передавая в него мок базы
 	u := usecase.New(postgres, nil, k)
 
 	{ // Сам тест

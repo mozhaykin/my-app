@@ -16,11 +16,6 @@ func (u *UseCase) Consume(ctx context.Context, msg kafka.Message) error {
 	ctx, span := tracer.Start(ctx, "usecase Consume")
 	defer span.End()
 
-	// Если мы вдруг получим сообщение из kafka повторно, то нужно сделать так, чтобы его повторная обработка
-	// ничего не меняла. То есть операция была идемпотентной.
-	// Для этого я передаю в redis idempotencyKey и проверяю, записан ли он уже в redis.
-	// Если он уже есть, значит это сообщение мы уже получали и повторно его обрабатывать не нужно, выходим.
-	// Если idempotencyKey в redis нет, то я записываю его туда и обрабатываю сообщение т.к. оно получено впервые.
 	if u.redis.IsIdempotencyKeyExists(ctx, string(msg.Key)) {
 		log.Info().Str("key", string(msg.Key)).Msg("usecase: Consume: message already processed")
 

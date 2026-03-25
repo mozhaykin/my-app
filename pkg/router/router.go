@@ -16,8 +16,8 @@ func New() *chi.Mux {
 	// - логирует ошибку
 	r.Use(middleware.Recoverer)
 
-	r.Get("/live", probe)  // для проверки "жив" ли сервис
-	r.Get("/ready", probe) // для проверки готовности сервиса принимать трафик
+	r.Get("/live", probe)
+	r.Get("/ready", probe)
 
 	return r
 }

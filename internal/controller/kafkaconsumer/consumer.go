@@ -74,7 +74,6 @@ func (c *Consumer) run(ctx context.Context) {
 	for {
 		now := time.Now()
 
-		// Читаем сообщение из kafka
 		m, err := c.reader.FetchMessage(ctx)
 		if err != nil {
 			log.Error().Err(err).Msg("kafka consumer: FetchMessage")
@@ -86,10 +85,8 @@ func (c *Consumer) run(ctx context.Context) {
 			continue
 		}
 
-		// Восстанавливаем контекст из Kafka headers
 		msgCtx := otel.CtxFromKafkaHeaders(ctx, m.Headers)
 
-		// Создаем span от извлеченного контекста
 		msgCtx, span := tracer.Start(msgCtx, "kafka consume "+m.Topic,
 			trace.WithSpanKind(trace.SpanKindConsumer),
 			trace.WithAttributes(
@@ -101,10 +98,9 @@ func (c *Consumer) run(ctx context.Context) {
 			),
 		)
 
-		// Обрабатываем сообщение
 		err = c.usecase.Consume(msgCtx, m)
 		if err != nil {
-			c.metrics.Total(consume, metrics.Error) // Инкрементим счетчик с ошибками
+			c.metrics.Total(consume, metrics.Error)
 			log.Error().Err(err).Msg("kafka consumer: some work failed")
 
 			span.End()
@@ -112,10 +108,9 @@ func (c *Consumer) run(ctx context.Context) {
 			continue
 		}
 
-		// Коммитим оффсет в consumer group
 		err = c.reader.CommitMessages(ctx, m)
 		if err != nil {
-			c.metrics.Total(consume, metrics.Error) // Инкрементим счетчик с ошибками
+			c.metrics.Total(consume, metrics.Error)
 			log.Error().Err(err).Msg("kafka consumer: CommitMessages")
 
 			span.End()
@@ -123,10 +118,10 @@ func (c *Consumer) run(ctx context.Context) {
 			continue
 		}
 
-		c.metrics.Duration(consume, now)     // Считаем и записываем в метрику продолжительность обработки запроса
-		c.metrics.Total(consume, metrics.Ok) // Инкрементим счетчик со статусом OK.
+		c.metrics.Duration(consume, now)
+		c.metrics.Total(consume, metrics.Ok)
 
-		span.End() // Закрываем span
+		span.End()
 	}
 
 	close(c.done)

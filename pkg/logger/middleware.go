@@ -28,8 +28,7 @@ func Middleware(next http.Handler) http.Handler {
 
 		// выполняется работа после выполнения нашей ручки
 
-		// event (событие) это запись лога
-		// по умолчанию создается лог INFO
+		// event это запись лога, по умолчанию создается лог INFO
 		event := log.Info()
 
 		if bag.Err != nil {
@@ -40,7 +39,7 @@ func Middleware(next http.Handler) http.Handler {
 			Str("profile_id", bag.ProfileID).
 			Str("proto", "http"). // если у нас есть другие протоколы
 			Int("code", ww.Code()).
-			Str("method", fmt.Sprintf("%s %s", r.Method, router.ExtractPath(ctx))). // метод и путь к ручке
+			Str("method", fmt.Sprintf("%s %s", r.Method, router.ExtractPath(ctx))).
 			Send()
 	}
 

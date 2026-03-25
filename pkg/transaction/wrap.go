@@ -11,19 +11,13 @@ import (
 	"github.com/mozhaykin/my-app/pkg/otel/tracer"
 )
 
-// Функция - обертка для транзакций
-// Вызываем эту функцию и передаем в нее ctx и анонимную функцию, в которой написали код,
-// который должен быть выполнен в транзакции.
-
 func Wrap(ctx context.Context, fn func(context.Context) error) error {
-	// Если IsUnitTest bool, то сразу выполняем анонимную функцию и выходим
 	if IsUnitTest {
 		return fn(ctx)
 	}
 
-	// Создаем новый трейс, указываем spanName(название пакета и функция)
 	ctx, span := tracer.Start(ctx, "transaction Wrap")
-	defer span.End() // Обязательно закрываем span
+	defer span.End()
 
 	tx, err := pool.Begin(ctx)
 	if err != nil {

@@ -11,12 +11,9 @@ import (
 	"github.com/mozhaykin/my-app/pkg/transaction"
 )
 
-// Внутренняя логика нашего приложения (все что происходит после получения input, до преобразования в output)
-
 func (u *UseCase) CreateProfile(ctx context.Context, input dto.CreateProfileInput) (dto.CreateProfileOutput, error) {
-	// Создаем новый трейс, указываем spanName(название пакета и функция)
 	ctx, span := tracer.Start(ctx, "usecase CreateProfile")
-	defer span.End() // Обязательно закрываем span
+	defer span.End()
 
 	var output dto.CreateProfileOutput
 
@@ -27,7 +24,6 @@ func (u *UseCase) CreateProfile(ctx context.Context, input dto.CreateProfileInpu
 
 	property := domain.NewProperty(profile.ID, []string{"home", "primary"})
 
-	// Создаю событие для записи в таблицу Outbox
 	event, err := domain.EventProfileCreated(profile)
 	if err != nil {
 		return output, fmt.Errorf("profile.ToProfileCreatedEvent: %w", err)
@@ -50,9 +46,6 @@ func (u *UseCase) CreateProfile(ctx context.Context, input dto.CreateProfileInpu
 			return fmt.Errorf("u.postgres.CreateProperty: %w", err)
 		}
 
-		// Фиксирую бизнес факт и атомарно сохраняю событие и трейс в таблицу Outbox.
-		// Отправка в Kafka - асинхронная инфраструктурная задача, вынесенная в отдельный воркер,
-		// который к тому же формирует message из event.
 		err = u.postgres.SaveOutbox(ctx, event)
 		if err != nil {
 			return fmt.Errorf("u.postgres.SaveOutboxKafka: %w", err)

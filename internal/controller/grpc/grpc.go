@@ -30,7 +30,6 @@ func New(c Config, uc *usecase.UseCase) (*Server, error) {
 		grpc.ChainUnaryInterceptor(logger.Interceptor, otel.Interceptor),
 	)
 
-	// для просмотра через инсомнию или постман
 	reflection.Register(s)
 
 	v1 := ver1.New(uc)

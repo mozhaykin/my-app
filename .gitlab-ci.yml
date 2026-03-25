@@ -20,10 +20,10 @@ test:
   script:
     - go test -v ./...
 
-build: # сборка image образа и его push в harbor
+build: # сборка образа и push в harbor
   stage: build
   variables:
-    IMAGE: $REGISTRY/$USERNAME/$APP_NAME # переменную $REGISTRY мы не видим, она прописана в админке gitlab
+    IMAGE: $REGISTRY/$USERNAME/$APP_NAME # переменная $REGISTRY прописана в админке gitlab
     TAG: $CI_COMMIT_SHORT_SHA # устанавливаем тег, как short SHA последнего коммита
   script:
     - cat $ENV_FILE > .env

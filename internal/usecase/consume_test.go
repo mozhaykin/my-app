@@ -47,8 +47,8 @@ func Test_Consume_Success(t *testing.T) {
 }
 
 func Test_Consume_AlreadyProcessed(t *testing.T) {
-	otel.SilentModeInit()         // отключить open telemetry
-	transaction.IsUnitTest = true // отключить транзакции
+	otel.SilentModeInit()
+	transaction.IsUnitTest = true
 
 	ctx := context.Background()
 
@@ -68,8 +68,8 @@ func Test_Consume_AlreadyProcessed(t *testing.T) {
 }
 
 func Test_Consume_InvalidJSON(t *testing.T) {
-	otel.SilentModeInit()         // отключить open telemetry
-	transaction.IsUnitTest = true // отключить транзакции
+	otel.SilentModeInit()
+	transaction.IsUnitTest = true
 
 	ctx := context.Background()
 

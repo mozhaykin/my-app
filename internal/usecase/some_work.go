@@ -9,9 +9,8 @@ import (
 )
 
 func (u *UseCase) SomeWork(ctx context.Context) error {
-	// Создаем новый трейс, указываем spanName(название пакета и функция)
 	_, span := tracer.Start(ctx, "usecase SomeWork")
-	defer span.End() // Обязательно закрываем span
+	defer span.End()
 
 	log.Info().Msg("SomeWork called")
 

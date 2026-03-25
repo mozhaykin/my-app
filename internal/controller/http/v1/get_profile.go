@@ -16,7 +16,7 @@ func (h *Handlers) GetProfile(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	input := dto.GetProfileInput{
-		ID: chi.URLParam(r, "id"), // Достаем ключ из запроса
+		ID: chi.URLParam(r, "id"),
 	}
 
 	baggage.PutProfileID(ctx, input.ID)

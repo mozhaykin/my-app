@@ -1,4 +1,3 @@
--- Мы имеем таблицы
 CREATE TYPE status AS ENUM (
     'pending',
     'active',
@@ -58,7 +57,6 @@ SELECT tags
 FROM property
 WHERE profile_id = (SELECT id FROM profile WHERE name = 'John Doe');
 
-
 -- Сделать append в массив
 UPDATE property
 SET tags = array_append(tags, 'new')
@@ -104,9 +102,3 @@ CREATE DATABASE mozhaykin_my_app;
 
 -- Удалить БД для my-app для своего пользователя
 DROP DATABASE mozhaykin_my_app;
-
--- Хост: 89.111.142.19
--- Порт: 5432
--- Логин: admin
--- Пароль: K3Ea8anNvpHWcy
--- База: postgres

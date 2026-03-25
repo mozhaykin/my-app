@@ -12,7 +12,6 @@ import (
 )
 
 func TestEventProfileCreated(t *testing.T) {
-	// Пример данных для profile
 	p := domain.Profile{
 		ID:       uuid.New(),
 		Name:     "John Doe",
@@ -25,16 +24,13 @@ func TestEventProfileCreated(t *testing.T) {
 		},
 	}
 
-	// Вызов основной функции
 	event, err := domain.EventProfileCreated(p)
 	require.NoError(t, err)
 
-	// Проверка
 	require.NotEqual(t, uuid.Nil, event.ID, "Event ID should not be nil")
 	require.Equal(t, domain.ProfileCreated, event.Type)
 	require.WithinDuration(t, time.Now().UTC(), event.OccurredAt, time.Second, "OccurredAt should be near now")
 
-	// Проверяем payload JSON
 	var payload domain.Payload
 	err = json.Unmarshal(event.Value, &payload)
 	require.NoError(t, err)

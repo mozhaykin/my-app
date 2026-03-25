@@ -30,10 +30,8 @@ func (s *Suite) PrepareTestDB(c postgres.Config) {
 	_, err = db.Exec(`DROP SCHEMA public CASCADE; CREATE SCHEMA public;`)
 	s.Require().NoError(err)
 
-	// Сохраняем db в Suite, чтобы SetupTest или TearDownTest могли использовать её
 	s.db = db
 
-	// Накатываем миграции
 	m, err := migrate.New(filePath, dbURL)
 	s.Require().NoError(err)
 

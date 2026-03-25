@@ -25,13 +25,11 @@ import (
 	"github.com/mozhaykin/my-app/pkg/redisclient"
 )
 
-// make up 								поднимается база данных
-// make test_integration_grpc_v1		запускаются тесты
+// make up
+// make test_integration_grpc_v1
 
 var ctx = context.Background()
 
-// Указываю типы здесь для удобства, чтобы все тесты и миграции были одинаковыми для всех протоколов,
-// различия есть только в файлах main_test.go
 type CreateProfileRequest = grpcclientv1.CreateProfileRequest
 
 type UpdateProfileRequest = grpcclientv1.UpdateProfileRequest
@@ -49,7 +47,6 @@ type Suite struct {
 	db          *sql.DB
 }
 
-// Запускается один раз, до тестов (например для поднятия коннекшена к базе).
 func (s *Suite) SetupSuite() {
 	s.Assertions = s.Require()
 
@@ -97,34 +94,28 @@ func (s *Suite) SetupSuite() {
 	}
 
 	logger.Init(c.Logger)
-	otel.SilentModeInit() // явно отключаем otel
+	otel.SilentModeInit()
 
-	// Подключение к базе и миграции
 	s.PrepareTestDB(c.Postgres)
 
-	// Kafka writer
 	s.kafkaWriter = &kafka.Writer{
 		Addr: kafka.TCP(c.KafkaProducer.Addr...),
 	}
 
-	// Server
 	go func() {
 		err := app.Run(context.Background(), c)
 		s.Require().NoError(err)
 	}()
 
-	// Client
 	var err error
 	s.client, err = grpcclientv1.New(c.GRPSClientV1)
 	s.Require().NoError(err)
 
-	time.Sleep(time.Second) // Спим секунду, что горутина с сервером успела запуститься
+	time.Sleep(time.Second)
 }
 
-// Запускается перед каждым кейсом
 func (s *Suite) SetupTest() {}
 
-// Запускается после каждого кейса
 func (s *Suite) TearDownTest() {
 	// Очистка данных из всех таблиц. Автоматически обходит все таблицы и работает при любой структуре БД.
 	_, err := s.db.Exec(`
@@ -140,7 +131,6 @@ func (s *Suite) TearDownTest() {
 	s.NoError(err)
 }
 
-// Запускается один раз в вконце, после тестов (например для закрытия коннекшн к базе данных)
 func (s *Suite) TearDownSuite() {
 	if s.db != nil {
 		_ = s.db.Close()

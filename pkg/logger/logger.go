@@ -16,9 +16,9 @@ type Config struct {
 }
 
 func Init(c Config) {
-	zerolog.TimeFieldFormat = time.RFC3339 // Формат времени: "2006-01-02T15:04:05Z07:00"
+	zerolog.TimeFieldFormat = time.RFC3339
 
-	zerolog.SetGlobalLevel(zerolog.InfoLevel) // Уровень логирования по умолчанию: Info
+	zerolog.SetGlobalLevel(zerolog.InfoLevel) // Уровень логирования по умолчанию
 
 	level, err := zerolog.ParseLevel(c.Level) // Динамическое изменение уровня логирования, если парсинг конфига успешен
 	if err == nil {

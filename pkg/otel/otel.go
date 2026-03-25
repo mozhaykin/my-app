@@ -50,10 +50,8 @@ func Init(ctx context.Context, c Config) error {
 		propagation.Baggage{},      // Передача baggage в header (если мы хотим использовать baggage)
 	)
 
-	// передаем пропагацию в Otel
 	otel.SetTextMapPropagator(prop)
 
-	// Указываем провайдер (HTTP или GRPC). Лучше GRPC из-за постоянного соединения.
 	traceExporter, err := otlptracegrpc.New(ctx, otlptracegrpc.WithEndpoint(c.Endpoint), otlptracegrpc.WithInsecure())
 	if err != nil {
 		return fmt.Errorf("failed to create OTLP trace exporter: %w", err)

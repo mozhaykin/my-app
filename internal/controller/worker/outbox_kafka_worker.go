@@ -43,7 +43,6 @@ FOR:
 		ctx := context.Background()
 		ctx, span := tracer.Start(ctx, "worker outbox kafka", trace.WithSpanKind(trace.SpanKindInternal))
 
-		// Читаем сообщения из Outbox и передаем их в kafka
 		eventsCount, err := w.usecase.OutboxReadAndProduce(ctx, w.config.Limit)
 		if err != nil {
 			log.Error().Err(err).Msg("outbox kafka worker: read and produce failed")
@@ -51,11 +50,10 @@ FOR:
 
 		log.Info().Int("count", eventsCount).Msg("outbox kafka worker: read and produce")
 
-		span.End() // Закрываем span
+		span.End()
 
 		var sleepDuration time.Duration
 
-		// если пришло меньше 10 сообщений, значит их больше нет и надо поспать 10 секунд
 		if eventsCount < w.config.Limit {
 			sleepDuration = 10 * time.Second
 
@@ -64,7 +62,7 @@ FOR:
 
 		select {
 		case <-w.stop:
-			break FOR // Метка FOR, чтобы выйти не только из select, а полностью из цикла for
+			break FOR
 		case <-time.After(sleepDuration):
 		}
 	}
