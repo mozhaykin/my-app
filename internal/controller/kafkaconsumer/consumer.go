@@ -41,7 +41,7 @@ func New(cfg Config, m *metrics.Entity, uc *usecase.UseCase) *Consumer {
 		GroupID:          cfg.Group,
 		ErrorLogger:      logger.ErrorLogger(),
 		ReadBatchTimeout: time.Second,
-		CommitInterval:   100 * time.Millisecond,
+		CommitInterval:   0,
 	})
 
 	ctx, stop := context.WithCancel(context.Background())

@@ -42,7 +42,7 @@ func TestEventProfileCreated(t *testing.T) {
 	require.Equal(t, p.ID, payload.ID)
 	require.Equal(t, string(p.Name), payload.Name)
 	require.Equal(t, int(p.Age), payload.Age)
-	require.Equal(t, p.Status.String(), payload.Status)
+	require.Equal(t, p.Status, payload.Status)
 	require.Equal(t, p.Verified, payload.Verified)
 	require.Equal(t, p.Contacts.Email, payload.Email)
 	require.Equal(t, p.Contacts.Phone, payload.Phone)
