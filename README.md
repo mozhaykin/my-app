@@ -1,4 +1,4 @@
-# Запуск приложения
+# Запуск приложения:
 ```shell
 make up
 make migrate-up
