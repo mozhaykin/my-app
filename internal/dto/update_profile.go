@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
+	"github.com/mozhaykin/my-app/internal/domain"
 )
 
 // Update это единственный кейс, когда простые типы передаются по указателю. Это делается для того,

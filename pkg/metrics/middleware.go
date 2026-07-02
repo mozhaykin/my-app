@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/router"
+	"github.com/mozhaykin/my-app/pkg/router"
 )
 
 func NewMiddleware(metrics *HTTPServer) func(next http.Handler) http.Handler {
@@ -18,8 +18,8 @@ func NewMiddleware(metrics *HTTPServer) func(next http.Handler) http.Handler {
 			method := r.Method + " " + router.ExtractPath(r.Context())
 
 			// Metrics
-			metrics.Duration(method, now)       // Записывем продолжительность запроса
-			metrics.TotalInc(method, ww.Code()) // Инкрементим счетчик запроса
+			metrics.Duration(method, now)
+			metrics.TotalInc(method, ww.Code())
 		}
 
 		return http.HandlerFunc(fn)

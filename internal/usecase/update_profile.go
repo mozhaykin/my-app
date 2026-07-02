@@ -7,16 +7,15 @@ import (
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
+	"github.com/mozhaykin/my-app/internal/domain"
+	"github.com/mozhaykin/my-app/internal/dto"
+	"github.com/mozhaykin/my-app/pkg/otel/tracer"
+	"github.com/mozhaykin/my-app/pkg/transaction"
 )
 
 func (u *UseCase) UpdateProfile(ctx context.Context, input dto.UpdateProfileInput) error {
-	// Создаем новый трейс, указываем spanName(название пакета и функция)
 	ctx, span := tracer.Start(ctx, "usecase UpdateProfile")
-	defer span.End() // Обязательно закрываем span
+	defer span.End()
 
 	err := input.Validate()
 	if err != nil {
@@ -52,7 +51,6 @@ func (u *UseCase) UpdateProfile(ctx context.Context, input dto.UpdateProfileInpu
 			return fmt.Errorf("u.postgres.UpdateProfile: %w", err)
 		}
 
-		// Обновляем данные в Redis
 		err = u.redis.SetCache(ctx, newProfile)
 		if err != nil {
 			log.Error().Err(err).Str("profileID", profile.ID.String()).Msg("cache: UpdateProfile: set cache")

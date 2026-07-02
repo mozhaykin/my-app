@@ -1,7 +1,7 @@
 variables:
-  USERNAME: "amozhaykin"
+  USERNAME: "mozhaykin"
   APP_NAME: "my-app"
-  POSTGRES_DB_NAME: "amozhaykin_my_app"
+  POSTGRES_DB_NAME: "mozhaykin_my_app"
 
 stages:
   - lint
@@ -20,10 +20,10 @@ test:
   script:
     - go test -v ./...
 
-build: # сборка image образа и его push в harbor
+build: # сборка образа и push в harbor
   stage: build
   variables:
-    IMAGE: $REGISTRY/$USERNAME/$APP_NAME # переменную $REGISTRY мы не видим, она прописана в админке gitlab
+    IMAGE: $REGISTRY/$USERNAME/$APP_NAME # переменная $REGISTRY прописана в админке gitlab
     TAG: $CI_COMMIT_SHORT_SHA # устанавливаем тег, как short SHA последнего коммита
   script:
     - cat $ENV_FILE > .env
@@ -44,7 +44,7 @@ update-tag: # этой секции может здесь не быть, в эт
   variables:
     IMAGE: $REGISTRY/$USERNAME/$APP_NAME
     TAG: $CI_COMMIT_SHORT_SHA # устанавливаем тег, как short SHA последнего коммита
-    REPOSITORY: https://$GITLAB_DEPLOY_USER:$GITLAB_DEPLOY_PASS@gitlab.golang-school.ru/potok-1/deploy.git
+    REPOSITORY: https://$GITLAB_DEPLOY_USER:$GITLAB_DEPLOY_PASS@gitlab.golang.ru/mozhaykin/deploy.git
     DEPLOYMENT: 1-deployment.yaml
   script:
     - git config --global user.email "ci@gitlab.bot" # прописываем глобального пользователя "ci@gitlab.bot"

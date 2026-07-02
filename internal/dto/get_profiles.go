@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
+	"github.com/mozhaykin/my-app/internal/domain"
 )
 
 type GetProfilesOutput struct {

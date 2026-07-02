@@ -7,21 +7,18 @@ import (
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
+	"github.com/mozhaykin/my-app/internal/domain"
+	"github.com/mozhaykin/my-app/pkg/otel/tracer"
+	"github.com/mozhaykin/my-app/pkg/transaction"
 )
 
 func (u *UseCase) OutboxReadAndProduce(ctx context.Context, limit int) (int, error) {
-	// Создаем новый трейс, указываем spanName(название пакета и функция)
 	ctx, span := tracer.Start(ctx, "usecase OutboxReadAndProduce")
-	defer span.End() // Обязательно закрываем span
+	defer span.End()
 
 	var events []domain.Event
 
-	// Транзакция на чтение из outbox
 	err := transaction.Wrap(ctx, func(ctx context.Context) error {
-		// Читаем событие из outbox таблицы БД
 		var err error
 
 		events, err = u.postgres.ReadOutbox(ctx, limit)
@@ -36,7 +33,6 @@ func (u *UseCase) OutboxReadAndProduce(ctx context.Context, limit int) (int, err
 	}
 
 	eventsCount := len(events)
-	// Если events нет, выходим из функции без ошибок
 	if eventsCount == 0 {
 		return 0, nil
 	}
@@ -50,7 +46,6 @@ func (u *UseCase) OutboxReadAndProduce(ctx context.Context, limit int) (int, err
 	// Формируем список id для удаления events из outbox
 	ids := extractEventIDs(events)
 
-	// Новая транзакция для удаления events из outbox
 	err = transaction.Wrap(ctx, func(ctx context.Context) error {
 		err = u.postgres.ClearOutbox(ctx, ids)
 		if err != nil {

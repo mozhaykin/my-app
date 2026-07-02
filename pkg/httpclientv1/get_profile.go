@@ -27,7 +27,7 @@ type Profile struct {
 }
 
 func (c *Client) Get(ctx context.Context, id string) (Profile, error) {
-	const getProfile = "amozhaykin/my-app/api/v1/profile"
+	const getProfile = "mozhaykin/my-app/api/v1/profile"
 
 	path := fmt.Sprintf("http://%s/%s/%s", c.host, getProfile, id)
 

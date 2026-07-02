@@ -3,9 +3,9 @@ package v2
 import (
 	"context"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http/profile_v2/server"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto/baggage"
+	"github.com/mozhaykin/my-app/gen/http/profile_v2/server"
+	"github.com/mozhaykin/my-app/internal/dto"
+	"github.com/mozhaykin/my-app/internal/dto/baggage"
 )
 
 func (h *Handlers) CreateProfile(ctx context.Context, request server.CreateProfileRequestObject) (

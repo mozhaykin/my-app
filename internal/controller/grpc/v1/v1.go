@@ -1,8 +1,8 @@
 package v1
 
 import (
-	pb "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/grpc/profile_v1"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
+	pb "github.com/mozhaykin/my-app/gen/grpc/profile_v1"
+	"github.com/mozhaykin/my-app/internal/usecase"
 )
 
 type Handlers struct {

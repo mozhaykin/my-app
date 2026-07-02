@@ -23,7 +23,7 @@ type Event struct {
 	ID           uuid.UUID `json:"event_id"`
 	Type         EventType `json:"event_type"`
 	OccurredAt   time.Time `json:"occurred_at"`
-	Value        []byte    `json:"value"` // сериализованный JSON события
+	Value        []byte    `json:"value"`
 	TraceContext []byte    `json:"traceContext"`
 }
 
@@ -32,7 +32,6 @@ type EventType string
 const ProfileCreated EventType = "ProfileCreated"
 
 func EventProfileCreated(p Profile) (Event, error) {
-	// Создаём чистое domain-событие
 	payload := Payload{
 		ID:         p.ID,
 		Name:       string(p.Name),
@@ -44,13 +43,11 @@ func EventProfileCreated(p Profile) (Event, error) {
 		OccurredAt: time.Now().UTC(),
 	}
 
-	// Сериализуем payload в JSON
 	value, err := json.Marshal(payload)
 	if err != nil {
 		return Event{}, fmt.Errorf("json.Marshal EventProfileCreated: %w", err)
 	}
 
-	// Возвращаем объект готовый к записи в outbox
 	return Event{
 		ID:         uuid.New(),
 		Type:       ProfileCreated,

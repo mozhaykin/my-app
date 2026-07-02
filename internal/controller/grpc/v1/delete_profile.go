@@ -8,10 +8,10 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	pb "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/grpc/profile_v1"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto/baggage"
+	pb "github.com/mozhaykin/my-app/gen/grpc/profile_v1"
+	"github.com/mozhaykin/my-app/internal/domain"
+	"github.com/mozhaykin/my-app/internal/dto"
+	"github.com/mozhaykin/my-app/internal/dto/baggage"
 )
 
 func (h Handlers) DeleteProfile(ctx context.Context, in *pb.DeleteProfileInput) (*emptypb.Empty, error) {

@@ -29,8 +29,6 @@ const (
 // ProfileV1Client is the client API for ProfileV1 service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// этот раздел с методами, пишется, только если мы хоти использовать protobuf с протоколом grpc.
 type ProfileV1Client interface {
 	CreateProfile(ctx context.Context, in *CreateProfileInput, opts ...grpc.CallOption) (*CreateProfileOutput, error)
 	GetProfile(ctx context.Context, in *GetProfileInput, opts ...grpc.CallOption) (*GetProfileOutput, error)
@@ -89,8 +87,6 @@ func (c *profileV1Client) DeleteProfile(ctx context.Context, in *DeleteProfileIn
 // ProfileV1Server is the server API for ProfileV1 service.
 // All implementations must embed UnimplementedProfileV1Server
 // for forward compatibility.
-//
-// этот раздел с методами, пишется, только если мы хоти использовать protobuf с протоколом grpc.
 type ProfileV1Server interface {
 	CreateProfile(context.Context, *CreateProfileInput) (*CreateProfileOutput, error)
 	GetProfile(context.Context, *GetProfileInput) (*GetProfileOutput, error)

@@ -25,7 +25,7 @@ func (c *Client) GetProfiles(ctx context.Context, request GetProfilesRequest) ([
 	u := &url.URL{
 		Scheme: "http",
 		Host:   c.host,
-		Path:   "amozhaykin/my-app/api/v1/profiles",
+		Path:   "mozhaykin/my-app/api/v1/profiles",
 	}
 
 	// Query params

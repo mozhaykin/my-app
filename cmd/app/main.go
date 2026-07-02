@@ -7,17 +7,11 @@ import (
 
 	_ "go.uber.org/automaxprocs"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/config"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/app"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
+	"github.com/mozhaykin/my-app/config"
+	"github.com/mozhaykin/my-app/internal/app"
+	"github.com/mozhaykin/my-app/pkg/logger"
+	"github.com/mozhaykin/my-app/pkg/otel"
 )
-
-// В пакете main создаем новый конфиг, инициализируем сторонний логгер и запускаем основную функцию
-// приложения app.Run, передавая в нее стандартный context.Background() и конфиг.
-
-// Основная функция Run находится не в пакете main, для того, чтобы в интеграционных тестах можно было ее запустить.
-// Импортировать пакет main в другие пакеты нельзя!
 
 func main() {
 	c, err := config.New()

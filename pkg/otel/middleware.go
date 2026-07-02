@@ -11,18 +11,16 @@ import (
 
 	semconv "go.opentelemetry.io/otel/semconv/v1.30.0"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/router"
+	"github.com/mozhaykin/my-app/pkg/otel/tracer"
+	"github.com/mozhaykin/my-app/pkg/router"
 )
 
 func Middleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		// Извлекаем контекст из заголовков запроса, если они заполнены
 		ctx := otel.GetTextMapPropagator().Extract(r.Context(), propagation.HeaderCarrier(r.Header))
 
 		// Создаем корневой span (name пока указываем пустой, т.к. в этом месте мы еще не знаем, какой обработчик был вызван)
 		ctx, span := tracer.Start(ctx, "", trace.WithSpanKind(trace.SpanKindServer))
-		// При выходе из middleware закроется span и замеррет общее время выполнения трейса
 		defer span.End()
 
 		// Оборачиваем writer для захвата статуса ответа

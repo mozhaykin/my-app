@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 
-	pb "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/grpc/profile_v1"
+	pb "github.com/mozhaykin/my-app/gen/grpc/profile_v1"
 )
 
 type CreateProfileRequest struct {

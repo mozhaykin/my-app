@@ -13,16 +13,15 @@ type HTTPServer struct {
 	duration *prometheus.HistogramVec
 }
 
-// Конструктор сервера с метриками.
 func NewHTTPServer() *HTTPServer {
 	m := &HTTPServer{}
 
 	// Счетчик запросов
 	m.total = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Name: "http_server_requests_total",    // Имя
+		Name: "http_server_requests_total",
 		Help: "Total number of HTTP requests", // Человеческое описание
 	}, []string{"method", "status"}) // Лейблы
-	prometheus.MustRegister(m.total) // Регистрация в prometheus
+	prometheus.MustRegister(m.total)
 
 	// Текущее состояние чего либо
 	m.current = prometheus.NewGaugeVec(prometheus.GaugeOpts{

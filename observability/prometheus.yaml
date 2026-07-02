@@ -1,5 +1,5 @@
 global:
-  scrape_interval:     15s # каждые 15 секунд прометеус забирает данные
+  scrape_interval:     15s
   evaluation_interval: 15s
 
 scrape_configs:

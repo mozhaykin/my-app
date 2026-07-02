@@ -8,7 +8,7 @@ import (
 )
 
 func (c *Client) Delete(ctx context.Context, id string) error {
-	const deleteProfile = "amozhaykin/my-app/api/v1/profile"
+	const deleteProfile = "mozhaykin/my-app/api/v1/profile"
 
 	path := fmt.Sprintf("http://%s/%s/%s", c.host, deleteProfile, id)
 

@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http/profile_v2/client"
+	"github.com/mozhaykin/my-app/gen/http/profile_v2/client"
 )
 
 type CreateProfileRequest struct {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/http/profile_v2/client"
+	"github.com/mozhaykin/my-app/gen/http/profile_v2/client"
 )
 
 func (c *Client) Get(ctx context.Context, id string) (*client.GetProfileOutput, error) {

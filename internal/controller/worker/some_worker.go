@@ -7,7 +7,7 @@ import (
 	"github.com/robfig/cron/v3"
 	"github.com/rs/zerolog/log"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
+	"github.com/mozhaykin/my-app/internal/usecase"
 )
 
 // Здесь показана работа воркера, который при определенных событиях запускает какой-то usecase
@@ -63,7 +63,7 @@ FOR:
 		// Если мы хотим чтобы worker срабатывал только по условию, то пишем select вначале цикла for
 		select {
 		case <-w.stop:
-			break FOR // Метка FOR, чтобы выйти не только из select, а полностью из цикла for
+			break FOR
 		case <-w.timeToWork:
 		}
 	}

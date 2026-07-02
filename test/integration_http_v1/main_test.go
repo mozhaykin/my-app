@@ -12,26 +12,24 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/config"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/kafkaproducer"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/app"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/kafkaconsumer"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/worker"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpclientv1"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/redisclient"
+	"github.com/mozhaykin/my-app/config"
+	"github.com/mozhaykin/my-app/internal/adapter/kafkaproducer"
+	"github.com/mozhaykin/my-app/internal/app"
+	"github.com/mozhaykin/my-app/internal/controller/kafkaconsumer"
+	"github.com/mozhaykin/my-app/internal/controller/worker"
+	"github.com/mozhaykin/my-app/pkg/httpclientv1"
+	"github.com/mozhaykin/my-app/pkg/httpserver"
+	"github.com/mozhaykin/my-app/pkg/logger"
+	"github.com/mozhaykin/my-app/pkg/otel"
+	"github.com/mozhaykin/my-app/pkg/postgres"
+	"github.com/mozhaykin/my-app/pkg/redisclient"
 )
 
-// make up 								поднимается база данных
-// make test_integration_http_v1 		запускаются тесты
+// make up
+// make test_integration_http_v1
 
 var ctx = context.Background()
 
-// Указываю типы здесь, чтобы все тесты были одинаковыми для всех протоколов, а различия были только
-// в файлах main_test.go
 type CreateProfileRequest = httpclientv1.CreateProfileRequest
 
 type GetProfilesRequest = httpclientv1.GetProfilesRequest
@@ -89,8 +87,8 @@ func (s *Suite) SetupSuite() {
 		},
 		KafkaConsumer: kafkaconsumer.Config{
 			Addr:     []string{"localhost:9094"},
-			Topic:    "amozhaykin-my-app-topic",
-			Group:    "amozhaykin-my-app-group",
+			Topic:    "mozhaykin-my-app-topic",
+			Group:    "mozhaykin-my-app-group",
 			Disabled: true, // Disable consumer in test!
 		},
 		OutboxKafkaWorker: worker.OutboxKafkaConfig{
@@ -99,26 +97,22 @@ func (s *Suite) SetupSuite() {
 	}
 
 	logger.Init(c.Logger)
-	otel.SilentModeInit() // явно отключаем otel
+	otel.SilentModeInit()
 
-	// Подключение к базе и миграции
 	s.PrepareTestDB(c.Postgres)
 
-	// Kafka writer
 	s.kafkaWriter = &kafka.Writer{
 		Addr: kafka.TCP(c.KafkaProducer.Addr...),
 	}
 
-	// Server
 	go func() {
 		err := app.Run(context.Background(), c)
 		s.Require().NoError(err)
 	}()
 
-	// Client V1
 	s.client = httpclientv1.New(c.HTTPClientV1)
 
-	time.Sleep(time.Second) // Спим секунду, что горутина с сервером успела запуститься
+	time.Sleep(time.Second)
 }
 
 // Запускается перед каждым кейсом

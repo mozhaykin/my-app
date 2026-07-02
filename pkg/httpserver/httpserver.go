@@ -18,11 +18,11 @@ type Server struct { // Обёртка над стандартным http.Server
 	server *http.Server
 }
 
-func New(handler http.Handler, c Config) *Server { // Создает экземпляр http.Server с настройками таймаутов
+func New(handler http.Handler, c Config) *Server {
 	httpServer := &http.Server{
-		Handler:      handler,          // Обработчик запросов (например, роутер chi/gin)
-		ReadTimeout:  20 * time.Second, // Таймаут на чтение запроса
-		WriteTimeout: 20 * time.Second, // Таймаут на запись ответа
+		Handler:      handler,
+		ReadTimeout:  20 * time.Second,
+		WriteTimeout: 20 * time.Second,
 		Addr:         net.JoinHostPort("", c.Port),
 	}
 
@@ -30,7 +30,7 @@ func New(handler http.Handler, c Config) *Server { // Создает экзем�
 		server: httpServer,
 	}
 
-	go s.start() // Запуск сервера в горутине
+	go s.start() // Запуск сервера в отдельной горутине
 
 	log.Info().Msg("http server: started on port: " + c.Port)
 
@@ -38,7 +38,6 @@ func New(handler http.Handler, c Config) *Server { // Создает экзем�
 }
 
 func (s *Server) start() {
-	// Запускает сервер в блокирующем режиме (ListenAndServe).
 	// Игнорирует ошибку http.ErrServerClosed (возникает при graceful shutdown).
 	// Логирует другие ошибки (например, если порт занят).
 	err := s.server.ListenAndServe()

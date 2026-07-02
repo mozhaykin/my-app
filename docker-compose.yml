@@ -1,6 +1,4 @@
 services:
-# По умолчанию приложение my-app запускается просто локально, а все зависимости в docker compose,
-# поэтому запуск приложения в docker compose я закоменировал.
 #  app:
 #    build:
 #      context: .
@@ -33,8 +31,8 @@ services:
     ports:
       - '8081:8081'
     environment:
-      - REDIS_HOST=redis  # хост по названию контейнера
-      - REDIS_PORT=6379   # порт который будет прослушиваться
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       - redis             # зависимость, чтобы redis-ui запускался только после того как поднялся сам redis
 
@@ -42,7 +40,7 @@ services:
     image: confluentinc/cp-kafka:latest
     ports:
       - '9092:9092' # internal. Для подключения приложений из docker-compose к kafka
-      - '9094:9094' # external. Для подключения из приложений на ноуте к kafka
+      - '9094:9094' # external.
     environment:
       KAFKA_NODE_ID: 0
       KAFKA_PROCESS_ROLES: 'controller,broker'

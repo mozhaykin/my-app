@@ -1,6 +1,6 @@
 package dto
 
-import "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
+import "github.com/mozhaykin/my-app/internal/domain"
 
 type GetProfileOutput struct {
 	domain.Profile

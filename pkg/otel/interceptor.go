@@ -10,11 +10,10 @@ import (
 
 	semconv "go.opentelemetry.io/otel/semconv/v1.30.0"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
+	"github.com/mozhaykin/my-app/pkg/otel/tracer"
 )
 
 func Interceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
-	// Создаем корневой span
 	ctx, span := tracer.Start(ctx, "grpc "+info.FullMethod, trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 

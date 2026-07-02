@@ -4,13 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto/baggage"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/render"
+	"github.com/mozhaykin/my-app/internal/dto"
+	"github.com/mozhaykin/my-app/internal/dto/baggage"
+	"github.com/mozhaykin/my-app/pkg/render"
 )
-
-// Получаем данные из запроса и передаем их в функцию обработчик в UseCase,
-// получаем ответ (output) и передаем его пользователю
 
 func (h *Handlers) CreateProfile(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()

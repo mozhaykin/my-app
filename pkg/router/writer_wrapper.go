@@ -3,10 +3,10 @@ package router
 import "net/http"
 
 type Writer struct {
-	http.ResponseWriter // эмбединг
+	http.ResponseWriter
 
 	wroteCode bool // был ли записан код ответа
-	code      int  // сам код ответа
+	code      int
 }
 
 func WriterWrapper(w http.ResponseWriter) *Writer {
@@ -14,17 +14,17 @@ func WriterWrapper(w http.ResponseWriter) *Writer {
 }
 
 func (w *Writer) WriteHeader(code int) { // Переопределяем метод WriteHeader, добавляем в него свою логику.
-	if !w.wroteCode { // Если код не записан, то:
-		w.setCode(code)                    // записываем его в нашу структуру (w.wroteCode = true и w.code = code)
-		w.ResponseWriter.WriteHeader(code) // оставляем прежнюю логику
+	if !w.wroteCode {
+		w.setCode(code)
+		w.ResponseWriter.WriteHeader(code)
 	}
 }
 
 func (w *Writer) Write(data []byte) (int, error) { // Переопределяем метод Write, добавляем в него свою логику.
-	if !w.wroteCode { // Если код не записан, то:
-		w.setCode(http.StatusOK) // записываем его в нашу структуру (w.wroteCode = true и w.code = code)
+	if !w.wroteCode {
+		w.setCode(http.StatusOK)
 	}
-	// оставляем прежнюю логику
+
 	return w.ResponseWriter.Write(data) //nolint:wrapcheck
 }
 

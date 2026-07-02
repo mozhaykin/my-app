@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	pb "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/gen/grpc/profile_v1"
+	pb "github.com/mozhaykin/my-app/gen/grpc/profile_v1"
 )
 
 type Config struct {
@@ -25,7 +25,7 @@ type Client struct {
 func New(c Config) (*Client, error) {
 	conn, err := grpc.NewClient(net.JoinHostPort(c.Host, c.Port),
 		grpc.WithTransportCredentials(insecure.NewCredentials()), // для работы по http а не https
-		grpc.WithUnaryInterceptor(timeoutInterceptor),            // мидлвара
+		grpc.WithUnaryInterceptor(timeoutInterceptor),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("grpc.NewClient: %w", err)
@@ -46,10 +46,8 @@ func (c *Client) Close() {
 func timeoutInterceptor(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn,
 	invoker grpc.UnaryInvoker, opts ...grpc.CallOption,
 ) error {
-	// Устанавливаем таймаут для каждого вызова
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	// Вызываем метод
 	return invoker(ctx, method, req, reply, cc, opts...)
 }

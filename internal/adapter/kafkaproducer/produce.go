@@ -12,10 +12,10 @@ import (
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/domain"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/logger"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/metrics"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/otel/tracer"
+	"github.com/mozhaykin/my-app/internal/domain"
+	"github.com/mozhaykin/my-app/pkg/logger"
+	"github.com/mozhaykin/my-app/pkg/metrics"
+	"github.com/mozhaykin/my-app/pkg/otel/tracer"
 )
 
 type Config struct {
@@ -55,25 +55,23 @@ func (p *Producer) Produce(ctx context.Context, events []domain.Event) error {
 
 	eventsCount := len(events)
 
-	defer p.metrics.Duration(produce, time.Now()) // Записываем в метрику продолжительность записи в кафку
+	defer p.metrics.Duration(produce, time.Now())
 
-	// Преобразуем события их outbox в сообщения для Kafka
 	messages, err := buildKafkaMessages(events)
 	if err != nil {
-		p.metrics.TotalAdd(produce, metrics.Error, eventsCount) // Инкрементим счетчик ошибок
+		p.metrics.TotalAdd(produce, metrics.Error, eventsCount)
 
 		return fmt.Errorf("p.buildKafkaMessages: %w", err)
 	}
 
-	// Пишем сообщения в kafka
 	err = p.writer.WriteMessages(ctx, messages...)
 	if err != nil {
-		p.metrics.TotalAdd(produce, metrics.Error, eventsCount) // Инкрементим счетчик ошибок
+		p.metrics.TotalAdd(produce, metrics.Error, eventsCount)
 
 		return fmt.Errorf("p.writer.WriteMessages: %w", err)
 	}
 
-	p.metrics.TotalAdd(produce, metrics.Ok, eventsCount) // Инкрементим счетчик отправленных в kafka сообщений
+	p.metrics.TotalAdd(produce, metrics.Ok, eventsCount)
 
 	return nil
 }

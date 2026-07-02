@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/dto"
+	"github.com/mozhaykin/my-app/internal/dto"
 )
 
 func Test_GetProfilesInput_Validate(t *testing.T) {

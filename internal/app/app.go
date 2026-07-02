@@ -9,25 +9,24 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/config"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/kafkaproducer"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/postgres"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/adapter/redis"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/grpc"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/http"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/kafkaconsumer"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/controller/worker"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/internal/usecase"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/httpserver"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/metrics"
-	pgpool "gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/postgres"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/redisclient"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/router"
-	"gitlab.golang-school.ru/potok-1/amozhaykin/my-app/pkg/transaction"
+	"github.com/mozhaykin/my-app/config"
+	"github.com/mozhaykin/my-app/internal/adapter/kafkaproducer"
+	"github.com/mozhaykin/my-app/internal/adapter/postgres"
+	"github.com/mozhaykin/my-app/internal/adapter/redis"
+	"github.com/mozhaykin/my-app/internal/controller/grpc"
+	"github.com/mozhaykin/my-app/internal/controller/http"
+	"github.com/mozhaykin/my-app/internal/controller/kafkaconsumer"
+	"github.com/mozhaykin/my-app/internal/controller/worker"
+	"github.com/mozhaykin/my-app/internal/usecase"
+	"github.com/mozhaykin/my-app/pkg/httpserver"
+	"github.com/mozhaykin/my-app/pkg/metrics"
+	pgpool "github.com/mozhaykin/my-app/pkg/postgres"
+	"github.com/mozhaykin/my-app/pkg/redisclient"
+	"github.com/mozhaykin/my-app/pkg/router"
+	"github.com/mozhaykin/my-app/pkg/transaction"
 )
 
 func Run(ctx context.Context, c config.Config) error {
-	// Создаем пул подключений к Postgres (используя данные из конфиг файла)
 	pgPool, err := pgpool.New(ctx, c.Postgres)
 	if err != nil {
 		return fmt.Errorf("pgpool.New: %w", err)
@@ -35,29 +34,24 @@ func Run(ctx context.Context, c config.Config) error {
 
 	transaction.Init(pgPool)
 
-	// Redis
 	redisClient, err := redisclient.New(c.Redis)
 	if err != nil {
 		return fmt.Errorf("redis.New: %w", err)
 	}
 
-	// Инициализация сервера с метриками.
-	entityMetrics := metrics.NewEntity()   // Для kafka consumer
-	httpMetrics := metrics.NewHTTPServer() // Основные метрики
+	entityMetrics := metrics.NewEntity()   // kafka consumer
+	httpMetrics := metrics.NewHTTPServer() // основные метрики
 
 	kafkaProducer := kafkaproducer.New(c.KafkaProducer, entityMetrics)
 
-	// Создаем UseCase (передаем в структуру интерфейсы с методами которые вызываются в юзкейсах)
 	uc := usecase.New(
 		postgres.New(),
 		redis.New(redisClient),
 		kafkaProducer,
 	)
 
-	// Запускаем Outbox Kafka worker, в котором вызывается метод usecase OutboxReadAndProduce записывающий в kafka
 	outboxKafkaWorker := worker.NewOutboxKafka(uc, c.OutboxKafkaWorker)
 
-	// Запускаем kafka consumer, который читает сообщения из kafka, обрабатывает его вызывая метод usecase, и делает commit
 	kafkaConsumer := kafkaconsumer.New(c.KafkaConsumer, entityMetrics, uc)
 
 	// Worker (просто пример воркера)
@@ -73,16 +67,15 @@ func Run(ctx context.Context, c config.Config) error {
 	}
 
 	// HTTP
-	r := router.New()                      // Создаем новый роутер chi
-	http.ProfileRouter(r, uc, httpMetrics) // Прописываем ручки
-	// Создаем HTTP сервер, передавая в него роутер и используя данные из конфиг файла
+	r := router.New()
+	http.ProfileRouter(r, uc, httpMetrics)
 	httpServer := httpserver.New(r, c.HTTPServer)
 
 	log.Info().Msg("App started!")
 
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
-	<-sig // wait signal
+	<-sig
 
 	log.Info().Msg("App got signal to stop")
 
