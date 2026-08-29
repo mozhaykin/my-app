@@ -15,9 +15,6 @@ mod-update:
 	go mod tidy
 	go mod download
 
-fmt:
-	golangci-lint fmt
-
 lint:
 	golangci-lint run --fix
 
